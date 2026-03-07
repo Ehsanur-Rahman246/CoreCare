@@ -1,8 +1,8 @@
-import 'package:core_demo1/pages/diet_module.dart';
-import 'package:core_demo1/pages/fitness_module.dart';
-import 'package:core_demo1/pages/home_screen.dart';
-import 'package:core_demo1/pages/login_screen.dart';
-import 'package:core_demo1/pages/shop_module.dart';
+import 'package:core_care/pages/diet_module.dart';
+import 'package:core_care/pages/fitness_module.dart';
+import 'package:core_care/pages/home_screen.dart';
+import 'package:core_care/pages/login_screen.dart';
+import 'package:core_care/pages/shop_module.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_symbols_icons/symbols.dart';

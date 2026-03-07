@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:core_demo1/main.dart';
+import 'package:core_care/main.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class DietScreen extends StatefulWidget {

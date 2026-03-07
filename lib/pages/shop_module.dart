@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:core_demo1/main.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
