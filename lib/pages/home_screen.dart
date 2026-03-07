@@ -115,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: CustomColors.yellowPrimary(context),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                            child: Text("${String.fromCharCode(0x1F525)} 3-day Streak")),
+                            child: Text("${String.fromCharCode(0x1F525)} 3-day Streak", style: TextStyle(color: CustomColors.black(context)),)),
                       )
                     ],
                 ),
@@ -288,11 +288,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Column(children: [Icon(Icons.water_drop_rounded, size: 50,color: CustomColors.bluePrimary(context),),
-                        const SizedBox(height: 10,),
-                        Text("${fillCounter * 0.25} L / ${waterBarCount * 0.25} L"),
-                        ]),
-                        waterIntakeBar(context: context, total: waterBarCount,fill: fillCounter),
+                        Container(
+                          padding : const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: BoxBorder.all(color: CustomColors.blueOutline(context))
+                          ),
+                          child: Row(
+                            children: [
+                              Column(children: [Icon(Icons.water_drop_rounded, size: 50,color: CustomColors.bluePrimary(context),),
+                                const SizedBox(height: 10,),
+                                Text("${fillCounter * 0.25} L / ${waterBarCount * 0.25} L"),
+                              ]),
+
+                              waterIntakeBar(context: context, total: waterBarCount,fill: fillCounter), ],
+                          ),
+                        ),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
