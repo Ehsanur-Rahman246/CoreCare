@@ -1,3 +1,4 @@
+import 'package:core_care/boarding_screen.dart';
 import 'package:core_care/main.dart';
 import 'package:core_care/pages/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               break;
                             case 1:
                               Navigator.push(
-                                  context, MaterialPageRoute(builder: (_) => SettingsPage())
+                                  context, MaterialPageRoute(builder: (_) => OnboardingScreen())
                               );
                               break;
                             case 2:
@@ -183,13 +184,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [Text("🍞 Carbs"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.7,)), SizedBox(height: 5,), Text("70/100 g")]),
+                                children: [Text("🍞 Carbs"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.7, color: CustomColors.yellowOutline(context),)), SizedBox(height: 5,), Text("70/100 g")]),
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [Text("🥩 Protein"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.8,)), SizedBox(height: 5,), Text("70/100 g")]),
+                                children: [Text("🥩 Protein"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.8, color: CustomColors.blueOutline(context),)), SizedBox(height: 5,), Text("70/100 g")]),
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [Text("🧈 Fat"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.6,)), SizedBox(height: 5,), Text("70/100 g")]),
+                                children: [Text("🧈 Fat"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.6, color: CustomColors.redOutline(context),)), SizedBox(height: 5,), Text("70/100 g")]),
                           ],
                         ),
                       ],

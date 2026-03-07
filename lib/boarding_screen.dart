@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -8,8 +9,32 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  final PageController _controller = PageController();
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Stack(
+        children: [
+          PageView(
+            controller: _controller,
+            children: [
+              Container(
+                color: Colors.blue,
+              ),
+              Container(
+                color: Colors.yellow,
+              ),
+              Container(
+                color: Colors.green,
+              ),
+            ],
+          ),
+          Container(
+              alignment: Alignment(0, 0.75),
+              child: SmoothPageIndicator(controller: _controller, count: 3, effect: WormEffect(),)),
+        ],
+      ),
+    );
   }
 }

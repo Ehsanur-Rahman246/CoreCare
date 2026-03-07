@@ -3,6 +3,7 @@ import 'package:core_care/pages/fitness_module.dart';
 import 'package:core_care/pages/home_screen.dart';
 import 'package:core_care/pages/login_screen.dart';
 import 'package:core_care/pages/shop_module.dart';
+import 'package:core_care/boarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         '/shop' : (context) => ShopScreen(),
         '/google' : (context) => GoogleLoginScreen(),
         '/apple' : (context) => AppleLoginScreen(),
+        '/board' : (context) => OnboardingScreen(),
       },
     );
   }

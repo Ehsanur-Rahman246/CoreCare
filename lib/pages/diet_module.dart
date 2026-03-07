@@ -132,25 +132,27 @@ class _DietScreenState extends State<DietScreen> {
         break;
     }
 
-    return GestureDetector(
-      onTap: (){
-
-      },
-      child: Container(
-        height: 70,
-        width: 45,
-        margin: const EdgeInsets.all(5),
-        padding: const EdgeInsets.all(5),
-        decoration: decoration,
-        child: Column(
-          children: [
-            Text(
-              text,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            Icon(icon, color: color,),
-          ],
+    return Expanded(
+      child: GestureDetector(
+        onTap: (){
+      
+        },
+        child: Container(
+          height: 70,
+          width: 45,
+          margin: const EdgeInsets.all(5),
+          padding: const EdgeInsets.all(5),
+          decoration: decoration,
+          child: Column(
+            children: [
+              Text(
+                text,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Icon(icon, color: color,),
+            ],
+          ),
         ),
       ),
     );
