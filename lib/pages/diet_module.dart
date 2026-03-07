@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:core_demo1/main.dart';
+import 'package:core_care/main.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class DietScreen extends StatefulWidget {
@@ -132,25 +132,27 @@ class _DietScreenState extends State<DietScreen> {
         break;
     }
 
-    return GestureDetector(
-      onTap: (){
-
-      },
-      child: Container(
-        height: 70,
-        width: 45,
-        margin: const EdgeInsets.all(5),
-        padding: const EdgeInsets.all(5),
-        decoration: decoration,
-        child: Column(
-          children: [
-            Text(
-              text,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            Icon(icon, color: color,),
-          ],
+    return Expanded(
+      child: GestureDetector(
+        onTap: (){
+      
+        },
+        child: Container(
+          height: 70,
+          width: 45,
+          margin: const EdgeInsets.all(5),
+          padding: const EdgeInsets.all(5),
+          decoration: decoration,
+          child: Column(
+            children: [
+              Text(
+                text,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Icon(icon, color: color,),
+            ],
+          ),
         ),
       ),
     );

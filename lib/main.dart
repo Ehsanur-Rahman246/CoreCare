@@ -1,8 +1,8 @@
-import 'package:core_demo1/pages/diet_module.dart';
-import 'package:core_demo1/pages/fitness_module.dart';
-import 'package:core_demo1/pages/home_screen.dart';
-import 'package:core_demo1/pages/login_screen.dart';
-import 'package:core_demo1/pages/shop_module.dart';
+import 'package:core_care/pages/diet_module.dart';
+import 'package:core_care/pages/fitness_module.dart';
+import 'package:core_care/pages/home_screen.dart';
+import 'package:core_care/pages/login_screen.dart';
+import 'package:core_care/pages/shop_module.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -81,7 +81,7 @@ final ThemeData lightTheme = ThemeData(
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+    contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
     fillColor: Color(0xfff2f2f2),
     iconColor: Color(0xff4d4d4d),
     labelStyle: TextStyle(
@@ -319,10 +319,12 @@ class CustomColors{
   static Color orangeOutline(BuildContext context) => _isDark(context) ? const Color(0xffffc078) : Color(0xfffb8c00);
   static Color orangeMuted(BuildContext context) => _isDark(context) ? const Color(0xff664422) : Color(0xffffe0b2);
   
-  static Color greyDark(BuildContext context) => _isDark(context) ? const Color(0xff0d1a1a) : Color(0xff1a1a1a);
-  static Color greyLight(BuildContext context) => _isDark(context) ? const Color(0xffcce6e6) : Color(0xff98cdcd);
-}
+  static Color greyDark(BuildContext context) => _isDark(context) ? const Color(0xff595959) : Color(0xff4d4d4d);
+  static Color greyLight(BuildContext context) => _isDark(context) ? const Color(0xffbfbfbf) : Color(0xffd9d9d9);
 
+  static Color white(BuildContext context) => _isDark(context) ? const Color(0xfff5f5f5) : Color(0xffffffff);
+  static Color black(BuildContext context) => _isDark(context) ? const Color(0xff000000) : Color(0xff262626);
+}
 
 class ScreenState extends StatefulWidget {
   const ScreenState({super.key});

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:core_demo1/main.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
@@ -28,6 +27,7 @@ class _ShopScreenState extends State<ShopScreen> {
                   Expanded(
                     child: TextField(
                       decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(10),
                         prefixIcon: Icon(Icons.search),
                         labelText: "Search",
                         errorBorder: OutlineInputBorder(
@@ -46,8 +46,10 @@ class _ShopScreenState extends State<ShopScreen> {
                     ),
                   ),
                   const SizedBox(width: 10,),
-                  IconButton(onPressed: (){}, icon: Icon(Symbols.filter_list))
-
+                  CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      foregroundColor: Theme.of(context).colorScheme.onSurface,
+                      child: IconButton(onPressed: (){}, icon: Icon(Symbols.filter_list)))
                 ],
               ),
             ),
