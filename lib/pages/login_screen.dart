@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                        child: Image.asset('lib/assets/logo/google.png'),
+                        child: Image.asset('assets/logo/google.png'),
                         ),
                     ),
             
@@ -126,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Image.asset('lib/assets/logo/apple.png'),
+                          child: Image.asset('assets/logo/apple.png'),
                         ),
                     ),
                   ],
@@ -166,7 +166,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                     SizedBox(
                       height: 100,
                         width: 100,
-                        child: Image.asset('lib/assets/logo/google.png')),
+                        child: Image.asset('assets/logo/google.png')),
                     const SizedBox(height: 10,),
                     Text("Google ID Login", style: Theme.of(context).textTheme.headlineLarge,),
                   ],
@@ -179,7 +179,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                   children: [
                     TextField(
                       decoration: InputDecoration(
-                        icon: Image.asset('lib/assets/logo/google.png', height: 25, width: 25,),
+                        icon: Image.asset('assets/logo/google.png', height: 25, width: 25,),
                         labelText: "E-mail",
                       ),
                     ),
@@ -262,7 +262,7 @@ class _AppleLoginScreenState extends State<AppleLoginScreen> {
                     SizedBox(
                         height: 100,
                         width: 100,
-                        child: Image.asset('lib/assets/logo/apple.png',)),
+                        child: Image.asset('assets/logo/apple.png',)),
                     const SizedBox(height: 10,),
                     Text("Apple ID Login", style: Theme.of(context).textTheme.headlineLarge,),
                   ],
@@ -275,7 +275,7 @@ class _AppleLoginScreenState extends State<AppleLoginScreen> {
                   children: [
                     TextField(
                       decoration: InputDecoration(
-                        icon: Image.asset('lib/assets/logo/apple.png', width: 25, height: 25,),
+                        icon: Image.asset('assets/logo/apple.png', width: 25, height: 25,),
                         labelText: "Apple id",
                       ),
                     ),
