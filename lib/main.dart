@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:core_care/boarding_screen.dart';
 import 'package:core_care/pages/diet_module.dart';
 import 'package:core_care/pages/fitness_module.dart';
@@ -326,6 +328,8 @@ class CustomColors{
 
   static Color white(BuildContext context) => _isDark(context) ? const Color(0xfff7f7f7) : Color(0xffffffff);
   static Color black(BuildContext context) => _isDark(context) ? const Color(0xff000000) : Color(0xff080808);
+
+  static Color back(BuildContext context) => _isDark(context) ? const Color(0xff000000).withValues(alpha: 0.6) : Color(0xff000000).withValues(alpha: 0.4);
 }
 
 class ScreenState extends StatefulWidget {

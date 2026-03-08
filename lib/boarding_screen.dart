@@ -77,132 +77,109 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  late PageController _pageController;
-  bool onLastScreen = false;
+  final PageController _pageController = PageController();
+  final ScrollController _timelineController = ScrollController();
+  int currentPage = 0;
   final int _totalSteps = 10;
+  final int visibleSteps = 4;
 
   @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
+    _timelineController.dispose();
+  }
+
+  void scrollTimeline(int index, double stepWidth){
+    int maxScroll = _totalSteps - visibleSteps;
+    int scrollIndex = (index - (visibleSteps - 2)).clamp(0, maxScroll);
+
+    double offset = scrollIndex * stepWidth;
+    _timelineController.animateTo(offset, duration: const Duration(milliseconds: 300), curve: Curves.ease);
   }
 
   @override
   Widget build(BuildContext context) {
+    final double stepWidth = MediaQuery.of(context).size.width / visibleSteps;
     return Scaffold(
-      body: Stack(
+      body: Column(
         children: [
-          PageView(
-            physics: const NeverScrollableScrollPhysics(),
-            onPageChanged: (index){
-                onLastScreen = (index == _totalSteps - 1);
-                },
-            controller: _pageController,
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    color: Colors.red,
-                  ),
-                  TimelineTile(
-                    isFirst: true,
-                  ),
-                ],
+          SizedBox(
+              height: 60,
+              child: SingleChildScrollView(
+                controller: _timelineController,
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(_totalSteps, (index){
+                    bool isFirst = index == 0;
+                    bool isLast = index == _totalSteps - 1;
+                    bool isActive = index == currentPage;
+                    bool isDone = index < currentPage;
+
+                    return SizedBox(
+                      width: stepWidth,
+                      child: stepIndicator(isFirst, isLast, isActive, isDone),
+                    );
+                  }),
+                ),
               ),
-              Stack(
-                children: [
-                  Container(
-                    color: Colors.blue,
-                  ),
-                  TimelineTile(),
-                ],
-              ),
-              Stack(
-                children: [
-                  Container(
-                    color: Colors.green,
-                  ),
-                  TimelineTile(),
-                ],
-              ),
-              Stack(
-                children: [
-                  Container(
-                    color: Colors.yellow,
-                  ),
-                  TimelineTile(),
-                ],
-              ),
-              Stack(
-                children: [
-                  Container(
-                    color: Colors.white,
-                  ),
-                  TimelineTile(),
-                ],
-              ),
-              Stack(
-                children: [
-                  Container(
-                    color: Colors.black,
-                  ),
-                  TimelineTile(),
-                ],
-              ),
-              Stack(
-                children: [
-                  Container(
-                    color: Colors.purple,
-                  ),
-                  TimelineTile(),
-                ],
-              ),
-              Stack(
-                children: [
-                  Container(
-                    color: Colors.orange,
-                  ),
-                  TimelineTile(),
-                ],
-              ),
-              Stack(
-                children: [
-                  Container(
-                    color: Colors.grey,
-                  ),
-                  TimelineTile(),
-                ],
-              ),
-              Stack(
-                children: [
-                  Container(
-                    color: Colors.cyan,
-                  ),
-                  TimelineTile(
-                    isLast: true,
-                  ),
-                ],
-              ),
-            ],
+            ),
+          Expanded(
+            child: PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: _pageController,
+              onPageChanged: (index){
+                setState(() {
+                  currentPage = index;
+                });
+                scrollTimeline(index, stepWidth);
+              },
+
+              children: [
+                Container(color: Colors.red,),
+                Container(color: Colors.blue,),
+                Container(color: Colors.green,),
+                Container(color: Colors.yellow,),
+                Container(color: Colors.orange,),
+                Container(color: Colors.purple,),
+                Container(color: Colors.black,),
+                Container(color: Colors.white,),
+                Container(color: Colors.cyan,),
+                Container(color: Colors.brown,),
+              ],
+            ),
           ),
-          IconButton.filled(onPressed: (){}, icon: Icon(Icons.navigate_next)),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: IconButton.filled(onPressed: (){
+              if(currentPage < _totalSteps - 1){
+                _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+              }
+            }, icon: Icon(Icons.navigate_next)),
+          ),
         ],
       ),
     );
   }
-  Widget stepIndicator(bool isFirst, bool isLast, bool isActive){
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.85,
+  Widget stepIndicator(bool isFirst, bool isLast, bool isActive, bool isDone){
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: TimelineTile(
         isFirst: isFirst,
         isLast: isLast,
         axis: TimelineAxis.horizontal,
         beforeLineStyle: LineStyle(
-          color: Theme.of(context).colorScheme.primary
+          color: isDone ? Theme.of(context).colorScheme.primary : isActive ? CustomColors.greenMuted(context) : Theme.of(context).colorScheme.tertiary,
+        ),
+        afterLineStyle: LineStyle(
+          color: isDone ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary,
         ),
         indicatorStyle: IndicatorStyle(
-          color: Theme.of(context).colorScheme.primary,
-          iconStyle: IconStyle(iconData: Icons.check, color: Theme.of(context).colorScheme.onPrimary),
+          color: isDone ? Theme.of(context).colorScheme.primary : isActive ? CustomColors.greenMuted(context) : Theme.of(context).colorScheme.tertiary,
+          iconStyle: IconStyle(
+              iconData: isDone ? Icons.check : isActive ? Icons.circle_rounded : Icons.circle_outlined,
+              color: isDone ? Theme.of(context).colorScheme.onPrimary : isActive ? CustomColors.greenOutline(context) : Theme.of(context).colorScheme.tertiary,
+          ),
         ),
       ),
     );
