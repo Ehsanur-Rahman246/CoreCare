@@ -95,7 +95,7 @@ class _SignupPageState extends State<SignupPage> {
     int scrollIndex = (index - (visibleSteps - 2)).clamp(0, maxScroll);
 
     double offset = scrollIndex * stepWidth;
-    _timelineController.animateTo(offset, duration: const Duration(milliseconds: 300), curve: Curves.ease);
+    _timelineController.animateTo(offset, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
   }
 
   @override
