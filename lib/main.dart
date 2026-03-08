@@ -322,8 +322,8 @@ class CustomColors{
   static Color greyDark(BuildContext context) => _isDark(context) ? const Color(0xff595959) : Color(0xff4d4d4d);
   static Color greyLight(BuildContext context) => _isDark(context) ? const Color(0xffbfbfbf) : Color(0xffd9d9d9);
 
-  static Color white(BuildContext context) => _isDark(context) ? const Color(0xfff5f5f5) : Color(0xffffffff);
-  static Color black(BuildContext context) => _isDark(context) ? const Color(0xff000000) : Color(0xff262626);
+  static Color white(BuildContext context) => _isDark(context) ? const Color(0xfff7f7f7) : Color(0xffffffff);
+  static Color black(BuildContext context) => _isDark(context) ? const Color(0xff000000) : Color(0xff080808);
 }
 
 class ScreenState extends StatefulWidget {
