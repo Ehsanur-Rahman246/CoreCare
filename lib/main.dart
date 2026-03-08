@@ -1,3 +1,4 @@
+import 'package:core_care/boarding_screen.dart';
 import 'package:core_care/pages/diet_module.dart';
 import 'package:core_care/pages/fitness_module.dart';
 import 'package:core_care/pages/home_screen.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         '/shop' : (context) => ShopScreen(),
         '/google' : (context) => GoogleLoginScreen(),
         '/apple' : (context) => AppleLoginScreen(),
+        '/signup' : (context) => SignupPage(),
       },
     );
   }
