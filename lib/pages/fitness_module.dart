@@ -20,33 +20,6 @@ enum BoxState{
 
 class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMixin {
 
-  late AnimationController _panel;
-  late Animation<Offset> _slide;
-
-  @override
-  void initState() {
-    super.initState();
-    _panel = AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
-    _slide = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _panel, curve: Curves.easeOutCubic));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _panel.dispose();
-  }
-
-  void _openPanel(){
-    _panel.forward();
-  }
-
-  void _closePanel(){
-    _panel.reverse();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,6 +82,7 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
     Decoration decoration;
     IconData? icon;
     Color? color;
+    bool isToday(BoxState state) => state == BoxState.today;
 
     switch(state){
       case BoxState.normal:
@@ -185,8 +159,7 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
           Navigator.pushNamed(context, '/');
         },
         child: Container(
-          height: 70,
-          width: 45,
+          height: isToday(state) ? 84 : 70,
           margin: const EdgeInsets.all(5),
           padding: const EdgeInsets.all(5),
           decoration: decoration,
@@ -197,7 +170,8 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-              Icon(icon, color: color,),
+              const Spacer(),
+              Icon(icon, color: color, size: 15,),
             ],
           ),
         ),
