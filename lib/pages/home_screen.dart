@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                               break;
                             case 2:
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                   context, MaterialPageRoute(builder: (_) => LoginScreen())
                               );
                               break;

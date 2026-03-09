@@ -70,17 +70,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 8,),
                 FilledButton(onPressed: (){
-                  Navigator.pushNamed(context, '/home');
+                  Navigator.pushReplacementNamed(context, '/home');
                 }, child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 70),
-                    child: Text("Sign In"))),
+                    child: Text("Sign In", style: TextStyle(fontWeight: FontWeight.w700,))),),
                 const SizedBox(height: 8,),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Don't have an account?", style: TextStyle(fontSize: 14),),
-                    TextButton(onPressed: (){}, child: Text("Register now",))
+                    TextButton(onPressed: (){
+                      Navigator.pushNamed(context, '/signup');
+                    }, child: Text("Register now",))
                   ],
                 ),
                 const SizedBox(height: 25,),
@@ -215,7 +217,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
               ),
               const SizedBox(height: 15,),
               FilledButton(onPressed: (){
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/home');
               }, child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 70),
                   child: Text("Sign In"))),
@@ -225,7 +227,9 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("Don't have an account?", style: TextStyle(fontSize: 14),),
-                  TextButton(onPressed: (){}, child: Text("Register now",))
+                  TextButton(onPressed: (){
+                    Navigator.pushNamed(context, '/signup');
+                  }, child: Text("Register now",))
                 ],
               ),
             ],
@@ -310,7 +314,7 @@ class _AppleLoginScreenState extends State<AppleLoginScreen> {
               ),
               const SizedBox(height: 15,),
               FilledButton(onPressed: (){
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/home');
               }, child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 70),
                   child: Text("Sign In"))),
@@ -320,7 +324,9 @@ class _AppleLoginScreenState extends State<AppleLoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("Don't have an account?", style: TextStyle(fontSize: 14),),
-                  TextButton(onPressed: (){}, child: Text("Register now",))
+                  TextButton(onPressed: (){
+                    Navigator.pushNamed(context, '/signup');
+                  }, child: Text("Register now",))
                 ],
               ),
             ],

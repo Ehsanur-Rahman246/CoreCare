@@ -57,7 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     dotColor: Theme.of(context).colorScheme.tertiary, activeDotColor: Theme.of(context).colorScheme.primary),),
                     onLastPage ?
                         FilledButton(onPressed: (){
-                          Navigator.pushNamed(context, '/signup');
+                          Navigator.pushReplacementNamed(context, '/signup');
                         }, child: Text('Done')) :
                     FilledButton(onPressed: (){
                       _controller.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
@@ -114,8 +114,7 @@ class _SignupPageState extends State<SignupPage> {
                     bool isFirst = index == 0;
                     bool isLast = index == _totalSteps - 1;
                     bool isActive = index == currentPage;
-                    bool isDone = index < currentPage;
-
+                    bool isDone = index < currentPage || (currentPage == _totalSteps - 1 && index == _totalSteps - 1);
                     return SizedBox(
                       width: stepWidth,
                       child: stepIndicator(isFirst, isLast, isActive, isDone),
@@ -151,11 +150,15 @@ class _SignupPageState extends State<SignupPage> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
-            child: IconButton.filled(onPressed: (){
+            child: FilledButton(
+              child: Text(currentPage == _totalSteps - 1 ? "Get Started" : "Next"),
+              onPressed: (){
               if(currentPage < _totalSteps - 1){
                 _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+              }else{
+                Navigator.pushReplacementNamed(context, '/home');
               }
-            }, icon: Icon(Icons.navigate_next)),
+            },),
           ),
         ],
       ),
