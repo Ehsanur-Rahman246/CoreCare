@@ -51,16 +51,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       Spacer(),
-                        Badge(
-                          child: CircleAvatar(
-                            child: IconButton(
-                              onPressed: (){
-                                Navigator.pushNamed(context, '/notifications');
-                              },
-                              icon: Icon(Icons.notifications),
-                            ),
+                      IconButton(
+                            onPressed: (){
+                              Navigator.pushNamed(context, '/notifications');
+                            },
+                            icon: Badge(
+                                child: Icon(Icons.notifications)),
                           ),
-                        ),
                       const SizedBox(width: 10,),
                       PopupMenuButton(
                         onSelected: (value){
@@ -98,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [Icon(Icons.logout_rounded),const SizedBox(width: 8,), Text("Sign out")])),
                           ];
                         },
-                          icon: CircleAvatar(child: Icon(Icons.menu))),
+                          icon: Icon(Icons.menu)),
                     ],
                   ),
                 ),
@@ -407,7 +404,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 padding: EdgeInsets.only(left: 10, top: 20),
                 child: IconButton(onPressed: (){
                   Navigator.pop(context);
-                }, icon: Icon(Icons.chevron_left_rounded, ))),
+                }, icon: Icon(Icons.chevron_left_rounded, size: 30, ))),
           ),
           Stack(
             clipBehavior: Clip.none,
@@ -469,20 +466,11 @@ class _ProfilePageState extends State<ProfilePage> {
           color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
             children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                color: Theme.of(context).colorScheme.primary,
-                child: Padding(
-                    padding: EdgeInsets.only(left: 10, top: 20),
-                    child: IconButton(onPressed: (){
-                      Navigator.pop(context);
-                    }, icon: Icon(Icons.chevron_left_rounded))),
-              ),
               Stack(
                 clipBehavior: Clip.none,
                 children: [
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.15,
+                    height: MediaQuery.of(context).size.height * 0.25,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.vertical(bottom:
@@ -516,10 +504,23 @@ class _ProfilePageState extends State<ProfilePage> {
                     left: 0,
                       right: 0,
                     child: CircleAvatar(
-                      backgroundColor: CustomColors.greyLight(context),
                       radius: 35,
-                      child: Icon(Icons.person),
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      child: CircleAvatar(
+                        backgroundColor: CustomColors.greyLight(context),
+                        radius: 32,
+                        child: Icon(Icons.person, size: 40,),
+                      ),
                     ),
+                  ),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    color: Theme.of(context).colorScheme.primary,
+                    child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: IconButton(onPressed: (){
+                          Navigator.pop(context);
+                        }, icon: Icon(Icons.chevron_left_rounded, size: 40,))),
                   ),
                 ],
               ),

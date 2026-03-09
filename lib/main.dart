@@ -122,7 +122,6 @@ final ThemeData lightTheme = ThemeData(
   ),
   badgeTheme: BadgeThemeData(
     backgroundColor: Color(0xffe53935),
-    padding: const EdgeInsets.all(8),
     alignment: Alignment.topRight,
   ),
 );
