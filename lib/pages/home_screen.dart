@@ -1,10 +1,10 @@
-import 'package:core_care/boarding_screen.dart';
 import 'package:core_care/main.dart';
 import 'package:core_care/pages/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class HomeScreen extends StatefulWidget {
+
   final Function(int) onNavigate;
   const HomeScreen({super.key, required this.onNavigate});
 
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Text("Good Morning ${String.fromCharCode(0x2600)}", style: Theme.of(context).textTheme.headlineSmall,),
                           const SizedBox(height: 7,),
-                          Text("Feb 28, 2026  .  12:37 PM", style: Theme.of(context).textTheme.labelMedium),
+                          Text("Feb 28, 2026  .  12:37 PM", style: Theme.of(context).textTheme.labelLarge),
                         ],
                       ),
                       Spacer(),
@@ -68,9 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                               break;
                             case 1:
-                              Navigator.push(
-                                  context, MaterialPageRoute(builder: (_) => SettingsPage())
-                              );
+                              Navigator.pushNamed(context, '/settings');
                               break;
                             case 2:
                               Navigator.pushReplacement(
@@ -384,34 +382,43 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  final ThemeMode currentTheme;
+  final Function(ThemeMode) onThemeChanged;
+
+  const SettingsPage({super.key, required this.currentTheme, required this.onThemeChanged});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  ThemeMode themeMode = ThemeMode.system;
-  bool isDark = false;
+  late ThemeMode themeMode;
+  late bool isNotificationsOn;
+  @override
+  void initState() {
+    super.initState();
+    themeMode = widget.currentTheme;
+    isNotificationsOn = false;
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool isDark;
+    if(themeMode == ThemeMode.dark){
+      isDark = true;
+    }else if(themeMode == ThemeMode.light){
+      isDark = false;
+    }else{
+      isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    }
     return Scaffold(
       body: Column(
         children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            color: Theme.of(context).colorScheme.primary,
-            child: Padding(
-                padding: EdgeInsets.only(left: 10, top: 20),
-                child: IconButton(onPressed: (){
-                  Navigator.pop(context);
-                }, icon: Icon(Icons.chevron_left_rounded, size: 30, ))),
-          ),
           Stack(
             clipBehavior: Clip.none,
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.3,
+                height: MediaQuery.of(context).size.height * 0.25,
                 width: MediaQuery.of(context).size.width ,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.vertical(bottom: Radius.circular(20),),
@@ -423,40 +430,61 @@ class _SettingsPageState extends State<SettingsPage> {
                   left: 0,
                   right: 0,
                   bottom: -40,
-                  child: Icon(Icons.settings_rounded, size: 100,)),
+                  child: Icon(Icons.settings_rounded, size: 100, color: Theme.of(context).colorScheme.primary,)),
+              Positioned(
+                child: IconButton(onPressed: (){
+                  Navigator.pop(context);
+                }, icon: Icon(Icons.chevron_left_rounded, size: 40, )),
+              ),
             ],
           ),
           const SizedBox(height: 50,),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+            padding: const EdgeInsets.all(10),
+            child: Card(
+                child: ListTile(
+                  leading: Icon(Icons.dark_mode_rounded),
+                  title: Text('Dark Mode'),
+                  subtitle: isDark ? Text('ON') : Text('OFF'),
+                  subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
+                  trailing: modeSelect(context),
+                  ),
+                ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
             child: Card(
               child: ListTile(
-                leading: Icon(Icons.dark_mode_rounded),
-                title: Text('Dark Mode'),
-                subtitle: isDark ? Text('ON') : Text('OFF'),
+                leading: Icon(Icons.notifications_active),
+                title: Text('Notifications'),
+                subtitle: isNotificationsOn ? Text('ON') : Text('OFF'),
                 subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
-                trailing: modeSelect(),
-                ),
+                trailing: Switch(value: isNotificationsOn, onChanged: (value){
+                  setState(() {
+                    isNotificationsOn = value;
+                  });
+                })
               ),
             ),
+          ),
         ],
       ),
     );
   }
 
-  Widget modeSelect(){
-    return SegmentedButton(
-        segments: const [
-          ButtonSegment(value: ThemeMode.system, label: Text('Auto'), icon: Icon(Icons.auto_awesome)),
-          ButtonSegment(value: ThemeMode.light, label: Text('Light'), icon: Icon(Icons.light_mode)),
-          ButtonSegment(value: ThemeMode.dark, label: Text('Dark'), icon: Icon(Icons.dark_mode)),
+  Widget modeSelect(BuildContext context){
+    return SegmentedButton<ThemeMode>(
+        segments: [
+          ButtonSegment(value: ThemeMode.system, label: Text('Auto', style: Theme.of(context).textTheme.bodySmall, ), icon: Icon(Icons.auto_awesome, size: 12,)),
+          ButtonSegment(value: ThemeMode.light, label: Text('Light', style: Theme.of(context).textTheme.bodySmall,), icon: Icon(Icons.light_mode, size: 12,)),
+          ButtonSegment(value: ThemeMode.dark, label: Text('Dark', style: Theme.of(context).textTheme.bodySmall,), icon: Icon(Icons.dark_mode, size: 12,)),
         ],
         selected: {themeMode},
       onSelectionChanged: (value){
           setState(() {
             themeMode = value.first;
-            isDark = Theme.of(context).brightness == Brightness.dark;
           });
+          widget.onThemeChanged(value.first);
       },
     );
   }
@@ -542,14 +570,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                 ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  color: Theme.of(context).colorScheme.primary,
-                  child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: IconButton(onPressed: (){
-                        Navigator.pop(context);
-                      }, icon: Icon(Icons.chevron_left_rounded, size: 40,))),
+                Positioned(
+                  child: IconButton(onPressed: (){
+                    Navigator.pop(context);
+                  }, icon: Icon(Icons.chevron_left_rounded, size: 40,)),
                 ),
                 Container(
                   alignment: Alignment.center,
