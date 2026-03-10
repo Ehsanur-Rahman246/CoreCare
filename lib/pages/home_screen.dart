@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+  bool hasNotification = false;
   late int waterBarCount;
   late int fillCounter;
 
@@ -55,7 +56,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: (){
                               Navigator.pushNamed(context, '/notifications');
                             },
-                            icon: Badge(
+                            icon:
+                            Badge(
+                              isLabelVisible: hasNotification,
                                 child: Icon(Icons.notifications)),
                           ),
                       const SizedBox(width: 10,),
