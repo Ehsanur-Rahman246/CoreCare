@@ -158,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 const SizedBox(height: 10,),
                                 Text("2500 cal"),
-                                Text("Eaten"),
+                                Text("Eaten", style: Theme.of(context).textTheme.labelLarge,),
                               ],
                             ),
                             Column(
@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 const SizedBox(height: 10,),
                                 Text("1200 cal"),
-                                Text("Burned"),
+                                Text("Burned", style: Theme.of(context).textTheme.labelLarge,),
                               ],
                             ),
                           ],
@@ -181,13 +181,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [Text("🍞 Carbs"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.7, color: CustomColors.yellowOutline(context),)), SizedBox(height: 5,), Text("70/100 g")]),
+                                children: [Text("🍞 Carbs"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.7, color: CustomColors.yellowOutline(context),)), SizedBox(height: 5,), Text("70/100 g", style: Theme.of(context).textTheme.labelLarge,)]),
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [Text("🥩 Protein"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.8, color: CustomColors.blueOutline(context),)), SizedBox(height: 5,), Text("70/100 g")]),
+                                children: [Text("🥩 Protein"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.8, color: CustomColors.blueOutline(context),)), SizedBox(height: 5,), Text("70/100 g", style: Theme.of(context).textTheme.labelLarge,)]),
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [Text("🧈 Fat"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.6, color: CustomColors.redOutline(context),)), SizedBox(height: 5,), Text("70/100 g")]),
+                                children: [Text("🧈 Fat"), SizedBox(height: 8,), SizedBox(width: 100, child: LinearProgressIndicator(backgroundColor: Theme.of(context).colorScheme.tertiary,value: 0.6, color: CustomColors.redOutline(context),)), SizedBox(height: 5,), Text("70/100 g", style: Theme.of(context).textTheme.labelLarge,)]),
                           ],
                         ),
                       ],
@@ -297,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const SizedBox(height: 10,),
                                 Text("${fillCounter * 0.25} L / ${waterBarCount * 0.25} L"),
                               ]),
-
+                              const SizedBox(width: 10,),
                               waterIntakeBar(context: context, total: waterBarCount,fill: fillCounter), ],
                           ),
                         ),
@@ -462,135 +462,169 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       body:
       SafeArea(
-        child: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Column(
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.25,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.vertical(bottom:
-                      Radius.circular(40),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 20,
-                    right: 20,
-                    bottom: -100,
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 40, 20, 15),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [Text("USER\nuser.cse@aust.edu"), Spacer(), Icon(Icons.person)]),
-                            Row(mainAxisAlignment: MainAxisAlignment.center,children: [Text("Streak: 3 days"), Spacer(), Icon(Icons.local_fire_department_rounded, color: CustomColors.orangePrimary(context),)]),
-                            Row(mainAxisAlignment: MainAxisAlignment.center,children: [Text("Points: 100 pts"), Spacer(), Icon(Icons.paid_outlined, color: CustomColors.yellowPrimary(context),)]),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    left: 0,
-                      right: 0,
-                    child: CircleAvatar(
-                      radius: 35,
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      child: CircleAvatar(
-                        backgroundColor: CustomColors.greyLight(context),
-                        radius: 32,
-                        child: Icon(Icons.person, size: 40,),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.centerLeft,
+        child: Column(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.25,
+                  decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
-                    child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: IconButton(onPressed: (){
-                          Navigator.pop(context);
-                        }, icon: Icon(Icons.chevron_left_rounded, size: 40,))),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 100,),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-                  child: ListView(
-                    children: [
-                      Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text("General", style: Theme.of(context).textTheme.bodyMedium,)),
-                      Card(
-                        child: ListTile(
-                           leading: Icon(Icons.eighteen_mp),
-                          title: Text('data'),
-                          subtitle: Text('data'),
-                          trailing: IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
-                        ),
-                      ),
-                      Card(
-                        child: ListTile(
-                          leading: Icon(Icons.eighteen_mp),
-                          title: Text('data'),
-                          subtitle: Text('data'),
-                          trailing: IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
-                        ),
-                      ),
-                      Card(
-                        child: ListTile(
-                          leading: Icon(Icons.eighteen_mp),
-                          title: Text('data'),
-                          subtitle: Text('data'),
-                          trailing: IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
-                        ),
-                      ),
-                      const SizedBox(height: 10,),
-                      Padding(padding: const EdgeInsets.only(left: 10),child: Text("Additional Settings")),
-                      Card(
-                        child: ListTile(
-                          leading: Icon(Icons.eighteen_mp),
-                          title: Text('data'),
-                          subtitle: Text('data'),
-                          trailing: IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
-                        ),
-                      ),
-                      Card(
-                        child: ListTile(
-                          leading: Icon(Icons.eighteen_mp),
-                          title: Text('data'),
-                          subtitle: Text('data'),
-                          trailing: Icon(Icons.eighteen_mp),
-                        ),
-                      ),
-                      const SizedBox(height: 10,),
-                      Padding(padding: const EdgeInsets.only(left: 10),child: Text("Others")),
-                      Card(
-                        child: ListTile(
-                          leading: Icon(Icons.eighteen_mp),
-                          title: Text('data'),
-                          subtitle: Text('data'),
-                          trailing: IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
-                        ),
-                      ),
-                    ],
+                    borderRadius: BorderRadius.vertical(bottom:
+                    Radius.circular(40),
+                    ),
                   ),
                 ),
+                Positioned(
+                  left: 20,
+                  right: 20,
+                  bottom: -150,
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 60, 20, 15),
+                      child: Column(
+                        children: [
+                          Text("User", style: Theme.of(context).textTheme.titleSmall,),
+                          Text("user.new@aust.edu", style: Theme.of(context).textTheme.labelLarge,),
+                          const SizedBox(height: 25,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  CircleAvatar(
+                                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                                      child: Text('data')),
+                                  const SizedBox(height: 8,),
+                                  Text("Starter", style: Theme.of(context).textTheme.bodySmall,),
+                                  Text("110 XP", style: Theme.of(context).textTheme.labelSmall,),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  CircleAvatar(
+                                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                                      child: Text("🔥")),
+                                  const SizedBox(height: 8,),
+                                  Text("3 day", style: Theme.of(context).textTheme.bodySmall,),
+                                  Text("Streak", style: Theme.of(context).textTheme.labelSmall,),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  CircleAvatar(
+                                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                                      child: Text('data')),
+                                  const SizedBox(height: 8,),
+                                  Text("100 FC", style: Theme.of(context).textTheme.bodySmall,),
+                                  Text("FitCoins", style: Theme.of(context).textTheme.labelSmall,),
+                                ],
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  color: Theme.of(context).colorScheme.primary,
+                  child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: IconButton(onPressed: (){
+                        Navigator.pop(context);
+                      }, icon: Icon(Icons.chevron_left_rounded, size: 40,))),
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child: Padding(
+                      padding: EdgeInsets.all(25),
+                      child: Text("Profile", style: Theme.of(context).textTheme.headlineLarge,)),
+                ),
+                Positioned(
+                  bottom: 30,
+                  left: 0,
+                  right: 0,
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    child: CircleAvatar(
+                      backgroundColor: CustomColors.greyLight(context),
+                      radius: 37,
+                      child: Icon(Icons.person, size: 40,),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 150,),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                child: ListView(
+                  children: [
+                    Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Text("General", style: Theme.of(context).textTheme.bodyLarge,)),
+                    Card(
+                      child: ListTile(
+                         leading: Icon(Icons.eighteen_mp),
+                        title: Text('data'),
+                        subtitle: Text('data'),
+                        trailing: IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
+                      ),
+                    ),
+                    Card(
+                      child: ListTile(
+                        leading: Icon(Icons.eighteen_mp),
+                        title: Text('data'),
+                        subtitle: Text('data'),
+                        trailing: IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
+                      ),
+                    ),
+                    Card(
+                      child: ListTile(
+                        leading: Icon(Icons.eighteen_mp),
+                        title: Text('data'),
+                        subtitle: Text('data'),
+                        trailing: IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                    Padding(padding: const EdgeInsets.only(left: 10),child: Text("Additional Settings")),
+                    Card(
+                      child: ListTile(
+                        leading: Icon(Icons.eighteen_mp),
+                        title: Text('data'),
+                        subtitle: Text('data'),
+                        trailing: IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
+                      ),
+                    ),
+                    Card(
+                      child: ListTile(
+                        leading: Icon(Icons.eighteen_mp),
+                        title: Text('data'),
+                        subtitle: Text('data'),
+                        trailing: Icon(Icons.eighteen_mp),
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                    Padding(padding: const EdgeInsets.only(left: 10),child: Text("Others")),
+                    Card(
+                      child: ListTile(
+                        leading: Icon(Icons.eighteen_mp),
+                        title: Text('data'),
+                        subtitle: Text('data'),
+                        trailing: IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -669,3 +703,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 }
 
+
+class Emoji{
+  
+}

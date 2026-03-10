@@ -214,17 +214,20 @@ final ThemeData darkTheme = ThemeData(
 
 TextTheme customTexts(ColorScheme scheme){
   return TextTheme(
-    displayLarge: GoogleFonts.montserrat(
+    displayLarge: TextStyle(
+      fontFamily: "Montserrat",
       fontSize: 32,
       fontWeight: FontWeight(700),
       color: scheme.onSurface,
     ),
-    displayMedium: GoogleFonts.montserrat(
+    displayMedium: TextStyle(
+      fontFamily: "Montserrat",
       fontSize: 28,
       fontWeight: FontWeight(600),
       color: scheme.onSurface,
     ),
-    displaySmall: GoogleFonts.montserrat(
+    displaySmall: TextStyle(
+      fontFamily: "Montserrat",
       fontSize: 22,
       fontWeight: FontWeight(400),
       color: scheme.onSurface,
@@ -234,57 +237,68 @@ TextTheme customTexts(ColorScheme scheme){
       fontWeight: FontWeight(700),
       color: scheme.onSurface,
     ),
-    headlineMedium: GoogleFonts.poppins(
+    headlineMedium: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 22,
       fontWeight: FontWeight(600),
       color: scheme.onSurface,
     ),
-    headlineSmall: GoogleFonts.poppins(
+    headlineSmall: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 18,
       fontWeight: FontWeight(500),
       color: scheme.onSurface,
     ),
-    titleLarge: GoogleFonts.poppins(
+    titleLarge: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 20,
       fontWeight: FontWeight(600),
       color: scheme.onSurface,
     ),
-    titleMedium: GoogleFonts.poppins(
+    titleMedium: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 20,
       fontWeight: FontWeight(500),
       color: scheme.onSurface,
     ),
-    titleSmall: GoogleFonts.poppins(
+    titleSmall: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 18,
-      fontWeight: FontWeight(600),
+      fontWeight: FontWeight(400),
       color: scheme.onSurface,
     ),
-    bodyLarge: GoogleFonts.poppins(
+    bodyLarge: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 16,
       fontWeight: FontWeight(400),
       color: scheme.onSurface,
     ),
-    bodyMedium: GoogleFonts.poppins(
+    bodyMedium: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 14,
       fontWeight: FontWeight(400),
       color: scheme.onSurface,
     ),
-    bodySmall: GoogleFonts.poppins(
+    bodySmall: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 12,
       fontWeight: FontWeight(400),
       color: scheme.onSurface,
     ),
-    labelLarge: GoogleFonts.poppins(
+    labelLarge: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 14,
-      fontWeight: FontWeight(500),
-      color: scheme.onSurface,
+      fontWeight: FontWeight(400),
+      color: scheme.onTertiary,
     ),
-    labelMedium: GoogleFonts.poppins(
+    labelMedium: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 12,
       fontWeight: FontWeight(400),
       color: scheme.onTertiary,
     ),
-    labelSmall: GoogleFonts.poppins(
+    labelSmall: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 10,
       fontWeight: FontWeight(300),
       color: scheme.onTertiary,
