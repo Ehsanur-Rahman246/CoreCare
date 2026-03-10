@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               break;
                             case 1:
                               Navigator.push(
-                                  context, MaterialPageRoute(builder: (_) => OnboardingScreen())
+                                  context, MaterialPageRoute(builder: (_) => SettingsPage())
                               );
                               break;
                             case 2:
@@ -391,6 +391,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  ThemeMode themeMode = ThemeMode.system;
   bool isDark = false;
   @override
   Widget build(BuildContext context) {
@@ -434,16 +435,29 @@ class _SettingsPageState extends State<SettingsPage> {
                 title: Text('Dark Mode'),
                 subtitle: isDark ? Text('ON') : Text('OFF'),
                 subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
-                trailing: Switch(value: isDark, onChanged: (value){
-                  setState(() {
-                    isDark = value;
-                  });
-                }),
+                trailing: modeSelect(),
+                ),
               ),
             ),
-          ),
         ],
       ),
+    );
+  }
+
+  Widget modeSelect(){
+    return SegmentedButton(
+        segments: const [
+          ButtonSegment(value: ThemeMode.system, label: Text('Auto'), icon: Icon(Icons.auto_awesome)),
+          ButtonSegment(value: ThemeMode.light, label: Text('Light'), icon: Icon(Icons.light_mode)),
+          ButtonSegment(value: ThemeMode.dark, label: Text('Dark'), icon: Icon(Icons.dark_mode)),
+        ],
+        selected: {themeMode},
+      onSelectionChanged: (value){
+          setState(() {
+            themeMode = value.first;
+            isDark = Theme.of(context).brightness == Brightness.dark;
+          });
+      },
     );
   }
 }
