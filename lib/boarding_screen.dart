@@ -21,48 +21,79 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           PageView(
             physics: const NeverScrollableScrollPhysics(),
-            onPageChanged: (index){
+            onPageChanged: (index) {
               setState(() {
                 onLastPage = (index == 3);
               });
             },
             controller: _controller,
             children: [
-              Container(
-                color: Colors.blue,
-              ),
-              Container(
-                color: Colors.yellow,
-              ),
-              Container(
-                color: Colors.green,
-              ),
-              Container(
-                color: Colors.red,
-              ),
+              Container(color: Colors.blue),
+              Container(color: Colors.yellow),
+              Container(color: Colors.green),
+              Container(color: Colors.red),
             ],
           ),
+          Positioned(
+            right: 12,
+            top: 12,
+            child: TextButton(
+              onPressed: () {
+                _controller.jumpToPage(3);
+              },
+              child: Text('Skip'),
+            ),
+          ),
           Container(
-              alignment: Alignment(0, 0.75),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                TextButton(onPressed: (){
-                  _controller.jumpToPage(3);
-                }, child: Text('Skip')),
-                SmoothPageIndicator(
-                  controller: _controller, count: 4, effect: WormEffect(
-                    dotWidth: 10,
-                    dotHeight: 10,
-                    dotColor: Theme.of(context).colorScheme.tertiary, activeDotColor: Theme.of(context).colorScheme.primary),),
-                    onLastPage ?
-                        FilledButton(onPressed: (){
-                          Navigator.pushReplacementNamed(context, '/signup');
-                        }, child: Text('Done')) :
-                    FilledButton(onPressed: (){
-                      _controller.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
-                    }, child: Text('Next')),
-              ])),
+            alignment: Alignment(0, 0.60),
+            child: SmoothPageIndicator(
+              controller: _controller,
+              count: 4,
+              effect: WormEffect(
+                dotWidth: 7,
+                dotHeight: 7,
+                dotColor: Theme.of(context).colorScheme.tertiary,
+                activeDotColor: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment(0, 0.72),
+            child: onLastPage
+                ? FilledButton(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/signup');
+                    },
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
+                        child: Text('Get Started')),
+                  )
+                : FilledButton(
+                    onPressed: () {
+                      _controller.nextPage(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeIn,
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: Text('Next'),
+                    ),
+                  ),
+          ),
+          Container(
+            alignment: Alignment(0, 0.85),
+            child: onLastPage
+                ? OutlinedButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+              child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Text('Sign In')),
+            )
+                : SizedBox(),
+          ),
         ],
       ),
     );
@@ -90,12 +121,16 @@ class _SignupPageState extends State<SignupPage> {
     _timelineController.dispose();
   }
 
-  void scrollTimeline(int index, double stepWidth){
+  void scrollTimeline(int index, double stepWidth) {
     int maxScroll = _totalSteps - visibleSteps;
     int scrollIndex = (index - (visibleSteps - 2)).clamp(0, maxScroll);
 
     double offset = scrollIndex * stepWidth;
-    _timelineController.animateTo(offset, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    _timelineController.animateTo(
+      offset,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -105,29 +140,32 @@ class _SignupPageState extends State<SignupPage> {
       body: Column(
         children: [
           SizedBox(
-              height: 60,
-              child: SingleChildScrollView(
-                controller: _timelineController,
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(_totalSteps, (index){
-                    bool isFirst = index == 0;
-                    bool isLast = index == _totalSteps - 1;
-                    bool isActive = index == currentPage;
-                    bool isDone = index < currentPage || (currentPage == _totalSteps - 1 && index == _totalSteps - 1);
-                    return SizedBox(
-                      width: stepWidth,
-                      child: stepIndicator(isFirst, isLast, isActive, isDone),
-                    );
-                  }),
-                ),
+            height: 60,
+            child: SingleChildScrollView(
+              controller: _timelineController,
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(_totalSteps, (index) {
+                  bool isFirst = index == 0;
+                  bool isLast = index == _totalSteps - 1;
+                  bool isActive = index == currentPage;
+                  bool isDone =
+                      index < currentPage ||
+                      (currentPage == _totalSteps - 1 &&
+                          index == _totalSteps - 1);
+                  return SizedBox(
+                    width: stepWidth,
+                    child: stepIndicator(isFirst, isLast, isActive, isDone),
+                  );
+                }),
               ),
             ),
+          ),
           Expanded(
             child: PageView(
               physics: const NeverScrollableScrollPhysics(),
               controller: _pageController,
-              onPageChanged: (index){
+              onPageChanged: (index) {
                 setState(() {
                   currentPage = index;
                 });
@@ -135,36 +173,43 @@ class _SignupPageState extends State<SignupPage> {
               },
 
               children: [
-                Container(color: Colors.red,),
-                Container(color: Colors.blue,),
-                Container(color: Colors.green,),
-                Container(color: Colors.yellow,),
-                Container(color: Colors.orange,),
-                Container(color: Colors.purple,),
-                Container(color: Colors.black,),
-                Container(color: Colors.white,),
-                Container(color: Colors.cyan,),
-                Container(color: Colors.brown,),
+                Container(color: Colors.red),
+                Container(color: Colors.blue),
+                Container(color: Colors.green),
+                Container(color: Colors.yellow),
+                Container(color: Colors.orange),
+                Container(color: Colors.purple),
+                Container(color: Colors.black),
+                Container(color: Colors.white),
+                Container(color: Colors.cyan),
+                Container(color: Colors.brown),
               ],
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: FilledButton(
-              child: Text(currentPage == _totalSteps - 1 ? "Get Started" : "Next"),
-              onPressed: (){
-              if(currentPage < _totalSteps - 1){
-                _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-              }else{
-                Navigator.pushReplacementNamed(context, '/home');
-              }
-            },),
+              child: Text(
+                currentPage == _totalSteps - 1 ? "Finish Setup" : "Next",
+              ),
+              onPressed: () {
+                if (currentPage < _totalSteps - 1) {
+                  _pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                } else {
+                  Navigator.pushReplacementNamed(context, '/home');
+                }
+              },
+            ),
           ),
         ],
       ),
     );
   }
-  Widget stepIndicator(bool isFirst, bool isLast, bool isActive, bool isDone){
+
+  Widget stepIndicator(bool isFirst, bool isLast, bool isActive, bool isDone) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: TimelineTile(
@@ -172,20 +217,37 @@ class _SignupPageState extends State<SignupPage> {
         isLast: isLast,
         axis: TimelineAxis.horizontal,
         beforeLineStyle: LineStyle(
-          color: isDone ? Theme.of(context).colorScheme.primary : isActive ? CustomColors.greenMuted(context) : Theme.of(context).colorScheme.tertiary,
+          color: isDone
+              ? Theme.of(context).colorScheme.primary
+              : isActive
+              ? CustomColors.greenMuted(context)
+              : Theme.of(context).colorScheme.tertiary,
         ),
         afterLineStyle: LineStyle(
-          color: isDone ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary,
+          color: isDone
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.tertiary,
         ),
         indicatorStyle: IndicatorStyle(
-          color: isDone ? Theme.of(context).colorScheme.primary : isActive ? CustomColors.greenMuted(context) : Theme.of(context).colorScheme.tertiary,
+          color: isDone
+              ? Theme.of(context).colorScheme.primary
+              : isActive
+              ? CustomColors.greenMuted(context)
+              : Theme.of(context).colorScheme.tertiary,
           iconStyle: IconStyle(
-              iconData: isDone ? Icons.check : isActive ? Icons.circle_rounded : Icons.circle_outlined,
-              color: isDone ? Theme.of(context).colorScheme.onPrimary : isActive ? CustomColors.greenOutline(context) : Theme.of(context).colorScheme.tertiary,
+            iconData: isDone
+                ? Icons.check
+                : isActive
+                ? Icons.circle_rounded
+                : Icons.circle_outlined,
+            color: isDone
+                ? Theme.of(context).colorScheme.onPrimary
+                : isActive
+                ? CustomColors.greenOutline(context)
+                : Theme.of(context).colorScheme.tertiary,
           ),
         ),
       ),
     );
   }
 }
-

@@ -9,17 +9,10 @@ class FitScreen extends StatefulWidget {
   State<FitScreen> createState() => _FitScreenState();
 }
 
-enum BoxState{
-  normal,
-  today,
-  notCompleted,
-  completed,
-  hasSchedule,
-  cancelled
-}
+enum BoxState { normal, today, notCompleted, completed, hasSchedule, cancelled }
 
-class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMixin {
-
+class _FitScreenState extends State<FitScreen>
+    with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,13 +23,16 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.only(left: 10),
               alignment: Alignment.centerLeft,
-              child: Text('This Week', style: Theme.of(context).textTheme.titleSmall,),
+              child: Text(
+                'This Week',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
             ),
-            const SizedBox(height: 15,),
+            const SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -49,49 +45,50 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
                 box("Sat\n7", BoxState.cancelled),
               ],
             ),
-            SizedBox(height: 30,),
+            SizedBox(height: 30),
             Container(
               padding: const EdgeInsets.only(left: 10),
               alignment: Alignment.centerLeft,
-              child: Text('Today\'s exercises', style: Theme.of(context).textTheme.titleSmall,),
+              child: Text(
+                'Today\'s exercises',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(height: 10),
             Expanded(
-                child: ListView(
-                  children: [
-                    exerciseCard("Push Up", "15 reps"),
-                    exerciseCard("Squat", "20 reps"),
-                    exerciseCard("Plank", "30 reps"),
-                    exerciseCard("Jumping Jack", "25 reps"),
-                    exerciseCard("Lunges", "15 reps"),
-                    exerciseCard("Sit Up", "20 reps"),
-                    exerciseCard("Burpees", "10 reps"),
-                    exerciseCard("Mountain Climber", "20 sec"),
-                    exerciseCard("High Knees", "30 sec"),
-                    exerciseCard("Stretching", "5 min"),
-                  ],
-                ),
+              child: ListView(
+                children: [
+                  exerciseCard("Push Up", "15 reps"),
+                  exerciseCard("Squat", "20 reps"),
+                  exerciseCard("Plank", "30 reps"),
+                  exerciseCard("Jumping Jack", "25 reps"),
+                  exerciseCard("Lunges", "15 reps"),
+                  exerciseCard("Sit Up", "20 reps"),
+                  exerciseCard("Burpees", "10 reps"),
+                  exerciseCard("Mountain Climber", "20 sec"),
+                  exerciseCard("High Knees", "30 sec"),
+                  exerciseCard("Stretching", "5 min"),
+                ],
+              ),
             ),
           ],
         ),
-      )
+      ),
     );
   }
 
-  Widget box(String text, BoxState state){
+  Widget box(String text, BoxState state) {
     Decoration decoration;
     IconData? icon;
     Color? color;
     bool isToday(BoxState state) => state == BoxState.today;
 
-    switch(state){
+    switch (state) {
       case BoxState.normal:
         decoration = BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: BoxBorder.all(
-              color: Colors.transparent
-          ),
-            borderRadius: BorderRadius.circular(12)
+          border: BoxBorder.all(color: Colors.transparent),
+          borderRadius: BorderRadius.circular(12),
         );
         icon = null;
         color = null;
@@ -99,10 +96,8 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
       case BoxState.today:
         decoration = BoxDecoration(
           color: Theme.of(context).colorScheme.primary,
-          border: BoxBorder.all(
-              color: Colors.transparent
-          ),
-            borderRadius: BorderRadius.circular(12)
+          border: BoxBorder.all(color: Colors.transparent),
+          borderRadius: BorderRadius.circular(12),
         );
         icon = null;
         color = null;
@@ -110,10 +105,8 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
       case BoxState.notCompleted:
         decoration = BoxDecoration(
           color: CustomColors.redMuted(context),
-          border: BoxBorder.all(
-              color: CustomColors.redOutline(context)
-          ),
-            borderRadius: BorderRadius.circular(12)
+          border: BoxBorder.all(color: CustomColors.redOutline(context)),
+          borderRadius: BorderRadius.circular(12),
         );
         icon = Icons.cancel_outlined;
         color = CustomColors.redOutline(context);
@@ -121,10 +114,8 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
       case BoxState.completed:
         decoration = BoxDecoration(
           color: CustomColors.greenMuted(context),
-          border: BoxBorder.all(
-              color: CustomColors.greenOutline(context)
-          ),
-            borderRadius: BorderRadius.circular(12)
+          border: BoxBorder.all(color: CustomColors.greenOutline(context)),
+          borderRadius: BorderRadius.circular(12),
         );
         icon = Icons.check_circle_outline;
         color = CustomColors.greenOutline(context);
@@ -132,10 +123,8 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
       case BoxState.hasSchedule:
         decoration = BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: BoxBorder.all(
-              color: CustomColors.greenOutline(context)
-          ),
-            borderRadius: BorderRadius.circular(12)
+          border: BoxBorder.all(color: CustomColors.greenOutline(context)),
+          borderRadius: BorderRadius.circular(12),
         );
         icon = Icons.event_available;
         color = Theme.of(context).colorScheme.onSurface;
@@ -143,10 +132,8 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
       case BoxState.cancelled:
         decoration = BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: BoxBorder.all(
-              color: CustomColors.redOutline(context)
-          ),
-            borderRadius: BorderRadius.circular(12)
+          border: BoxBorder.all(color: CustomColors.redOutline(context)),
+          borderRadius: BorderRadius.circular(12),
         );
         icon = Icons.event_busy;
         color = Theme.of(context).colorScheme.onSurface;
@@ -155,7 +142,7 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
 
     return Expanded(
       child: GestureDetector(
-        onTap: (){
+        onTap: () {
           Navigator.pushNamed(context, '/');
         },
         child: Container(
@@ -171,15 +158,15 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const Spacer(),
-              Icon(icon, color: color, size: 15,),
+              Icon(icon, color: color, size: 15),
             ],
           ),
         ),
       ),
     );
   }
-  
-  Widget exerciseCard(String name, String rep){
+
+  Widget exerciseCard(String name, String rep) {
     return Padding(
       padding: const EdgeInsets.all(5),
       child: Card(
@@ -191,12 +178,12 @@ class _FitScreenState extends State<FitScreen> with SingleTickerProviderStateMix
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: Theme.of(context).textTheme.bodyLarge,),
-                  Text(rep, style: Theme.of(context).textTheme.bodySmall,),
+                  Text(name, style: Theme.of(context).textTheme.bodyLarge),
+                  Text(rep, style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
               Spacer(),
-              IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right)),
+              IconButton(onPressed: () {}, icon: Icon(Icons.chevron_right)),
             ],
           ),
         ),
