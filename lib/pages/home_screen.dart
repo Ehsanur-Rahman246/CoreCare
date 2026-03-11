@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => OnboardingScreen(),
+                                  builder: (_) => LoginScreen(),
                                 ),
                               );
                               break;
@@ -622,7 +622,7 @@ class _SettingsPageState extends State<SettingsPage> {
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: -40,
+                bottom: -45,
                 child: Icon(
                   Icons.settings_rounded,
                   size: 100,

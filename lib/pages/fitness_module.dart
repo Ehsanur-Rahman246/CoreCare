@@ -143,7 +143,6 @@ class _FitScreenState extends State<FitScreen>
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, '/');
         },
         child: Container(
           height: isToday(state) ? 84 : 70,

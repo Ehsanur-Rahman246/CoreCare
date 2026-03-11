@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: _themeMode,
-      home: const LoginScreen(),
+      home: const OnboardingScreen(),
       routes: {
         '/home': (context) => ScreenState(),
         '/profile': (context) => ProfilePage(),
