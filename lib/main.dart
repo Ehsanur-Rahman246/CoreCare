@@ -12,8 +12,21 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  void updateTheme(ThemeMode mode) {
+    setState(() {
+      _themeMode = mode;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,41 +35,44 @@ class MyApp extends StatelessWidget {
       title: 'CoreCare',
       theme: lightTheme,
       darkTheme: darkTheme,
-        themeMode: ThemeMode.system,
-        home: const LoginScreen(),
+      themeMode: _themeMode,
+      home: const OnboardingScreen(),
       routes: {
-        '/home' : (context) => ScreenState(),
-        '/profile' : (context) => ProfilePage(),
-        '/settings' : (context) => SettingsPage(),
-        '/login' : (context) => LoginScreen(),
-        '/notifications' : (context) => NotificationsPage(),
-        '/fit' : (context) => FitScreen(),
-        '/diet' : (context) => DietScreen(),
-        '/shop' : (context) => ShopScreen(),
-        '/google' : (context) => GoogleLoginScreen(),
-        '/apple' : (context) => AppleLoginScreen(),
-        '/signup' : (context) => SignupPage(),
-        '/onboard' : (context) => OnboardingScreen(),
+        '/home': (context) => ScreenState(),
+        '/profile': (context) => ProfilePage(),
+        '/settings': (context) =>
+            SettingsPage(currentTheme: _themeMode, onThemeChanged: updateTheme),
+        '/login': (context) => LoginScreen(),
+        '/notifications': (context) => NotificationsPage(),
+        '/fit': (context) => FitScreen(),
+        '/diet': (context) => DietScreen(),
+        '/shop': (context) => ShopScreen(),
+        '/google': (context) => GoogleLoginScreen(),
+        '/apple': (context) => AppleLoginScreen(),
+        '/signup': (context) => SignupPage(),
+        '/onboard': (context) => OnboardingScreen(),
       },
     );
   }
 }
 
 final ColorScheme lightMode = ColorScheme(
-    brightness: Brightness.light,
-    primary: Color(0xff009999),
-    onPrimary: Color(0xfffcfcfc),
-    secondary: Color(0xff009999),
-    onSecondary: Color(0xfffcfcfc),
-    error: Color(0xffcc0000),
-    onError: Color(0xffffe6e6),
-    surface: Color(0xfff2f2f2),
-    onSurface: Color(0xff0d0d0d),
+  brightness: Brightness.light,
+  primary: Color(0xff009999),
+  onPrimary: Color(0xfffcfcfc),
+  secondary: Color(0xff009999),
+  onSecondary: Color(0xfffcfcfc),
+  error: Color(0xffcc0000),
+  onError: Color(0xffffe6e6),
+  surface: Color(0xfff2f2f2),
+  onSurface: Color(0xff0d0d0d),
   outline: Color(0xff009999),
   shadow: Color(0xff007a7a).withValues(alpha: 0.25),
-  tertiary: Color(0xffdddddd),  //background
-  onTertiary: Color(0xff4d4d4d),     //mutedText
-  errorContainer: Color(0xffe53935),     //badge
+  tertiary: Color(0xffdddddd),
+  //background
+  onTertiary: Color(0xff4d4d4d),
+  //mutedText
+  errorContainer: Color(0xffe53935), //badge
 );
 
 final ThemeData lightTheme = ThemeData(
@@ -64,9 +80,7 @@ final ThemeData lightTheme = ThemeData(
   colorScheme: lightMode,
   textTheme: customTexts(lightMode),
   useMaterial3: true,
-  appBarTheme: AppBarTheme(
-    centerTitle: false,
-  ),
+  appBarTheme: AppBarTheme(centerTitle: false),
   navigationBarTheme: NavigationBarThemeData(
     elevation: 20,
     labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
@@ -76,9 +90,7 @@ final ThemeData lightTheme = ThemeData(
   ),
   popupMenuTheme: PopupMenuThemeData(
     menuPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     elevation: 5,
     position: PopupMenuPosition.under,
   ),
@@ -87,33 +99,19 @@ final ThemeData lightTheme = ThemeData(
     contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
     fillColor: Color(0xfff2f2f2),
     iconColor: Color(0xff4d4d4d),
-    labelStyle: TextStyle(
-      fontSize: 14,
-      color: Color(0xffdddddd),
-    ),
-    floatingLabelStyle: TextStyle(
-      color: Color(0xff009999),
-    ),
+    labelStyle: TextStyle(fontSize: 14, color: Color(0xffdddddd)),
+    floatingLabelStyle: TextStyle(color: Color(0xff009999)),
     floatingLabelBehavior: FloatingLabelBehavior.never,
-    hintStyle: TextStyle(
-      fontSize: 14,
-      color: Color(0xff4d4d4d),
-    ),
-    helperStyle: TextStyle(
-      fontSize: 12,
-      color: Color(0xff0d0d0d),
-    ),
-    errorStyle: TextStyle(
-      fontSize: 10,
-      color: Color(0xffb71c1c),
-    ),
+    hintStyle: TextStyle(fontSize: 14, color: Color(0xff4d4d4d)),
+    helperStyle: TextStyle(fontSize: 12, color: Color(0xff0d0d0d)),
+    errorStyle: TextStyle(fontSize: 10, color: Color(0xffb71c1c)),
     errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Color(0xffb71c1c))
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: Color(0xffb71c1c)),
     ),
     focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Color(0xff009999))
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: Color(0xff009999)),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
@@ -122,7 +120,6 @@ final ThemeData lightTheme = ThemeData(
   ),
   badgeTheme: BadgeThemeData(
     backgroundColor: Color(0xffe53935),
-    padding: const EdgeInsets.all(8),
     alignment: Alignment.topRight,
   ),
 );
@@ -139,9 +136,11 @@ final ColorScheme darkMode = ColorScheme(
   onSurface: Color(0xfff2f2f2),
   outline: Color(0xff33cccc),
   shadow: Color(0xff248f8f).withValues(alpha: 0.35),
-  tertiary: Color(0xff4d4d4d),   //background
-  onTertiary: Color(0xffb3b3b3),     //mutedText
-  errorContainer: Color(0xffff6e6e),      //badge
+  tertiary: Color(0xff4d4d4d),
+  //background
+  onTertiary: Color(0xffb3b3b3),
+  //mutedText
+  errorContainer: Color(0xffff6e6e), //badge
 );
 
 final ThemeData darkTheme = ThemeData(
@@ -149,9 +148,7 @@ final ThemeData darkTheme = ThemeData(
   colorScheme: darkMode,
   textTheme: customTexts(darkMode),
   useMaterial3: true,
-  appBarTheme: AppBarTheme(
-    centerTitle: false,
-  ),
+  appBarTheme: AppBarTheme(centerTitle: false),
   navigationBarTheme: NavigationBarThemeData(
     elevation: 20,
     labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
@@ -161,9 +158,7 @@ final ThemeData darkTheme = ThemeData(
   ),
   popupMenuTheme: PopupMenuThemeData(
     menuPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     elevation: 5,
     position: PopupMenuPosition.under,
   ),
@@ -172,33 +167,19 @@ final ThemeData darkTheme = ThemeData(
     fillColor: Color(0xff262626),
     contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
     iconColor: Color(0xffdddddd),
-    labelStyle: TextStyle(
-      fontSize: 14,
-      color: Color(0xff4d4d4d),
-    ),
-    floatingLabelStyle: TextStyle(
-      color: Color(0xff33cccc),
-    ),
+    labelStyle: TextStyle(fontSize: 14, color: Color(0xff4d4d4d)),
+    floatingLabelStyle: TextStyle(color: Color(0xff33cccc)),
     floatingLabelBehavior: FloatingLabelBehavior.never,
-    hintStyle: TextStyle(
-      fontSize: 14,
-      color: Color(0xffdddddd),
-    ),
-    helperStyle: TextStyle(
-      fontSize: 12,
-      color: Color(0xfff2f2f2),
-    ),
-    errorStyle: TextStyle(
-      fontSize: 10,
-      color: Color(0xfff28b82),
-    ),
+    hintStyle: TextStyle(fontSize: 14, color: Color(0xffdddddd)),
+    helperStyle: TextStyle(fontSize: 12, color: Color(0xfff2f2f2)),
+    errorStyle: TextStyle(fontSize: 10, color: Color(0xfff28b82)),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(color: Color(0xfff28b82))
+      borderSide: BorderSide(color: Color(0xfff28b82)),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(color: Color(0xff33cccc))
+      borderSide: BorderSide(color: Color(0xff33cccc)),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
@@ -213,19 +194,22 @@ final ThemeData darkTheme = ThemeData(
   ),
 );
 
-TextTheme customTexts(ColorScheme scheme){
+TextTheme customTexts(ColorScheme scheme) {
   return TextTheme(
-    displayLarge: GoogleFonts.montserrat(
+    displayLarge: TextStyle(
+      fontFamily: "Montserrat",
       fontSize: 32,
       fontWeight: FontWeight(700),
       color: scheme.onSurface,
     ),
-    displayMedium: GoogleFonts.montserrat(
+    displayMedium: TextStyle(
+      fontFamily: "Montserrat",
       fontSize: 28,
       fontWeight: FontWeight(600),
       color: scheme.onSurface,
     ),
-    displaySmall: GoogleFonts.montserrat(
+    displaySmall: TextStyle(
+      fontFamily: "Montserrat",
       fontSize: 22,
       fontWeight: FontWeight(400),
       color: scheme.onSurface,
@@ -235,57 +219,68 @@ TextTheme customTexts(ColorScheme scheme){
       fontWeight: FontWeight(700),
       color: scheme.onSurface,
     ),
-    headlineMedium: GoogleFonts.poppins(
+    headlineMedium: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 22,
       fontWeight: FontWeight(600),
       color: scheme.onSurface,
     ),
-    headlineSmall: GoogleFonts.poppins(
+    headlineSmall: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 18,
       fontWeight: FontWeight(500),
       color: scheme.onSurface,
     ),
-    titleLarge: GoogleFonts.poppins(
+    titleLarge: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 20,
       fontWeight: FontWeight(600),
       color: scheme.onSurface,
     ),
-    titleMedium: GoogleFonts.poppins(
+    titleMedium: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 20,
       fontWeight: FontWeight(500),
       color: scheme.onSurface,
     ),
-    titleSmall: GoogleFonts.poppins(
+    titleSmall: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 18,
-      fontWeight: FontWeight(600),
+      fontWeight: FontWeight(400),
       color: scheme.onSurface,
     ),
-    bodyLarge: GoogleFonts.poppins(
+    bodyLarge: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 16,
       fontWeight: FontWeight(400),
       color: scheme.onSurface,
     ),
-    bodyMedium: GoogleFonts.poppins(
+    bodyMedium: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 14,
       fontWeight: FontWeight(400),
       color: scheme.onSurface,
     ),
-    bodySmall: GoogleFonts.poppins(
+    bodySmall: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 12,
       fontWeight: FontWeight(400),
       color: scheme.onSurface,
     ),
-    labelLarge: GoogleFonts.poppins(
+    labelLarge: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 14,
-      fontWeight: FontWeight(500),
-      color: scheme.onSurface,
+      fontWeight: FontWeight(400),
+      color: scheme.onTertiary,
     ),
-    labelMedium: GoogleFonts.poppins(
+    labelMedium: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 12,
       fontWeight: FontWeight(400),
       color: scheme.onTertiary,
     ),
-    labelSmall: GoogleFonts.poppins(
+    labelSmall: TextStyle(
+      fontFamily: "Poppins",
       fontSize: 10,
       fontWeight: FontWeight(300),
       color: scheme.onTertiary,
@@ -293,42 +288,81 @@ TextTheme customTexts(ColorScheme scheme){
   );
 }
 
-class CustomColors{
+class CustomColors {
   CustomColors._();
 
-  static bool _isDark (BuildContext context) => Theme.of(context).colorScheme.brightness == Brightness.dark;
+  static bool _isDark(BuildContext context) =>
+      Theme.of(context).colorScheme.brightness == Brightness.dark;
 
-  static Color redPrimary(BuildContext context) => _isDark(context) ? const Color(0xffff6b6b) : Color(0xffd32f2f);
-  static Color redOutline(BuildContext context) => _isDark(context) ? const Color(0xffff8787) : Color(0xffe53935);
-  static Color redMuted(BuildContext context) => _isDark(context) ? const Color(0xff662222) : Color(0xfff5c6c6);
+  static Color redPrimary(BuildContext context) =>
+      _isDark(context) ? const Color(0xffff6b6b) : Color(0xffd32f2f);
 
-  static Color bluePrimary(BuildContext context) => _isDark(context) ? const Color(0xff4dabf5) : Color(0xff1565c0);
-  static Color blueOutline(BuildContext context) => _isDark(context) ? const Color(0xff80c1ff) : Color(0xff1976d2);
-  static Color blueMuted(BuildContext context) => _isDark(context) ? const Color(0xff224466) : Color(0xffcce0f5);
+  static Color redOutline(BuildContext context) =>
+      _isDark(context) ? const Color(0xffff8787) : Color(0xffe53935);
 
-  static Color greenPrimary(BuildContext context) => _isDark(context) ? const Color(0xff6edc82) : Color(0xff2e7d32);
-  static Color greenOutline(BuildContext context) => _isDark(context) ? const Color(0xff8ff2a0) : Color(0xff388e3c);
-  static Color greenMuted(BuildContext context) => _isDark(context) ? const Color(0xff225522) : Color(0xffc8e6c9);
+  static Color redMuted(BuildContext context) =>
+      _isDark(context) ? const Color(0xff662222) : Color(0xfff5c6c6);
 
-  static Color yellowPrimary(BuildContext context) => _isDark(context) ? const Color(0xfffdd54f) : Color(0xfffbc02d);
-  static Color yellowOutline(BuildContext context) => _isDark(context) ? const Color(0xffffe082) : Color(0xfffdd835);
-  static Color yellowMuted(BuildContext context) => _isDark(context) ? const Color(0xff665522) : Color(0xfffff9c4);
+  static Color bluePrimary(BuildContext context) =>
+      _isDark(context) ? const Color(0xff4dabf5) : Color(0xff1565c0);
 
-  static Color purplePrimary(BuildContext context) => _isDark(context) ? const Color(0xffb084f5) : Color(0xff6a1b9a);
-  static Color purpleOutline(BuildContext context) => _isDark(context) ? const Color(0xffc4a3ff) : Color(0xff7b1fa2);
-  static Color purpleMuted(BuildContext context) => _isDark(context) ? const Color(0xff332244) : Color(0xffe1bee7);
+  static Color blueOutline(BuildContext context) =>
+      _isDark(context) ? const Color(0xff80c1ff) : Color(0xff1976d2);
 
-  static Color orangePrimary(BuildContext context) => _isDark(context) ? const Color(0xffffa657) : Color(0xfff57c00);
-  static Color orangeOutline(BuildContext context) => _isDark(context) ? const Color(0xffffc078) : Color(0xfffb8c00);
-  static Color orangeMuted(BuildContext context) => _isDark(context) ? const Color(0xff664422) : Color(0xffffe0b2);
-  
-  static Color greyDark(BuildContext context) => _isDark(context) ? const Color(0xff595959) : Color(0xff4d4d4d);
-  static Color greyLight(BuildContext context) => _isDark(context) ? const Color(0xffbfbfbf) : Color(0xffd9d9d9);
+  static Color blueMuted(BuildContext context) =>
+      _isDark(context) ? const Color(0xff224466) : Color(0xffcce0f5);
 
-  static Color white(BuildContext context) => _isDark(context) ? const Color(0xfff7f7f7) : Color(0xffffffff);
-  static Color black(BuildContext context) => _isDark(context) ? const Color(0xff000000) : Color(0xff080808);
+  static Color greenPrimary(BuildContext context) =>
+      _isDark(context) ? const Color(0xff6edc82) : Color(0xff2e7d32);
 
-  static Color back(BuildContext context) => _isDark(context) ? const Color(0xff000000).withValues(alpha: 0.6) : Color(0xff000000).withValues(alpha: 0.4);
+  static Color greenOutline(BuildContext context) =>
+      _isDark(context) ? const Color(0xff8ff2a0) : Color(0xff388e3c);
+
+  static Color greenMuted(BuildContext context) =>
+      _isDark(context) ? const Color(0xff225522) : Color(0xffc8e6c9);
+
+  static Color yellowPrimary(BuildContext context) =>
+      _isDark(context) ? const Color(0xfffdd54f) : Color(0xfffbc02d);
+
+  static Color yellowOutline(BuildContext context) =>
+      _isDark(context) ? const Color(0xffffe082) : Color(0xfffdd835);
+
+  static Color yellowMuted(BuildContext context) =>
+      _isDark(context) ? const Color(0xff665522) : Color(0xfffff9c4);
+
+  static Color purplePrimary(BuildContext context) =>
+      _isDark(context) ? const Color(0xffb084f5) : Color(0xff6a1b9a);
+
+  static Color purpleOutline(BuildContext context) =>
+      _isDark(context) ? const Color(0xffc4a3ff) : Color(0xff7b1fa2);
+
+  static Color purpleMuted(BuildContext context) =>
+      _isDark(context) ? const Color(0xff332244) : Color(0xffe1bee7);
+
+  static Color orangePrimary(BuildContext context) =>
+      _isDark(context) ? const Color(0xffffa657) : Color(0xfff57c00);
+
+  static Color orangeOutline(BuildContext context) =>
+      _isDark(context) ? const Color(0xffffc078) : Color(0xfffb8c00);
+
+  static Color orangeMuted(BuildContext context) =>
+      _isDark(context) ? const Color(0xff664422) : Color(0xffffe0b2);
+
+  static Color greyDark(BuildContext context) =>
+      _isDark(context) ? const Color(0xff595959) : Color(0xff4d4d4d);
+
+  static Color greyLight(BuildContext context) =>
+      _isDark(context) ? const Color(0xffbfbfbf) : Color(0xffd9d9d9);
+
+  static Color white(BuildContext context) =>
+      _isDark(context) ? const Color(0xfff7f7f7) : Color(0xffffffff);
+
+  static Color black(BuildContext context) =>
+      _isDark(context) ? const Color(0xff000000) : Color(0xff080808);
+
+  static Color back(BuildContext context) => _isDark(context)
+      ? const Color(0xff000000).withValues(alpha: 0.6)
+      : Color(0xff000000).withValues(alpha: 0.4);
 }
 
 class ScreenState extends StatefulWidget {
@@ -340,18 +374,20 @@ class ScreenState extends StatefulWidget {
 
 class _ScreenStateState extends State<ScreenState> {
   int _selectedIndex = 0;
-  void _changeIndex(int idx){
+
+  void _changeIndex(int idx) {
     setState(() {
       _selectedIndex = idx;
     });
   }
 
   late final List<Widget> _pages;
+
   @override
   void initState() {
     super.initState();
     _pages = [
-      HomeScreen(onNavigate: _changeIndex,),
+      HomeScreen(onNavigate: _changeIndex),
       FitScreen(),
       DietScreen(),
       ShopScreen(),
@@ -361,24 +397,25 @@ class _ScreenStateState extends State<ScreenState> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: NavigationBar(
         animationDuration: Duration(milliseconds: 300),
         destinations: [
           NavigationDestination(
-              icon: Icon(Symbols.home_filled_rounded), label: 'Home'
+            icon: Icon(Symbols.home_filled_rounded),
+            label: 'Home',
           ),
           NavigationDestination(
-              icon: Icon(Symbols.exercise), label: 'Exercise'
+            icon: Icon(Symbols.exercise),
+            label: 'Exercise',
           ),
           NavigationDestination(
-              icon: Icon(Symbols.dinner_dining), label: 'Meals'
+            icon: Icon(Symbols.dinner_dining),
+            label: 'Meals',
           ),
           NavigationDestination(
-              icon: Icon(Symbols.shopping_cart_rounded), label: 'Shop'
+            icon: Icon(Symbols.shopping_cart_rounded),
+            label: 'Shop',
           ),
         ],
         selectedIndex: _selectedIndex,

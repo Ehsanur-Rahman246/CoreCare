@@ -19,7 +19,7 @@ class _ShopScreenState extends State<ShopScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 15,),
+            const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -32,28 +32,37 @@ class _ShopScreenState extends State<ShopScreen> {
                         labelText: "Search",
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(60),
-                          borderSide: BorderSide(color: Theme.of(context).colorScheme.error)
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(60),
-                          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary)
+                          borderRadius: BorderRadius.circular(60),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(60),
-                          borderSide: BorderSide.none
+                          borderRadius: BorderRadius.circular(60),
+                          borderSide: BorderSide.none,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10,),
+                  const SizedBox(width: 10),
                   CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      foregroundColor: Theme.of(context).colorScheme.onSurface,
-                      child: IconButton(onPressed: (){}, icon: Icon(Symbols.filter_list)))
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: Icon(Symbols.filter_list),
+                    ),
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 20,),
+            const SizedBox(height: 20),
             Expanded(
               child: ListView(
                 children: [
@@ -65,27 +74,29 @@ class _ShopScreenState extends State<ShopScreen> {
                   shopCard("Gym Gloves"),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
-  Widget shopCard(String itemName){
+
+  Widget shopCard(String itemName) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: Padding(padding: const EdgeInsets.all(12),
-      child: Row(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
           children: [
-            Text(itemName, style: Theme.of(context).textTheme.bodyMedium,),
+            Text(itemName, style: Theme.of(context).textTheme.bodyMedium),
             Spacer(),
-            ElevatedButton(onPressed: (){},
-                style: ElevatedButton.styleFrom(
-                  shape: StadiumBorder()
-                ),
-                child: Text("Add to cart"))
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(shape: StadiumBorder()),
+              child: Text("Add to cart"),
+            ),
           ],
-      ),
+        ),
       ),
     );
   }
