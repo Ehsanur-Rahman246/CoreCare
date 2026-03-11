@@ -2,6 +2,8 @@ import 'package:core_care/main.dart';
 import 'package:core_care/pages/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
 
 class HomeScreen extends StatefulWidget {
 
@@ -40,7 +42,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       CircleAvatar(
-                        child: Icon(Icons.person_rounded),
+                  foregroundImage: _ProfilePageState.hasImage
+                        ? MemoryImage(_ProfilePageState.imageBytes) : null,
+                        child:
+                        _ProfilePageState.hasImage ? null :
+                        Icon(Icons.person_rounded),
                       ),
                       const SizedBox(width: 15,),
                       Column(
@@ -68,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             case 0:
                               Navigator.push(
                                   context, MaterialPageRoute(builder: (_) => ProfilePage())
-                              );
+                              ).then((_) => setState(() {}));
                               break;
                             case 1:
                               Navigator.pushNamed(context, '/settings');
@@ -502,6 +508,25 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  static bool hasImage = false;
+  static Uint8List imageBytes = Uint8List(0);
+
+  Future<void> pickImage() async{
+    final imagePicker = ImagePicker();
+    final pickedImage = await imagePicker.pickImage(
+      maxHeight: 1080,
+      maxWidth: 1080,
+      source: ImageSource.gallery,
+    );
+    if(pickedImage != null){
+      XFile? imageFile = XFile(pickedImage.path);
+      imageBytes = await imageFile.readAsBytes();
+      setState(() {
+        hasImage = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -591,10 +616,38 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: CircleAvatar(
                     radius: 40,
                     backgroundColor: Theme.of(context).colorScheme.surface,
-                    child: CircleAvatar(
-                      backgroundColor: CustomColors.greyLight(context),
-                      radius: 37,
-                      child: Icon(Icons.person, size: 40,),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        if(!hasImage)
+                        CircleAvatar(
+                          backgroundColor: CustomColors.greyLight(context),
+                          radius: 37,
+                          child: Icon(Icons.person, size: 40,),
+                        )
+                        else CircleAvatar(
+                          radius: 37,
+                          foregroundImage: MemoryImage(imageBytes),
+                        ),
+                        Positioned(
+                          right: -5,
+                          bottom: -5,
+                          child: SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: IconButton.filled(
+                              style: IconButton.styleFrom(
+                                backgroundColor: Theme.of(context).colorScheme.tertiary
+                              ),
+                              padding: const EdgeInsets.all(0),
+                              onPressed: (){
+                                pickImage();
+                              }, icon:
+                            hasImage ?
+                            Icon(Icons.edit) : Icon(Icons.camera_alt), iconSize: 18, tooltip: "Add", color: Theme.of(context).colorScheme.onTertiary,),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -738,7 +791,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
             ),
           ],
         ),
-        
       ),
     );
   }
