@@ -4,12 +4,16 @@ import 'package:core_care/pages/fitness_module.dart';
 import 'package:core_care/pages/home_screen.dart';
 import 'package:core_care/pages/login_screen.dart';
 import 'package:core_care/pages/shop_module.dart';
+import 'package:core_care/time_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (_) => TimeProvider(),
+      child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {

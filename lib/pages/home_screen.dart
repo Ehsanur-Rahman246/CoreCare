@@ -1,10 +1,12 @@
-import 'package:core_care/boarding_screen.dart';
 import 'package:core_care/main.dart';
 import 'package:core_care/pages/login_screen.dart';
+import 'package:core_care/time_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
+
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(int) onNavigate;
@@ -29,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final time = context.watch<TimeProvider>();
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -59,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 7),
                           Text(
-                            "Feb 28, 2026  .  12:37 PM",
+                            "${time.formatDate}  .  ${time.formatTime}",
                             style: Theme.of(context).textTheme.labelLarge,
                           ),
                         ],
@@ -589,6 +593,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final hourFormat = context.watch<TimeProvider>();
     bool isDark;
     if (themeMode == ThemeMode.dark) {
       isDark = true;
@@ -666,6 +671,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     setState(() {
                       isNotificationsOn = value;
                     });
+                  },
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Card(
+              child: ListTile(
+                leading: Icon(Icons.watch_later_outlined),
+                title: Text('Time Format'),
+                subtitle: hourFormat.is24Hour ? Text('24-hour') : Text('12-hour'),
+                subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
+                trailing: Switch(
+                  value: hourFormat.is24Hour,
+                  onChanged: (bool value) {
+                    hourFormat.toggleFormat();
                   },
                 ),
               ),
