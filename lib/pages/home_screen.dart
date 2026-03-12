@@ -759,6 +759,29 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     }
   }
+  void removeImage(){
+    setState(() {
+      hasImage = false;
+    });
+  }
+
+  void _showDialog(){
+    showDialog(context: context, builder: (context){
+      return AlertDialog(
+        title: Text("Edit Profile Image"),
+        actions: [
+          OutlinedButton(onPressed: (){
+            removeImage();
+            Navigator.pop(context);
+          }, child: Text('Remove Image')),
+          FilledButton(onPressed: (){
+            pickImage();
+            Navigator.pop(context);
+          }, child: Text('Change Image')),
+        ],
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -928,7 +951,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               padding: const EdgeInsets.all(0),
                               onPressed: () {
-                                pickImage();
+                                if(hasImage){
+                                  _showDialog();
+                                }
+                                else{
+                                  pickImage();
+                                }
                               },
                               icon: hasImage
                                   ? Icon(Icons.edit)
@@ -973,7 +1001,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     Card(
-                      child: ListTile(
+                      child: ExpansionTile(
                         leading: Icon(Icons.eighteen_mp),
                         title: Text('data'),
                         subtitle: Text('data'),
@@ -981,6 +1009,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           onPressed: () {},
                           icon: Icon(Icons.chevron_right),
                         ),
+                        children: [
+                          Text('data'),
+                          Text('data')
+                        ],
                       ),
                     ),
                     Card(

@@ -124,6 +124,9 @@ final ThemeData lightTheme = ThemeData(
     backgroundColor: Color(0xffe53935),
     alignment: Alignment.topRight,
   ),
+  expansionTileTheme: ExpansionTileThemeData(
+
+  ),
 );
 
 final ColorScheme darkMode = ColorScheme(
@@ -193,6 +196,9 @@ final ThemeData darkTheme = ThemeData(
     largeSize: 20,
     padding: const EdgeInsets.all(8),
     alignment: Alignment.topRight,
+  ),
+  expansionTileTheme: ExpansionTileThemeData(
+
   ),
 );
 
@@ -278,7 +284,7 @@ TextTheme customTexts(ColorScheme scheme) {
     labelMedium: TextStyle(
       fontFamily: "Poppins",
       fontSize: 12,
-      fontWeight: FontWeight(400),
+      fontWeight: FontWeight(300),
       color: scheme.onTertiary,
     ),
     labelSmall: TextStyle(

@@ -28,7 +28,7 @@ class TimeProvider extends ChangeNotifier {
       return '${hour.toString().padLeft(2,'0')}: $minute';
     }
     else{
-      final period = hour >= 12 ? 'PM' : 'Am';
+      final period = hour >= 12 ? 'PM' : 'AM';
       hour = hour % 12;
       if(hour == 0) hour = 12;
       return '${hour.toString().padLeft(2, '0')}:$minute $period';

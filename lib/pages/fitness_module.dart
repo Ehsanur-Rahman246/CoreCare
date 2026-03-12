@@ -1,6 +1,8 @@
 import 'package:core_care/main.dart';
+import 'package:core_care/time_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:provider/provider.dart';
 
 class FitScreen extends StatefulWidget {
   const FitScreen({super.key});
@@ -15,6 +17,8 @@ class _FitScreenState extends State<FitScreen>
     with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
+    final day = context.watch<TimeProvider>();
+
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Symbols.exercise),
@@ -35,15 +39,22 @@ class _FitScreenState extends State<FitScreen>
             const SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                box("Sun\n1", BoxState.notCompleted),
-                box("Mon\n2", BoxState.completed),
-                box("Tue\n3", BoxState.today),
-                box("Wed\n4", BoxState.normal),
-                box("Thu\n5", BoxState.normal),
-                box("Fri\n6", BoxState.hasSchedule),
-                box("Sat\n7", BoxState.cancelled),
-              ],
+              children: List.generate(7, (i){
+                final now = day.now;
+                final firstDayOfWeek = now.subtract(Duration(days: now.weekday % 7));
+                final date = firstDayOfWeek.add(Duration(days: i));
+                BoxState state;
+                if(date.day == now.day && date.month == now.month && date.year == now.year){
+                  state = BoxState.today;
+                }
+                else{
+                  state = BoxState.normal;
+                }
+                final dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7];
+                final text = "$dayName\n${date.day}";
+
+                return weekBox(text, state);
+              })
             ),
             SizedBox(height: 30),
             Container(
@@ -77,7 +88,7 @@ class _FitScreenState extends State<FitScreen>
     );
   }
 
-  Widget box(String text, BoxState state) {
+  Widget weekBox(String date, BoxState state) {
     Decoration decoration;
     IconData? icon;
     Color? color;
@@ -152,7 +163,7 @@ class _FitScreenState extends State<FitScreen>
           child: Column(
             children: [
               Text(
-                text,
+                date,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),

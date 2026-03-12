@@ -1,6 +1,8 @@
+import 'package:core_care/time_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:core_care/main.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:provider/provider.dart';
 
 class DietScreen extends StatefulWidget {
   const DietScreen({super.key});
@@ -14,6 +16,8 @@ enum DietState { taken, remaining, normal, fasting, today }
 class _DietScreenState extends State<DietScreen> {
   @override
   Widget build(BuildContext context) {
+    final day = context.watch<TimeProvider>();
+    
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Symbols.dinner_dining),
@@ -33,16 +37,23 @@ class _DietScreenState extends State<DietScreen> {
             ),
             const SizedBox(height: 15),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                box("Sun\n1", DietState.taken),
-                box("Mon\n2", DietState.remaining),
-                box("Tue\n3", DietState.today),
-                box("Wed\n4", DietState.fasting),
-                box("Thu\n5", DietState.normal),
-                box("Fri\n6", DietState.fasting),
-                box("Sat\n7", DietState.normal),
-              ],
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(7, (i){
+                  final now = day.now;
+                  final firstDayOfWeek = now.subtract(Duration(days: now.weekday % 7));
+                  final date = firstDayOfWeek.add(Duration(days: i));
+                  DietState state;
+                  if(date.day == now.day && date.month == now.month && date.year == now.year){
+                    state = DietState.today;
+                  }
+                  else{
+                    state = DietState.normal;
+                  }
+                  final dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7];
+                  final text = "$dayName\n${date.day}";
+
+                  return weekBox(text, state);
+                })
             ),
             SizedBox(height: 30),
             Container(
@@ -70,10 +81,11 @@ class _DietScreenState extends State<DietScreen> {
     );
   }
 
-  Widget box(String text, DietState state) {
+  Widget weekBox(String date, DietState state) {
     Decoration decoration;
     IconData? icon;
     Color? color;
+    bool isToday(DietState state) => state == DietState.today;
 
     switch (state) {
       case DietState.normal:
@@ -125,21 +137,22 @@ class _DietScreenState extends State<DietScreen> {
 
     return Expanded(
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+        },
         child: Container(
-          height: 70,
-          width: 45,
+          height: isToday(state) ? 84 : 70,
           margin: const EdgeInsets.all(5),
           padding: const EdgeInsets.all(5),
           decoration: decoration,
           child: Column(
             children: [
               Text(
-                text,
+                date,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-              Icon(icon, color: color),
+              const Spacer(),
+              Icon(icon, color: color, size: 15),
             ],
           ),
         ),
