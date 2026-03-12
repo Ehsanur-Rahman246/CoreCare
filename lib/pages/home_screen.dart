@@ -1,3 +1,4 @@
+import 'package:core_care/decoration.dart';
 import 'package:core_care/main.dart';
 import 'package:core_care/pages/login_screen.dart';
 import 'package:core_care/time_provider.dart';
@@ -161,9 +162,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           vertical: 10,
                           horizontal: 5,
                         ),
-                        child: Text(
-                          "${String.fromCharCode(0x1F525)} 3-day Streak",
-                          style: TextStyle(color: CustomColors.black(context)),
+                        child: Row(
+                          children: [
+                            Emoji.fire,
+                            Text(
+                              "3-day Streak",
+                              style: TextStyle(color: CustomColors.black(context)),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -205,10 +211,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         "1300",
                                         style: Theme.of(
                                           context,
-                                        ).textTheme.bodyLarge,
+                                        ).textTheme.titleMedium,
                                       ),
                                       const SizedBox(height: 7),
-                                      Text("Calories left"),
+                                      Text("Calories left", style: Theme.of(context).textTheme.labelLarge,),
                                     ],
                                   ),
                                 ),
@@ -227,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text("2500 cal"),
                                 Text(
                                   "Eaten",
-                                  style: Theme.of(context).textTheme.labelLarge,
+                                  style: Theme.of(context).textTheme.labelMedium,
                                 ),
                               ],
                             ),
@@ -246,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text("1200 cal"),
                                 Text(
                                   "Burned",
-                                  style: Theme.of(context).textTheme.labelLarge,
+                                  style: Theme.of(context).textTheme.labelMedium,
                                 ),
                               ],
                             ),
@@ -274,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 SizedBox(height: 5),
                                 Text(
                                   "70/100 g",
-                                  style: Theme.of(context).textTheme.labelLarge,
+                                  style: Theme.of(context).textTheme.labelMedium,
                                 ),
                               ],
                             ),
@@ -296,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 SizedBox(height: 5),
                                 Text(
                                   "70/100 g",
-                                  style: Theme.of(context).textTheme.labelLarge,
+                                  style: Theme.of(context).textTheme.labelMedium,
                                 ),
                               ],
                             ),
@@ -318,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 SizedBox(height: 5),
                                 Text(
                                   "70/100 g",
-                                  style: Theme.of(context).textTheme.labelLarge,
+                                  style: Theme.of(context).textTheme.labelMedium,
                                 ),
                               ],
                             ),
@@ -655,7 +661,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       Center(child: modeSelect(context)),
                     ],
                   ),
-                  subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
+                  subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
                 ),
               ),
             ),
@@ -666,7 +672,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   leading: Icon(Icons.notifications_active),
                   title: Text('Notifications'),
                   subtitle: isNotificationsOn ? Text('ON') : Text('OFF'),
-                  subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
+                  subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
                   trailing: Switch(
                     value: isNotificationsOn,
                     onChanged: (value) {
@@ -687,7 +693,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   subtitle: hourFormat.is24Hour
                       ? Text('24-hour')
                       : Text('12-hour'),
-                  subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
+                  subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
                   trailing: Switch(
                     value: hourFormat.is24Hour,
                     onChanged: (bool value) {
@@ -828,7 +834,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     backgroundColor: Theme.of(
                                       context,
                                     ).colorScheme.tertiary,
-                                    child: Text('data'),
+                                    child: Emoji.starter,
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
@@ -851,7 +857,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     backgroundColor: Theme.of(
                                       context,
                                     ).colorScheme.tertiary,
-                                    child: Text("🔥"),
+                                    child: Emoji.fire,
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
@@ -874,7 +880,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     backgroundColor: Theme.of(
                                       context,
                                     ).colorScheme.tertiary,
-                                    child: Text('data'),
+                                    child: Emoji.coin,
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
@@ -1149,4 +1155,3 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 }
 
-class Emoji {}
