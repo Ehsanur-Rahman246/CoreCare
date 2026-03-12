@@ -428,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 20,
-                      horizontal: 15,
+                      horizontal: 7,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -469,41 +469,35 @@ class _HomeScreenState extends State<HomeScreen> {
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Symbols.water_full_rounded,
-                                  size: 30,
-                                  color: CustomColors.bluePrimary(context),
-                                ),
-                                const SizedBox(width: 8),
-                                FilledButton(
-                                  onPressed: fillCounter < waterBarCount
-                                      ? () => setState(() => fillCounter++)
-                                      : null,
-                                  child: Text("+ 250 ml"),
-                                ),
-                              ],
+                            FilledButton(
+                              onPressed: fillCounter < waterBarCount
+                                  ? () => setState(() => fillCounter++)
+                                  : null,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Icon(Symbols.water_full_rounded),
+                                  Text("+ 250 ml"),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 25),
-                            Row(
-                              children: [
-                                Icon(
-                                  Symbols.water_bottle_rounded,
-                                  size: 30,
-                                  color: CustomColors.bluePrimary(context),
-                                ),
-                                const SizedBox(width: 8),
-                                FilledButton(
-                                  onPressed: fillCounter < waterBarCount
-                                      ? () => setState(() {
-                                          fillCounter++;
-                                          fillCounter++;
-                                        })
-                                      : null,
-                                  child: Text("+ 500 ml"),
-                                ),
-                              ],
+                            FilledButton(
+                              onPressed: fillCounter < waterBarCount
+                                  ? () => setState(() {
+                                      fillCounter++;
+                                      fillCounter++;
+                                    })
+                                  : null,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Icon(Symbols.water_bottle_rounded),
+                                  Text("+ 500 ml"),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -603,97 +597,108 @@ class _SettingsPageState extends State<SettingsPage> {
       isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
     }
     return Scaffold(
-      body: Column(
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.25,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(20),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.25,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(20),
+                    ),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-                  color: Theme.of(context).colorScheme.primary,
+                  child: Center(
+                    child: Text(
+                      "SETTINGS",
+                      style: Theme.of(context).textTheme.displayLarge,
+                    ),
+                  ),
                 ),
-                child: Center(
-                  child: Text(
-                    "SETTINGS",
-                    style: Theme.of(context).textTheme.displayLarge,
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: -45,
+                  child: Icon(
+                    Icons.settings_rounded,
+                    size: 100,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                Positioned(
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(Icons.chevron_left_rounded, size: 40),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 50),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Card(
+                child: ListTile(
+                  isThreeLine: true,
+                  leading: Icon(Icons.dark_mode_rounded),
+                  title: Text('Dark Mode'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      isDark ? Text('ON') : Text('OFF'),
+                      SizedBox(height: 8),
+                      Center(child: modeSelect(context)),
+                    ],
+                  ),
+                  subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Card(
+                child: ListTile(
+                  leading: Icon(Icons.notifications_active),
+                  title: Text('Notifications'),
+                  subtitle: isNotificationsOn ? Text('ON') : Text('OFF'),
+                  subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
+                  trailing: Switch(
+                    value: isNotificationsOn,
+                    onChanged: (value) {
+                      setState(() {
+                        isNotificationsOn = value;
+                      });
+                    },
                   ),
                 ),
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: -45,
-                child: Icon(
-                  Icons.settings_rounded,
-                  size: 100,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              Positioned(
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(Icons.chevron_left_rounded, size: 40),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 50),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Card(
-              child: ListTile(
-                leading: Icon(Icons.dark_mode_rounded),
-                title: Text('Dark Mode'),
-                subtitle: isDark ? Text('ON') : Text('OFF'),
-                subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
-                trailing: modeSelect(context),
-              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Card(
-              child: ListTile(
-                leading: Icon(Icons.notifications_active),
-                title: Text('Notifications'),
-                subtitle: isNotificationsOn ? Text('ON') : Text('OFF'),
-                subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
-                trailing: Switch(
-                  value: isNotificationsOn,
-                  onChanged: (value) {
-                    setState(() {
-                      isNotificationsOn = value;
-                    });
-                  },
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Card(
+                child: ListTile(
+                  leading: Icon(Icons.watch_later_outlined),
+                  title: Text('Time Format'),
+                  subtitle: hourFormat.is24Hour
+                      ? Text('24-hour')
+                      : Text('12-hour'),
+                  subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
+                  trailing: Switch(
+                    value: hourFormat.is24Hour,
+                    onChanged: (bool value) {
+                      hourFormat.toggleFormat();
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Card(
-              child: ListTile(
-                leading: Icon(Icons.watch_later_outlined),
-                title: Text('Time Format'),
-                subtitle: hourFormat.is24Hour ? Text('24-hour') : Text('12-hour'),
-                subtitleTextStyle: Theme.of(context).textTheme.labelSmall,
-                trailing: Switch(
-                  value: hourFormat.is24Hour,
-                  onChanged: (bool value) {
-                    hourFormat.toggleFormat();
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

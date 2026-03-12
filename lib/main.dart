@@ -11,9 +11,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
-      create: (_) => TimeProvider(),
-      child: MyApp()));
+  runApp(ChangeNotifierProvider(create: (_) => TimeProvider(), child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
