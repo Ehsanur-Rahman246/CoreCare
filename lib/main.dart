@@ -278,7 +278,7 @@ TextTheme customTexts(ColorScheme scheme) {
     labelLarge: TextStyle(
       fontFamily: "Poppins",
       fontSize: 14,
-      fontWeight: FontWeight(400),
+      fontWeight: FontWeight(300),
       color: scheme.onTertiary,
     ),
     labelMedium: TextStyle(
