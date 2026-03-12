@@ -4,12 +4,14 @@ import 'package:core_care/pages/fitness_module.dart';
 import 'package:core_care/pages/home_screen.dart';
 import 'package:core_care/pages/login_screen.dart';
 import 'package:core_care/pages/shop_module.dart';
+import 'package:core_care/time_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(create: (_) => TimeProvider(), child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -122,6 +124,9 @@ final ThemeData lightTheme = ThemeData(
     backgroundColor: Color(0xffe53935),
     alignment: Alignment.topRight,
   ),
+  expansionTileTheme: ExpansionTileThemeData(
+
+  ),
 );
 
 final ColorScheme darkMode = ColorScheme(
@@ -191,6 +196,9 @@ final ThemeData darkTheme = ThemeData(
     largeSize: 20,
     padding: const EdgeInsets.all(8),
     alignment: Alignment.topRight,
+  ),
+  expansionTileTheme: ExpansionTileThemeData(
+
   ),
 );
 
@@ -276,7 +284,7 @@ TextTheme customTexts(ColorScheme scheme) {
     labelMedium: TextStyle(
       fontFamily: "Poppins",
       fontSize: 12,
-      fontWeight: FontWeight(400),
+      fontWeight: FontWeight(300),
       color: scheme.onTertiary,
     ),
     labelSmall: TextStyle(
