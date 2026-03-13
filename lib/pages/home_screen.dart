@@ -988,7 +988,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 child: ListView(
                   children: [
-                    ExpansionTile(title: Text('Personal Information')),
+                    profileTile(Emoji.fire, 'Personal', 'Information', context),
                     const SizedBox(height: 10,),
                     ExpansionTile(title: Text('Fitness Profile')),
                     const SizedBox(height: 10,),
@@ -998,7 +998,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 10,),
                     ExpansionTile(title: Text('Schedule')),
                     const SizedBox(height: 10,),
-                    ExpansionTile(title: Text('Additional Settings'))
+                    ExpansionTile(title: Text('Additional Settings')),
                   ],
                 ),
               ),
@@ -1008,8 +1008,29 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-  Widget profileTile(Image img, Widget title, BuildContext context){
-    return ExpansionTile(title: title);
+  Widget profileTile(Image img, String title, String sub, BuildContext context){
+    return ExpansionTile(
+      collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
+      collapsedShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide.none,
+      ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+      ),
+      leading: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.tertiary,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: img,
+      ),
+      title: Text(title,),
+    subtitle: Text(sub, style: Theme.of(context).textTheme.labelMedium,),
+    );
   }
 }
 

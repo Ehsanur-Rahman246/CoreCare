@@ -124,17 +124,6 @@ final ThemeData lightTheme = ThemeData(
     backgroundColor: Color(0xffe53935),
     alignment: Alignment.topRight,
   ),
-  expansionTileTheme: ExpansionTileThemeData(
-    tilePadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-      side: BorderSide(width: 2),
-    ),
-    collapsedShape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-      side: BorderSide.none,
-    ),
-  ),
 );
 
 final ColorScheme darkMode = ColorScheme(
@@ -204,17 +193,6 @@ final ThemeData darkTheme = ThemeData(
     largeSize: 20,
     padding: const EdgeInsets.all(8),
     alignment: Alignment.topRight,
-  ),
-  expansionTileTheme: ExpansionTileThemeData(
-    tilePadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-      side: BorderSide(width: 2),
-    ),
-    collapsedShape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-      side: BorderSide.none,
-    ),
   ),
 );
 
