@@ -1,6 +1,7 @@
 import 'package:core_care/decoration.dart';
 import 'package:core_care/main.dart';
 import 'package:core_care/pages/login_screen.dart';
+import 'package:core_care/profile_decoration.dart';
 import 'package:core_care/time_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -688,6 +689,16 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: const EdgeInsets.all(10),
               child: Card(
                 child: ListTile(
+                  leading: Icon(Icons.language),
+                  title: Text('Language'),
+                  trailing: Text('English'),
+                  ),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Card(
+                child: ListTile(
                   leading: Icon(Icons.watch_later_outlined),
                   title: Text('Time Format'),
                   subtitle: hourFormat.is24Hour
@@ -988,17 +999,67 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 child: ListView(
                   children: [
-                    profileTile(Emoji.fire, 'Personal', 'Information', context),
+                    profileTile(Emoji.profile, 'Personal Information', 'Identity and body stats', ProfileWidgets.profileList(context), "Personal info", EditSheets.profileEdit, context),
                     const SizedBox(height: 10,),
-                    ExpansionTile(title: Text('Fitness Profile')),
+                    profileTile(Emoji.stat, 'Body Stats', 'Identity and body stats', ProfileWidgets.statList(context), "Body Stats", EditSheets.statEdit, context),
                     const SizedBox(height: 10,),
-                    ExpansionTile(title: Text('Diet Profile')),
+                    profileTile(Emoji.fit, 'Fitness Profile', 'Activity & Goals', ProfileWidgets.fitList(context), "Fitness Profile", EditSheets.fitEdit, context),
                     const SizedBox(height: 10,),
-                    ExpansionTile(title: Text('Health & Conditions')),
+                    profileTile(Emoji.diet, 'Diet Profile', 'Meal & Diet preferences', ProfileWidgets.dietList(context), "Diet Preferences", EditSheets.dietEdit, context),
                     const SizedBox(height: 10,),
-                    ExpansionTile(title: Text('Schedule')),
+                    profileTile(Emoji.med, 'Health & Conditions', 'Medical Conditions and allergies', ProfileWidgets.medList(context), "Health info", EditSheets.medEdit, context),
                     const SizedBox(height: 10,),
-                    ExpansionTile(title: Text('Additional Settings')),
+                    profileTile(Emoji.time, 'Schedule', 'Daily routine & workout timing', ProfileWidgets.timeList(context), "Schedule", EditSheets.timeEdit, context),
+                    const SizedBox(height: 10,),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ListTile(
+                        title: Text('App Settings'),
+                        leading: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Emoji.settings,
+                        ),
+                        trailing: IconButton(onPressed: (){
+                          Navigator.pushNamed(context, '/settings');
+                        }, icon: Icon(Icons.chevron_right)),
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                    OutlinedButton(onPressed: (){
+                      Navigator.pushReplacementNamed(context, '/login');
+                    }, child: Row(children: [Icon(Icons.logout), const SizedBox(width: 10,), Text('Log Out')],)),
+                    const SizedBox(height: 10,),
+                    OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Theme.of(context).colorScheme.error),
+                          foregroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                        onPressed: (){
+                      showDialog(context: context, builder: (BuildContext context){
+                        return AlertDialog(
+                          title: Text('Delete Account', style: TextStyle(color: Theme.of(context).colorScheme.error),),
+                          content: Text('Do you really want to delete your account?', style: Theme.of(context).textTheme.labelLarge,),
+                          actions: [
+                            OutlinedButton(onPressed: (){
+                              Navigator.of(context).pop();
+                            }, child: Text('Cancel')),
+                            FilledButton(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Theme.of(context).colorScheme.error,
+                            ),
+                                onPressed: (){}, child: Text('Delete')),
+                          ],
+                        );
+                      });
+                    }, child: Row(children: [Icon(Icons.delete), const SizedBox(width: 10,), Text('Delete Account')],)),
                   ],
                 ),
               ),
@@ -1008,7 +1069,8 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-  Widget profileTile(Image img, String title, String sub, BuildContext context){
+
+  Widget profileTile(Image img, String title, String sub, Widget list, String edit, void Function(BuildContext) function, BuildContext context){
     return ExpansionTile(
       collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
       collapsedShape: RoundedRectangleBorder(
@@ -1018,7 +1080,7 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+        side: BorderSide(color: Theme.of(context).colorScheme.primary,),
       ),
       leading: Container(
         padding: const EdgeInsets.all(5),
@@ -1029,7 +1091,18 @@ class _ProfilePageState extends State<ProfilePage> {
         child: img,
       ),
       title: Text(title,),
-    subtitle: Text(sub, style: Theme.of(context).textTheme.labelMedium,),
+    subtitle: Text(sub, style: Theme.of(context).textTheme.labelSmall,),
+      children: [
+        Divider(height: 1, color: CustomColors.greyDark(context),),
+        list,
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 130),
+          child: Center(
+            child: OutlinedButton(onPressed: () => function(context), child: Row(children: [Icon(Icons.edit),const SizedBox(width: 8,),Text(edit)])),
+          ),
+        ),
+        const SizedBox(height: 15,),
+      ],
     );
   }
 }

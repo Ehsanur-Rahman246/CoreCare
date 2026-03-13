@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 70),
                   child: Text(
                     "Sign In",
-                    style: TextStyle(fontWeight: FontWeight.w700),
+                    style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
               ),

@@ -37,7 +37,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Positioned(
             right: 12,
             top: 12,
-            child: TextButton(
+            child: onLastPage ? SizedBox() : TextButton(
               onPressed: () {
                 _controller.jumpToPage(3);
               },
