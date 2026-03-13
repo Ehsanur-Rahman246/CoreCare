@@ -988,90 +988,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 child: ListView(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text(
-                        "General",
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.chevron_right),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: ExpansionTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.chevron_right),
-                        ),
-                        children: [
-                          Text('data'),
-                          Text('data')
-                        ],
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.chevron_right),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text("Additional Settings"),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.chevron_right),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: Icon(Icons.eighteen_mp),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text("Others"),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.chevron_right),
-                        ),
-                      ),
-                    ),
+                    ExpansionTile(title: Text('Personal Information')),
+                    ExpansionTile(title: Text('Fitness Profile')),
+                    ExpansionTile(title: Text('Diet Profile')),
+                    ExpansionTile(title: Text('Health & Conditions')),
+                    ExpansionTile(title: Text('Schedule')),
+                    ExpansionTile(title: Text('Additional Settings'))
                   ],
                 ),
               ),
