@@ -125,7 +125,15 @@ final ThemeData lightTheme = ThemeData(
     alignment: Alignment.topRight,
   ),
   expansionTileTheme: ExpansionTileThemeData(
-
+    tilePadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+      side: BorderSide(width: 2),
+    ),
+    collapsedShape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+      side: BorderSide.none,
+    ),
   ),
 );
 
@@ -198,7 +206,15 @@ final ThemeData darkTheme = ThemeData(
     alignment: Alignment.topRight,
   ),
   expansionTileTheme: ExpansionTileThemeData(
-
+    tilePadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+      side: BorderSide(width: 2),
+    ),
+    collapsedShape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+      side: BorderSide.none,
+    ),
   ),
 );
 

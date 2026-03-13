@@ -989,10 +989,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: ListView(
                   children: [
                     ExpansionTile(title: Text('Personal Information')),
+                    const SizedBox(height: 10,),
                     ExpansionTile(title: Text('Fitness Profile')),
+                    const SizedBox(height: 10,),
                     ExpansionTile(title: Text('Diet Profile')),
+                    const SizedBox(height: 10,),
                     ExpansionTile(title: Text('Health & Conditions')),
+                    const SizedBox(height: 10,),
                     ExpansionTile(title: Text('Schedule')),
+                    const SizedBox(height: 10,),
                     ExpansionTile(title: Text('Additional Settings'))
                   ],
                 ),
@@ -1002,6 +1007,9 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+  Widget profileTile(Image img, Widget title, BuildContext context){
+    return ExpansionTile(title: title);
   }
 }
 
