@@ -1,13 +1,12 @@
 import 'package:core_care/decoration.dart';
 import 'package:core_care/main.dart';
-import 'package:core_care/pages/login_screen.dart';
 import 'package:core_care/profile_decoration.dart';
 import 'package:core_care/time_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
-
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,6 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
   bool hasNotification = false;
   late int waterBarCount;
   late int fillCounter;
+
+  static Future<void> logUserOut() async{
+    FirebaseAuth.instance.signOut();
+  }
 
   @override
   void initState() {
@@ -82,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(width: 10),
                       PopupMenuButton(
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           switch (value) {
                             case 0:
                               Navigator.push(
@@ -96,12 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.pushNamed(context, '/settings');
                               break;
                             case 2:
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => LoginScreen(),
-                                ),
-                              );
+                              await logUserOut();
                               break;
                           }
                         },
@@ -1034,7 +1032,27 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const SizedBox(height: 10,),
                     OutlinedButton(onPressed: (){
-                      Navigator.pushReplacementNamed(context, '/login');
+                      showDialog(context: context, builder: (BuildContext context){
+                        return AlertDialog(
+                          title: Text('Log Out',),
+                          content: Text('Do you want to sign out from the account?', style: Theme.of(context).textTheme.labelLarge,),
+                          actions: [
+                            OutlinedButton(onPressed: (){
+                              Navigator.of(context).pop();
+                            }, child: Text('Cancel')),
+                            FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Theme.of(context).colorScheme.error,
+                                ),
+                                onPressed: () async{
+                                  await _HomeScreenState.logUserOut();
+                                  if(context.mounted){
+                                    Navigator.of(context).pushNamedAndRemoveUntil('/auth', (route) => false);
+                                  }
+                                }, child: Text('Log out')),
+                          ],
+                        );
+                      });
                     }, child: Row(children: [Icon(Icons.logout), const SizedBox(width: 10,), Text('Log Out')],)),
                     const SizedBox(height: 10,),
                     OutlinedButton(

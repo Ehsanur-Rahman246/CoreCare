@@ -86,7 +86,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: onLastPage
                 ? OutlinedButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/login');
+                Navigator.pushReplacementNamed(context, '/auth');
               },
               child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
