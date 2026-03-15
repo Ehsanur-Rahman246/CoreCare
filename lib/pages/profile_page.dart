@@ -25,224 +25,222 @@ class _ProfilePageState extends State<ProfilePage> {
                 floating: false,
                 delegate: ProfileHeader(maxHeight: MediaQuery.of(context).size.height * 0.3, minHeight: MediaQuery.of(context).size.height * 0.1),
             ),
-            SliverPadding(
-              padding: const EdgeInsetsGeometry.fromLTRB(10, 160, 10, 20),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  profileTile(
-                    Emoji.profile,
-                    'Personal Information',
-                    'Identity and body stats',
-                    ProfileWidgets.profileList(context),
-                    "Personal info",
-                    EditSheets.profileEdit,
-                    context,
+            SliverPersistentHeader(delegate: SpacerDelegate(maxSpace: 170, minSpace: 20)),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                profileTile(
+                  Emoji.profile,
+                  'Personal Information',
+                  'Identity and body stats',
+                  ProfileWidgets.profileList(context),
+                  "Personal info",
+                  EditSheets.profileEdit,
+                  context,
+                ),
+                const SizedBox(height: 10),
+                profileTile(
+                  Emoji.stat,
+                  'Body Stats',
+                  'Identity and body stats',
+                  ProfileWidgets.statList(context),
+                  "Body Stats",
+                  EditSheets.statEdit,
+                  context,
+                ),
+                const SizedBox(height: 10),
+                profileTile(
+                  Emoji.fit,
+                  'Fitness Profile',
+                  'Activity & Goals',
+                  ProfileWidgets.fitList(context),
+                  "Fitness Profile",
+                  EditSheets.fitEdit,
+                  context,
+                ),
+                const SizedBox(height: 10),
+                profileTile(
+                  Emoji.diet,
+                  'Diet Profile',
+                  'Meal & Diet preferences',
+                  ProfileWidgets.dietList(context),
+                  "Diet Preferences",
+                  EditSheets.dietEdit,
+                  context,
+                ),
+                const SizedBox(height: 10),
+                profileTile(
+                  Emoji.med,
+                  'Health & Conditions',
+                  'Medical Conditions and allergies',
+                  ProfileWidgets.medList(context),
+                  "Health info",
+                  EditSheets.medEdit,
+                  context,
+                ),
+                const SizedBox(height: 10),
+                profileTile(
+                  Emoji.time,
+                  'Schedule',
+                  'Daily routine & workout timing',
+                  ProfileWidgets.timeList(context),
+                  "Schedule",
+                  EditSheets.timeEdit,
+                  context,
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  const SizedBox(height: 10),
-                  profileTile(
-                    Emoji.stat,
-                    'Body Stats',
-                    'Identity and body stats',
-                    ProfileWidgets.statList(context),
-                    "Body Stats",
-                    EditSheets.statEdit,
-                    context,
-                  ),
-                  const SizedBox(height: 10),
-                  profileTile(
-                    Emoji.fit,
-                    'Fitness Profile',
-                    'Activity & Goals',
-                    ProfileWidgets.fitList(context),
-                    "Fitness Profile",
-                    EditSheets.fitEdit,
-                    context,
-                  ),
-                  const SizedBox(height: 10),
-                  profileTile(
-                    Emoji.diet,
-                    'Diet Profile',
-                    'Meal & Diet preferences',
-                    ProfileWidgets.dietList(context),
-                    "Diet Preferences",
-                    EditSheets.dietEdit,
-                    context,
-                  ),
-                  const SizedBox(height: 10),
-                  profileTile(
-                    Emoji.med,
-                    'Health & Conditions',
-                    'Medical Conditions and allergies',
-                    ProfileWidgets.medList(context),
-                    "Health info",
-                    EditSheets.medEdit,
-                    context,
-                  ),
-                  const SizedBox(height: 10),
-                  profileTile(
-                    Emoji.time,
-                    'Schedule',
-                    'Daily routine & workout timing',
-                    ProfileWidgets.timeList(context),
-                    "Schedule",
-                    EditSheets.timeEdit,
-                    context,
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ListTile(
-                      title: Text('App Settings'),
-                      leading: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.tertiary,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Emoji.settings,
+                  child: ListTile(
+                    title: Text('App Settings'),
+                    leading: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      trailing: IconButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/settings');
+                      child: Emoji.settings,
+                    ),
+                    trailing: IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/settings');
+                      },
+                      icon: Icon(Icons.chevron_right),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                    horizontal: 50,
+                  ),
+                  child: OutlinedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Log Out'),
+                            content: Text(
+                              'Do you want to sign out from the account?',
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            actions: [
+                              OutlinedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Cancel'),
+                              ),
+                              FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.error,
+                                ),
+                                onPressed: () async {
+                                  await HomeScreen.logUserOut();
+                                  if (context.mounted) {
+                                    Navigator.of(
+                                      context,
+                                    ).pushNamedAndRemoveUntil(
+                                      '/auth',
+                                          (route) => false,
+                                    );
+                                  }
+                                },
+                                child: Text('Log out'),
+                              ),
+                            ],
+                          );
                         },
-                        icon: Icon(Icons.chevron_right),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 20,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.logout),
+                          const SizedBox(width: 10),
+                          Text('Log Out'),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 5,
-                      horizontal: 50,
+                ),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                    horizontal: 50,
+                  ),
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      foregroundColor: Theme.of(context).colorScheme.error,
                     ),
-                    child: OutlinedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Log Out'),
-                              content: Text(
-                                'Do you want to sign out from the account?',
-                                style: Theme.of(context).textTheme.labelLarge,
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              'Delete Account',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
                               ),
-                              actions: [
-                                OutlinedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Cancel'),
+                            ),
+                            content: Text(
+                              'Do you really want to delete your account?',
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            actions: [
+                              OutlinedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Cancel'),
+                              ),
+                              FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.error,
                                 ),
-                                FilledButton(
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.error,
-                                  ),
-                                  onPressed: () async {
-                                    await HomeScreen.logUserOut();
-                                    if (context.mounted) {
-                                      Navigator.of(
-                                        context,
-                                      ).pushNamedAndRemoveUntil(
-                                        '/auth',
-                                            (route) => false,
-                                      );
-                                    }
-                                  },
-                                  child: Text('Log out'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 20,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.logout),
-                            const SizedBox(width: 10),
-                            Text('Log Out'),
-                          ],
-                        ),
+                                onPressed: () {},
+                                child: Text('Delete'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 20,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete),
+                          const SizedBox(width: 10),
+                          Text('Delete Account'),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 5,
-                      horizontal: 50,
-                    ),
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                        foregroundColor: Theme.of(context).colorScheme.error,
-                      ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text(
-                                'Delete Account',
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                              ),
-                              content: Text(
-                                'Do you really want to delete your account?',
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                              actions: [
-                                OutlinedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Cancel'),
-                                ),
-                                FilledButton(
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.error,
-                                  ),
-                                  onPressed: () {},
-                                  child: Text('Delete'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 20,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete),
-                            const SizedBox(width: 10),
-                            Text('Delete Account'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                ]),
-              ),
+                ),
+                const SizedBox(height: 30),
+              ]),
             ),
           ],
         ),
@@ -338,8 +336,38 @@ class ProfileHeader extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return true;
+    return false;
   }
+}
+
+class SpacerDelegate extends SliverPersistentHeaderDelegate{
+  final double maxSpace;
+  final double minSpace;
+
+  SpacerDelegate({
+    required this.maxSpace,
+    required this.minSpace,
+});
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final space = (maxExtent - shrinkOffset).clamp(minExtent, maxExtent);
+    return Container(
+      height: space,
+      color: Colors.transparent,
+    );
+  }
+
+  @override
+  double get maxExtent => maxSpace;
+
+  @override
+  double get minExtent => minSpace;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
+  }
+
 }
 
 class ExpandedProfileHeader extends StatefulWidget {
