@@ -25,4 +25,8 @@ class Emoji{
   static final Image diet = Image.asset('assets/emojis/ramen.png', width: logoSize, height: logoSize,);
   static final Image med = Image.asset('assets/emojis/stethoscope.png', width: logoSize, height: logoSize,);
   static final Image stat = Image.asset('assets/emojis/muscle.png', width: logoSize, height: logoSize,);
+  static final Image id = Image.asset('assets/emojis/technologist.png', width: logoSize, height: logoSize,);
+
+  static final Image google = Image.asset('assets/logo/google.png', width: logoSize, height: logoSize,);
+  static final Image apple = Image.asset('assets/logo/apple.png', width: logoSize, height: logoSize,);
 }

@@ -23,8 +23,6 @@ class ProfileWidgets{
           const SizedBox(height: 8,),
           Divider(height: 0.5, color: CustomColors.greyDark(context),),
           const SizedBox(height: 8,),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Email', style: Theme.of(context).textTheme.labelLarge,), Text('user@gmail.com', style: Theme.of(context).textTheme.bodyMedium,)],),
-          const SizedBox(height: 8,),
         ],
       ),
     );

@@ -139,6 +139,7 @@ class _SignupPageState extends State<SignupPage> {
     return Scaffold(
       body: Column(
         children: [
+
           SizedBox(
             height: 60,
             child: SingleChildScrollView(

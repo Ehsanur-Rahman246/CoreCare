@@ -26,221 +26,297 @@ class _ProfilePageState extends State<ProfilePage> {
                 delegate: ProfileHeader(maxHeight: MediaQuery.of(context).size.height * 0.3, minHeight: MediaQuery.of(context).size.height * 0.1),
             ),
             SliverPersistentHeader(delegate: SpacerDelegate(maxSpace: 170, minSpace: 20)),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                profileTile(
-                  Emoji.profile,
-                  'Personal Information',
-                  'Identity and body stats',
-                  ProfileWidgets.profileList(context),
-                  "Personal info",
-                  EditSheets.profileEdit,
-                  context,
-                ),
-                const SizedBox(height: 10),
-                profileTile(
-                  Emoji.stat,
-                  'Body Stats',
-                  'Identity and body stats',
-                  ProfileWidgets.statList(context),
-                  "Body Stats",
-                  EditSheets.statEdit,
-                  context,
-                ),
-                const SizedBox(height: 10),
-                profileTile(
-                  Emoji.fit,
-                  'Fitness Profile',
-                  'Activity & Goals',
-                  ProfileWidgets.fitList(context),
-                  "Fitness Profile",
-                  EditSheets.fitEdit,
-                  context,
-                ),
-                const SizedBox(height: 10),
-                profileTile(
-                  Emoji.diet,
-                  'Diet Profile',
-                  'Meal & Diet preferences',
-                  ProfileWidgets.dietList(context),
-                  "Diet Preferences",
-                  EditSheets.dietEdit,
-                  context,
-                ),
-                const SizedBox(height: 10),
-                profileTile(
-                  Emoji.med,
-                  'Health & Conditions',
-                  'Medical Conditions and allergies',
-                  ProfileWidgets.medList(context),
-                  "Health info",
-                  EditSheets.medEdit,
-                  context,
-                ),
-                const SizedBox(height: 10),
-                profileTile(
-                  Emoji.time,
-                  'Schedule',
-                  'Daily routine & workout timing',
-                  ProfileWidgets.timeList(context),
-                  "Schedule",
-                  EditSheets.timeEdit,
-                  context,
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(10),
+            SliverPadding(
+              padding: const EdgeInsetsGeometry.symmetric(horizontal: 15),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  profileTile(
+                    Emoji.profile,
+                    'Personal Information',
+                    'Identity and body stats',
+                    ProfileWidgets.profileList(context),
+                    "Personal info",
+                    EditSheets.profileEdit,
+                    context,
                   ),
-                  child: ListTile(
-                    title: Text('App Settings'),
+                  const SizedBox(height: 10),
+                  profileTile(
+                    Emoji.stat,
+                    'Body Stats',
+                    'Identity and body stats',
+                    ProfileWidgets.statList(context),
+                    "Body Stats",
+                    EditSheets.statEdit,
+                    context,
+                  ),
+                  const SizedBox(height: 10),
+                  profileTile(
+                    Emoji.fit,
+                    'Fitness Profile',
+                    'Activity & Goals',
+                    ProfileWidgets.fitList(context),
+                    "Fitness Profile",
+                    EditSheets.fitEdit,
+                    context,
+                  ),
+                  const SizedBox(height: 10),
+                  profileTile(
+                    Emoji.diet,
+                    'Diet Profile',
+                    'Meal & Diet preferences',
+                    ProfileWidgets.dietList(context),
+                    "Diet Preferences",
+                    EditSheets.dietEdit,
+                    context,
+                  ),
+                  const SizedBox(height: 10),
+                  profileTile(
+                    Emoji.med,
+                    'Health & Conditions',
+                    'Medical Conditions and allergies',
+                    ProfileWidgets.medList(context),
+                    "Health info",
+                    EditSheets.medEdit,
+                    context,
+                  ),
+                  const SizedBox(height: 10),
+                  profileTile(
+                    Emoji.time,
+                    'Schedule',
+                    'Daily routine & workout timing',
+                    ProfileWidgets.timeList(context),
+                    "Schedule",
+                    EditSheets.timeEdit,
+                    context,
+                  ),
+                  const SizedBox(height: 10),
+                  ExpansionTile(
+                    collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
+                    collapsedShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide.none,
+                    ),
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                    ),
                     leading: Container(
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.tertiary,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Emoji.settings,
+                      child: Emoji.id,
                     ),
-                    trailing: IconButton(
+                    title: Text('Account Settings'),
+                    subtitle: Text('User account information', style: Theme.of(context).textTheme.labelSmall),
+                    children: [
+                      Divider(height: 1, color: CustomColors.greyDark(context)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        child: Column(
+                          children: [
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Username', style: Theme.of(context).textTheme.labelLarge,), Text('user_new', style: Theme.of(context).textTheme.bodyMedium,)],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('UID', style: Theme.of(context).textTheme.labelLarge,), Text('#3334jhj764', style: Theme.of(context).textTheme.bodyMedium,)],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Mobile no.', style: Theme.of(context).textTheme.labelLarge,), Text('00275767832321', style: Theme.of(context).textTheme.bodyMedium,)],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            const SizedBox(height: 10,),
+                            Row(mainAxisSize: MainAxisSize.min, children: [
+                              OutlinedButton(onPressed: (){}, child: Padding(
+                                padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
+                                child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [Icon(Icons.person), const SizedBox(width: 10,),Text('Edit username')]),
+                              )),
+                              const SizedBox(width: 20,),
+                              OutlinedButton(onPressed: (){}, child: Padding(padding: const EdgeInsetsGeometry.symmetric(vertical: 15),child: Row(children: [Icon(Icons.phone), const SizedBox(width: 10,),Text('Edit mobile no')]))),
+                            ],),
+                            const SizedBox(height: 15,),
+                            OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: CustomColors.orangeOutline(context),
+                              ),
+                              foregroundColor: CustomColors.orangeOutline(context),
+                            ),
+                            onPressed: (){}, child: Padding(
+                              padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
+                              child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                                children: [Icon(Icons.edit), const SizedBox(width: 10,), Text('Change Password')],),
+                            )),
+                            const SizedBox(height: 15,),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Theme.of(context).colorScheme.tertiary),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ListTile(
+                                leading: Emoji.google,
+                                title: Text('Google ID'),
+                                subtitle: Text('not connected'),
+                                subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                                trailing: IconButton(onPressed: (){}, icon: Icon(Icons.sync)),
+                              ),
+                            ),
+                            const SizedBox(height: 15,),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Theme.of(context).colorScheme.tertiary),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ListTile(
+                                leading: Emoji.apple,
+                                title: Text('Apple ID'),
+                                subtitle: Text('not connected'),
+                                subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                                trailing: IconButton(onPressed: (){},icon: Icon(Icons.sync)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 50,
+                    ),
+                    child: OutlinedButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/settings');
-                      },
-                      icon: Icon(Icons.chevron_right),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 5,
-                    horizontal: 50,
-                  ),
-                  child: OutlinedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Log Out'),
-                            content: Text(
-                              'Do you want to sign out from the account?',
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-                            actions: [
-                              OutlinedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('Cancel'),
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Log Out'),
+                              content: Text(
+                                'Do you want to sign out from the account?',
+                                style: Theme.of(context).textTheme.labelLarge,
                               ),
-                              FilledButton(
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.error,
+                              actions: [
+                                OutlinedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Cancel'),
                                 ),
-                                onPressed: () async {
-                                  await HomeScreen.logUserOut();
-                                  if (context.mounted) {
-                                    Navigator.of(
+                                FilledButton(
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: Theme.of(
                                       context,
-                                    ).pushNamedAndRemoveUntil(
-                                      '/auth',
-                                          (route) => false,
-                                    );
-                                  }
-                                },
-                                child: Text('Log out'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 20,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.logout),
-                          const SizedBox(width: 10),
-                          Text('Log Out'),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 5,
-                    horizontal: 50,
-                  ),
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                      foregroundColor: Theme.of(context).colorScheme.error,
-                    ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text(
-                              'Delete Account',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.error,
-                              ),
-                            ),
-                            content: Text(
-                              'Do you really want to delete your account?',
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-                            actions: [
-                              OutlinedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('Cancel'),
-                              ),
-                              FilledButton(
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.error,
+                                    ).colorScheme.error,
+                                  ),
+                                  onPressed: () async {
+                                    await HomeScreen.logUserOut();
+                                    if (context.mounted) {
+                                      Navigator.of(
+                                        context,
+                                      ).pushNamedAndRemoveUntil(
+                                        '/auth',
+                                            (route) => false,
+                                      );
+                                    }
+                                  },
+                                  child: Text('Log out'),
                                 ),
-                                onPressed: () {},
-                                child: Text('Delete'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 20,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete),
-                          const SizedBox(width: 10),
-                          Text('Delete Account'),
-                        ],
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 20,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout),
+                            const SizedBox(width: 10),
+                            Text('Log Out'),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 30),
-              ]),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 50,
+                    ),
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                        foregroundColor: Theme.of(context).colorScheme.error,
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(
+                                'Delete Account',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                              content: Text(
+                                'Do you really want to delete your account?',
+                                style: Theme.of(context).textTheme.labelLarge,
+                              ),
+                              actions: [
+                                OutlinedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                                FilledButton(
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.error,
+                                  ),
+                                  onPressed: () {},
+                                  child: Text('Delete'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 20,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete),
+                            const SizedBox(width: 10),
+                            Text('Delete Account'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                ]),
+              ),
             ),
           ],
         ),
@@ -281,18 +357,16 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         Divider(height: 1, color: CustomColors.greyDark(context)),
         list,
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 120),
-          child: Center(
-            child: OutlinedButton(
-              onPressed: () => function(context),
-              child: Row(
-                children: [
-                  Icon(Icons.edit),
-                  const SizedBox(width: 8),
-                  Text("Edit $edit"),
-                ],
-              ),
+        Center(
+          child: OutlinedButton(
+            onPressed: () => function(context),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.edit),
+                const SizedBox(width: 8),
+                Text("Edit $edit"),
+              ],
             ),
           ),
         ),
@@ -436,6 +510,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
       clipBehavior: Clip.none,
       children: [
         Container(
+          alignment: Alignment.topLeft,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.vertical(
@@ -446,7 +521,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
         Container(
           alignment: Alignment.topCenter,
           child: Padding(
-            padding: EdgeInsets.all(25),
+            padding: EdgeInsets.symmetric(vertical: 15),
             child: Text(
               "Profile",
               style: Theme.of(context).textTheme.headlineLarge,
@@ -456,19 +531,15 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
         Positioned(
           left: 20,
           right: 20,
-          bottom: -150,
+          bottom: -120,
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 60, 20, 15),
+              padding: const EdgeInsets.fromLTRB(20, 40, 20, 15),
               child: Column(
                 children: [
                   Text(
                     "User",
                     style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Text(
-                    "user.new@aust.edu",
-                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                   Divider(color: Theme.of(context).colorScheme.tertiary,),
                   const SizedBox(height: 20),
@@ -559,8 +630,24 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
           },
           icon: Icon(Icons.chevron_left_rounded, size: 40),
         ),
+        Container(
+          padding: const EdgeInsets.all(15),
+          alignment: Alignment.topRight,
+          child: InkWell(
+            onTap: (){
+              Navigator.pushNamed(context, '/settings');
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: CustomColors.greyDark(context),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(padding: const EdgeInsetsGeometry.all(5),child: Emoji.settings),
+            ),
+          ),
+        ),
         Positioned(
-          bottom: 70,
+          bottom: 80,
           left: 0,
           right: 0,
           child: CircleAvatar(
@@ -663,6 +750,23 @@ class _CollapsedProfileHeaderState extends State<CollapsedProfileHeader> {
           ),
           const SizedBox(width: 15,),
           Text('USER', style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600)),
+          Spacer(),
+          Container(
+            padding: const EdgeInsets.all(15),
+            alignment: Alignment.topRight,
+            child: InkWell(
+              onTap: (){
+                Navigator.pushNamed(context, '/settings');
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: CustomColors.greyDark(context),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(padding: const EdgeInsetsGeometry.all(5),child: Emoji.settings),
+              ),
+            ),
+          ),
         ],
       ),
     );
