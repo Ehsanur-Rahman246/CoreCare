@@ -1030,54 +1030,60 @@ class _ProfilePageState extends State<ProfilePage> {
                         }, icon: Icon(Icons.chevron_right)),
                       ),
                     ),
+                    const SizedBox(height: 20,),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 50),
+                      child: OutlinedButton(onPressed: (){
+                        showDialog(context: context, builder: (BuildContext context){
+                          return AlertDialog(
+                            title: Text('Log Out',),
+                            content: Text('Do you want to sign out from the account?', style: Theme.of(context).textTheme.labelLarge,),
+                            actions: [
+                              OutlinedButton(onPressed: (){
+                                Navigator.of(context).pop();
+                              }, child: Text('Cancel')),
+                              FilledButton(
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: Theme.of(context).colorScheme.error,
+                                  ),
+                                  onPressed: () async{
+                                    await _HomeScreenState.logUserOut();
+                                    if(context.mounted){
+                                      Navigator.of(context).pushNamedAndRemoveUntil('/auth', (route) => false);
+                                    }
+                                  }, child: Text('Log out')),
+                            ],
+                          );
+                        });
+                      }, child: Row(children: [Icon(Icons.logout), const SizedBox(width: 10,), Text('Log Out')],)),
+                    ),
                     const SizedBox(height: 10,),
-                    OutlinedButton(onPressed: (){
-                      showDialog(context: context, builder: (BuildContext context){
-                        return AlertDialog(
-                          title: Text('Log Out',),
-                          content: Text('Do you want to sign out from the account?', style: Theme.of(context).textTheme.labelLarge,),
-                          actions: [
-                            OutlinedButton(onPressed: (){
-                              Navigator.of(context).pop();
-                            }, child: Text('Cancel')),
-                            FilledButton(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 50),
+                      child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Theme.of(context).colorScheme.error),
+                            foregroundColor: Theme.of(context).colorScheme.error,
+                          ),
+                          onPressed: (){
+                        showDialog(context: context, builder: (BuildContext context){
+                          return AlertDialog(
+                            title: Text('Delete Account', style: TextStyle(color: Theme.of(context).colorScheme.error),),
+                            content: Text('Do you really want to delete your account?', style: Theme.of(context).textTheme.labelLarge,),
+                            actions: [
+                              OutlinedButton(onPressed: (){
+                                Navigator.of(context).pop();
+                              }, child: Text('Cancel')),
+                              FilledButton(
                                 style: FilledButton.styleFrom(
                                   backgroundColor: Theme.of(context).colorScheme.error,
-                                ),
-                                onPressed: () async{
-                                  await _HomeScreenState.logUserOut();
-                                  if(context.mounted){
-                                    Navigator.of(context).pushNamedAndRemoveUntil('/auth', (route) => false);
-                                  }
-                                }, child: Text('Log out')),
-                          ],
-                        );
-                      });
-                    }, child: Row(children: [Icon(Icons.logout), const SizedBox(width: 10,), Text('Log Out')],)),
-                    const SizedBox(height: 10,),
-                    OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Theme.of(context).colorScheme.error),
-                          foregroundColor: Theme.of(context).colorScheme.error,
-                        ),
-                        onPressed: (){
-                      showDialog(context: context, builder: (BuildContext context){
-                        return AlertDialog(
-                          title: Text('Delete Account', style: TextStyle(color: Theme.of(context).colorScheme.error),),
-                          content: Text('Do you really want to delete your account?', style: Theme.of(context).textTheme.labelLarge,),
-                          actions: [
-                            OutlinedButton(onPressed: (){
-                              Navigator.of(context).pop();
-                            }, child: Text('Cancel')),
-                            FilledButton(
-                              style: FilledButton.styleFrom(
-                                backgroundColor: Theme.of(context).colorScheme.error,
-                            ),
-                                onPressed: (){}, child: Text('Delete')),
-                          ],
-                        );
-                      });
-                    }, child: Row(children: [Icon(Icons.delete), const SizedBox(width: 10,), Text('Delete Account')],)),
+                              ),
+                                  onPressed: (){}, child: Text('Delete')),
+                            ],
+                          );
+                        });
+                      }, child: Row(children: [Icon(Icons.delete), const SizedBox(width: 10,), Text('Delete Account')],)),
+                    ),
                   ],
                 ),
               ),
