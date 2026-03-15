@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "565972369729",
+    "project_id": "corecare-de930",
+    "storage_bucket": "corecare-de930.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565972369729:android:d7fc869affa83f3c07e1c0",
+        "android_client_info": {
+          "package_name": "com.example.core_demo1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8vRSKKpPUmp6C09-h404kV7oj1dqVKrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
