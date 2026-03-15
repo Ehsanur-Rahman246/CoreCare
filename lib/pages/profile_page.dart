@@ -128,33 +128,38 @@ class _ProfilePageState extends State<ProfilePage> {
                             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Mobile no.', style: Theme.of(context).textTheme.labelLarge,), Text('00275767832321', style: Theme.of(context).textTheme.bodyMedium,)],),
                             const SizedBox(height: 8,),
                             Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 8,),
-                            const SizedBox(height: 10,),
-                            Row(mainAxisSize: MainAxisSize.min, children: [
-                              OutlinedButton(onPressed: (){}, child: Padding(
-                                padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
-                                child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [Icon(Icons.person), const SizedBox(width: 10,),Text('Edit username')]),
-                              )),
-                              const SizedBox(width: 20,),
-                              OutlinedButton(onPressed: (){}, child: Padding(padding: const EdgeInsetsGeometry.symmetric(vertical: 15),child: Row(children: [Icon(Icons.phone), const SizedBox(width: 10,),Text('Edit mobile no')]))),
-                            ],),
                             const SizedBox(height: 15,),
-                            OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: CustomColors.orangeOutline(context),
+                              Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 15,
+                                runSpacing: 10,
+                                children: [
+                                  OutlinedButton(onPressed: (){}, child: Padding(
+                                    padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
+                                    child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [Icon(Icons.person), const SizedBox(width: 10,),Text('Edit username')]),
+                                  )),
+                                  const SizedBox(width: 20,),
+                                  OutlinedButton(onPressed: (){}, child: Padding(padding: const EdgeInsetsGeometry.symmetric(vertical: 15),child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [Icon(Icons.phone), const SizedBox(width: 10,),Text('Edit mobile no')]))),
+                                  OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: CustomColors.orangeOutline(context),
+                                        ),
+                                        foregroundColor: CustomColors.orangeOutline(context),
+                                      ),
+                                      onPressed: (){}, child: Padding(
+                                    padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [Icon(Icons.edit), const SizedBox(width: 10,), Text('Change Password')],),
+                                  )),
+                                ],
                               ),
-                              foregroundColor: CustomColors.orangeOutline(context),
-                            ),
-                            onPressed: (){}, child: Padding(
-                              padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
-                              child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                                children: [Icon(Icons.edit), const SizedBox(width: 10,), Text('Change Password')],),
-                            )),
-                            const SizedBox(height: 15,),
+                            const SizedBox(height: 20,),
                             Container(
                               decoration: BoxDecoration(
                                 border: Border.all(color: Theme.of(context).colorScheme.tertiary),
