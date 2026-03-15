@@ -3,14 +3,21 @@ import 'package:core_care/pages/diet_module.dart';
 import 'package:core_care/pages/fitness_module.dart';
 import 'package:core_care/pages/home_screen.dart';
 import 'package:core_care/pages/login_screen.dart';
+import 'package:core_care/pages/profile_page.dart';
 import 'package:core_care/pages/shop_module.dart';
 import 'package:core_care/time_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(ChangeNotifierProvider(create: (_) => TimeProvider(), child: MyApp()));
 }
 
@@ -49,10 +56,11 @@ class _MyAppState extends State<MyApp> {
         '/fit': (context) => FitScreen(),
         '/diet': (context) => DietScreen(),
         '/shop': (context) => ShopScreen(),
-        '/google': (context) => GoogleLoginScreen(),
-        '/apple': (context) => AppleLoginScreen(),
+        // '/google': (context) => GoogleLoginScreen(),
+        // '/apple': (context) => AppleLoginScreen(),
         '/signup': (context) => SignupPage(),
         '/onboard': (context) => OnboardingScreen(),
+        '/auth' : (context) => AuthPage(),
       },
     );
   }
@@ -119,13 +127,14 @@ final ThemeData lightTheme = ThemeData(
       borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide.none,
     ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: Color(0xffb71c1c)),
+    ),
   ),
   badgeTheme: BadgeThemeData(
     backgroundColor: Color(0xffe53935),
     alignment: Alignment.topRight,
-  ),
-  expansionTileTheme: ExpansionTileThemeData(
-
   ),
 );
 
@@ -190,15 +199,16 @@ final ThemeData darkTheme = ThemeData(
       borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide.none,
     ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: Color(0xfff28b82)),
+    ),
   ),
   badgeTheme: BadgeThemeData(
     backgroundColor: Color(0xffff6e6e),
     largeSize: 20,
     padding: const EdgeInsets.all(8),
     alignment: Alignment.topRight,
-  ),
-  expansionTileTheme: ExpansionTileThemeData(
-
   ),
 );
 

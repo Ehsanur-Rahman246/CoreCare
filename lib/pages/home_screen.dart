@@ -1,18 +1,19 @@
 import 'package:core_care/decoration.dart';
 import 'package:core_care/main.dart';
-import 'package:core_care/pages/login_screen.dart';
+import 'package:core_care/pages/profile_page.dart';
 import 'package:core_care/time_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:typed_data';
-
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(int) onNavigate;
 
   const HomeScreen({super.key, required this.onNavigate});
+  static Future<void> logUserOut() async{
+    FirebaseAuth.instance.signOut();
+  }
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -47,10 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       CircleAvatar(
-                        foregroundImage: _ProfilePageState.hasImage
-                            ? MemoryImage(_ProfilePageState.imageBytes)
+                        foregroundImage: ExpandedProfileHeader.hasImage
+                            ? MemoryImage(ExpandedProfileHeader.imageBytes)
                             : null,
-                        child: _ProfilePageState.hasImage
+                        child: ExpandedProfileHeader.hasImage
                             ? null
                             : Icon(Icons.person_rounded),
                       ),
@@ -81,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(width: 10),
                       PopupMenuButton(
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           switch (value) {
                             case 0:
                               Navigator.push(
@@ -95,12 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.pushNamed(context, '/settings');
                               break;
                             case 2:
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => LoginScreen(),
-                                ),
-                              );
+                              await HomeScreen.logUserOut();
                               break;
                           }
                         },
@@ -688,6 +684,16 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: const EdgeInsets.all(10),
               child: Card(
                 child: ListTile(
+                  leading: Icon(Icons.language),
+                  title: Text('Language'),
+                  trailing: Text('English'),
+                  ),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Card(
+                child: ListTile(
                   leading: Icon(Icons.watch_later_outlined),
                   title: Text('Time Format'),
                   subtitle: hourFormat.is24Hour
@@ -735,350 +741,6 @@ class _SettingsPageState extends State<SettingsPage> {
         });
         widget.onThemeChanged(value.first);
       },
-    );
-  }
-}
-
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
-
-  @override
-  State<ProfilePage> createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-  static bool hasImage = false;
-  static Uint8List imageBytes = Uint8List(0);
-
-  Future<void> pickImage() async {
-    final imagePicker = ImagePicker();
-    final pickedImage = await imagePicker.pickImage(
-      maxHeight: 1080,
-      maxWidth: 1080,
-      source: ImageSource.gallery,
-    );
-    if (pickedImage != null) {
-      XFile? imageFile = XFile(pickedImage.path);
-      imageBytes = await imageFile.readAsBytes();
-      setState(() {
-        hasImage = true;
-      });
-    }
-  }
-  void removeImage(){
-    setState(() {
-      hasImage = false;
-    });
-  }
-
-  void _showDialog(){
-    showDialog(context: context, builder: (context){
-      return AlertDialog(
-        title: Text("Edit Profile Image"),
-        actions: [
-          OutlinedButton(onPressed: (){
-            removeImage();
-            Navigator.pop(context);
-          }, child: Text('Remove Image')),
-          FilledButton(onPressed: (){
-            pickImage();
-            Navigator.pop(context);
-          }, child: Text('Change Image')),
-        ],
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.25,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.vertical(
-                      bottom: Radius.circular(40),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 20,
-                  right: 20,
-                  bottom: -150,
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 60, 20, 15),
-                      child: Column(
-                        children: [
-                          Text(
-                            "User",
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          Text(
-                            "user.new@aust.edu",
-                            style: Theme.of(context).textTheme.labelLarge,
-                          ),
-                          const SizedBox(height: 25),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Column(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.tertiary,
-                                    child: Emoji.starter,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    "Starter",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
-                                  Text(
-                                    "110 XP",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.labelSmall,
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.tertiary,
-                                    child: Emoji.fire,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    "3 day",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
-                                  Text(
-                                    "Streak",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.labelSmall,
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.tertiary,
-                                    child: Emoji.coin,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    "100 FC",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
-                                  Text(
-                                    "FitCoins",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.labelSmall,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.chevron_left_rounded, size: 40),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: EdgeInsets.all(25),
-                    child: Text(
-                      "Profile",
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 30,
-                  left: 0,
-                  right: 0,
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        if (!hasImage)
-                          CircleAvatar(
-                            backgroundColor: CustomColors.greyLight(context),
-                            radius: 37,
-                            child: Icon(Icons.person, size: 40),
-                          )
-                        else
-                          CircleAvatar(
-                            radius: 37,
-                            foregroundImage: MemoryImage(imageBytes),
-                          ),
-                        Positioned(
-                          right: -5,
-                          bottom: -5,
-                          child: SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: IconButton.filled(
-                              style: IconButton.styleFrom(
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.tertiary,
-                              ),
-                              padding: const EdgeInsets.all(0),
-                              onPressed: () {
-                                if(hasImage){
-                                  _showDialog();
-                                }
-                                else{
-                                  pickImage();
-                                }
-                              },
-                              icon: hasImage
-                                  ? Icon(Icons.edit)
-                                  : Icon(Icons.camera_alt),
-                              iconSize: 18,
-                              tooltip: "Add",
-                              color: Theme.of(context).colorScheme.onTertiary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 150),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 10,
-                ),
-                child: ListView(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text(
-                        "General",
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.chevron_right),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: ExpansionTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.chevron_right),
-                        ),
-                        children: [
-                          Text('data'),
-                          Text('data')
-                        ],
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.chevron_right),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text("Additional Settings"),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.chevron_right),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: Icon(Icons.eighteen_mp),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text("Others"),
-                    ),
-                    Card(
-                      child: ListTile(
-                        leading: Icon(Icons.eighteen_mp),
-                        title: Text('data'),
-                        subtitle: Text('data'),
-                        trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.chevron_right),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

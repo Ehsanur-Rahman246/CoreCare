@@ -36,7 +36,7 @@ class _FitScreenState extends State<FitScreen>
                 style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(7, (i){
@@ -56,7 +56,7 @@ class _FitScreenState extends State<FitScreen>
                 return weekBox(text, state);
               })
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.only(left: 10),
               alignment: Alignment.centerLeft,

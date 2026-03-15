@@ -37,11 +37,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Positioned(
             right: 12,
             top: 12,
-            child: TextButton(
+            child: onLastPage ? SizedBox() : TextButton(
               onPressed: () {
                 _controller.jumpToPage(3);
               },
-              child: Text('Skip'),
+              child: Text('Skip', style: TextStyle(fontWeight: FontWeight.w600),),
             ),
           ),
           Container(
@@ -86,7 +86,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: onLastPage
                 ? OutlinedButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/login');
+                Navigator.pushReplacementNamed(context, '/auth');
               },
               child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
