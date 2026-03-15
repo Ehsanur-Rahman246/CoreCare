@@ -48,10 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       CircleAvatar(
-                        foregroundImage: ProfilePage.hasImage
-                            ? MemoryImage(ProfilePage.imageBytes)
+                        foregroundImage: ExpandedProfileHeader.hasImage
+                            ? MemoryImage(ExpandedProfileHeader.imageBytes)
                             : null,
-                        child: ProfilePage.hasImage
+                        child: ExpandedProfileHeader.hasImage
                             ? null
                             : Icon(Icons.person_rounded),
                       ),
