@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:core_care/main.dart';
+import 'package:lottie/lottie.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -10,91 +11,191 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen> with TickerProviderStateMixin{
   final PageController _controller = PageController();
   bool onLastPage = false;
+  late final List<AnimationController> _lottieController;
+
+  @override
+  void initState() {
+    super.initState();
+    _lottieController = List.generate(4, (_) => AnimationController(vsync: this));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    for(final c in _lottieController){
+      c.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          PageView(
-            physics: const NeverScrollableScrollPhysics(),
-            onPageChanged: (index) {
-              setState(() {
-                onLastPage = (index == 3);
-              });
-            },
-            controller: _controller,
-            children: [
-              Container(color: Colors.blue),
-              Container(color: Colors.yellow),
-              Container(color: Colors.green),
-              Container(color: Colors.red),
-            ],
-          ),
-          Positioned(
-            right: 12,
-            top: 12,
-            child: onLastPage ? SizedBox() : TextButton(
-              onPressed: () {
-                _controller.jumpToPage(3);
-              },
-              child: Text('Skip', style: TextStyle(fontWeight: FontWeight.w600),),
-            ),
-          ),
-          Container(
-            alignment: Alignment(0, 0.60),
-            child: SmoothPageIndicator(
-              controller: _controller,
-              count: 4,
-              effect: WormEffect(
-                dotWidth: 7,
-                dotHeight: 7,
-                dotColor: Theme.of(context).colorScheme.tertiary,
-                activeDotColor: Theme.of(context).colorScheme.primary,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned(
+              top: 60,
+              left: 0,
+              right: 0,
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: PageView(
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (index) {
+                  setState(() {
+                    onLastPage = (index == 3);
+                  });
+                  for(int i=0;i<_lottieController.length;i++){
+                    if(i == index){
+                      if(_lottieController[i].duration != Duration.zero){
+                        _lottieController[i].repeat();
+                      }
+                    }
+                    else{
+                      _lottieController[i].stop();
+                    }
+                  }
+                },
+                controller: _controller,
+                children: List.generate(4, (index){
+                  final lottie = [
+                    'assets/logo/sc1.json',
+                    'assets/logo/sc2.json',
+                    'assets/logo/sc3.json',
+                    'assets/logo/sc4.json',
+                  ];
+                  final title = [
+                    'Fitness That Fits You',
+                    'Track. Improve. Repeat.',
+                    'We Guide. You Decide.',
+                    'Small Steps. Big Results.',
+                  ];
+                  final subtitle = [
+                    'Tailored workouts and meal plans based on your body, lifestyle, and goals.',
+                    'Monitor progress and get smart insights to stay on course.',
+                    'Personalized advice and motivation—your commitment makes it work.',
+                    'Build habits, celebrate milestones, and watch your progress grow.',
+                  ];
+                  return  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: 250,
+                          height: 250,
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: Lottie.asset(
+                              lottie[index],
+                              controller: _lottieController[index],
+                              onLoaded: (play){
+                                _lottieController[index].duration = play.duration;
+                                _lottieController[index].repeat();
+                              }
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          title[index],
+                          style: Theme.of(context).textTheme.displayLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 15,
+                            horizontal: 40,
+                          ),
+                          child: Text(
+                            subtitle[index],
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
               ),
             ),
-          ),
-          Container(
-            alignment: Alignment(0, 0.72),
-            child: onLastPage
-                ? FilledButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/signup');
-                    },
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 22),
-                        child: Text('Get Started')),
-                  )
-                : FilledButton(
-                    onPressed: () {
-                      _controller.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeIn,
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: Text('Next'),
+            Positioned(
+              right: 12,
+              top: 12,
+              child: onLastPage
+                  ? SizedBox()
+                  : TextButton(
+                      onPressed: () {
+                        _controller.jumpToPage(3);
+                      },
+                      child: Text(
+                        'Skip',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                     ),
-                  ),
-          ),
-          Container(
-            alignment: Alignment(0, 0.85),
-            child: onLastPage
-                ? OutlinedButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/auth');
-              },
-              child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Text('Sign In')),
-            )
-                : SizedBox(),
-          ),
-        ],
+            ),
+            Container(
+              alignment: Alignment(0, 0.60),
+              child: SmoothPageIndicator(
+                controller: _controller,
+                count: 4,
+                effect: WormEffect(
+                  dotWidth: 7,
+                  dotHeight: 7,
+                  dotColor: Theme.of(context).colorScheme.tertiary,
+                  activeDotColor: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+            Container(
+              alignment: Alignment(0, 0.72),
+              child: onLastPage
+                  ? FilledButton(
+                      onPressed: () {
+                        for(final c in _lottieController){
+                          c.stop();
+                        }
+                        Navigator.pushReplacementNamed(context, '/signup');
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
+                        child: Text('Get Started'),
+                      ),
+                    )
+                  : FilledButton(
+                      onPressed: () {
+                        _controller.nextPage(
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeIn,
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Text('Next'),
+                      ),
+                    ),
+            ),
+            Container(
+              alignment: Alignment(0, 0.85),
+              child: onLastPage
+                  ? OutlinedButton(
+                      onPressed: () {
+                        for(final c in _lottieController){
+                          c.stop();
+                        }
+                        Navigator.pushReplacementNamed(context, '/auth');
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Text('Sign In'),
+                      ),
+                    )
+                  : SizedBox(),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -137,75 +238,78 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     final double stepWidth = MediaQuery.of(context).size.width / visibleSteps;
     return Scaffold(
-      body: Column(
-        children: [
-
-          SizedBox(
-            height: 60,
-            child: SingleChildScrollView(
-              controller: _timelineController,
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(_totalSteps, (index) {
-                  bool isFirst = index == 0;
-                  bool isLast = index == _totalSteps - 1;
-                  bool isActive = index == currentPage;
-                  bool isDone =
-                      index < currentPage ||
-                      (currentPage == _totalSteps - 1 &&
-                          index == _totalSteps - 1);
-                  return SizedBox(
-                    width: stepWidth,
-                    child: stepIndicator(isFirst, isLast, isActive, isDone),
-                  );
-                }),
+      body: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 20,),
+            Text("Step ${currentPage+1} out of $_totalSteps", style: Theme.of(context).textTheme.labelMedium,),
+            SizedBox(
+              height: 60,
+              child: SingleChildScrollView(
+                controller: _timelineController,
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(_totalSteps, (index) {
+                    bool isFirst = index == 0;
+                    bool isLast = index == _totalSteps - 1;
+                    bool isActive = index == currentPage;
+                    bool isDone =
+                        index < currentPage ||
+                        (currentPage == _totalSteps - 1 &&
+                            index == _totalSteps - 1);
+                    return SizedBox(
+                      width: stepWidth,
+                      child: stepIndicator(isFirst, isLast, isActive, isDone),
+                    );
+                  }),
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  currentPage = index;
-                });
-                scrollTimeline(index, stepWidth);
-              },
+            Expanded(
+              child: PageView(
+                physics: const NeverScrollableScrollPhysics(),
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    currentPage = index;
+                  });
+                  scrollTimeline(index, stepWidth);
+                },
 
-              children: [
-                Container(color: Colors.red),
-                Container(color: Colors.blue),
-                Container(color: Colors.green),
-                Container(color: Colors.yellow),
-                Container(color: Colors.orange),
-                Container(color: Colors.purple),
-                Container(color: Colors.black),
-                Container(color: Colors.white),
-                Container(color: Colors.cyan),
-                Container(color: Colors.brown),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: FilledButton(
-              child: Text(
-                currentPage == _totalSteps - 1 ? "Finish Setup" : "Next",
+                children: [
+                  Container(color: Colors.red),
+                  Container(color: Colors.blue),
+                  Container(color: Colors.green),
+                  Container(color: Colors.yellow),
+                  Container(color: Colors.orange),
+                  Container(color: Colors.purple),
+                  Container(color: Colors.black),
+                  Container(color: Colors.white),
+                  Container(color: Colors.cyan),
+                  Container(color: Colors.brown),
+                ],
               ),
-              onPressed: () {
-                if (currentPage < _totalSteps - 1) {
-                  _pageController.nextPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                } else {
-                  Navigator.pushReplacementNamed(context, '/home');
-                }
-              },
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: FilledButton(
+                child: Text(
+                  currentPage == _totalSteps - 1 ? "Finish Setup" : "Next",
+                ),
+                onPressed: () {
+                  if (currentPage < _totalSteps - 1) {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    Navigator.pushReplacementNamed(context, '/home');
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
