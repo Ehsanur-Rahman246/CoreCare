@@ -150,47 +150,49 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
               ),
             ),
             Container(
-              alignment: Alignment(0, 0.72),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+              alignment: Alignment(0, 0.77),
               child: onLastPage
                   ? FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
                       onPressed: () {
                         for(final c in _lottieController){
                           c.stop();
                         }
                         Navigator.pushReplacementNamed(context, '/signup');
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 22),
-                        child: Text('Get Started'),
-                      ),
+                      child: Text('Get Started'),
                     )
                   : FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
                       onPressed: () {
                         _controller.nextPage(
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.easeIn,
                         );
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text('Next'),
-                      ),
+                      child: Text('Next'),
                     ),
             ),
             Container(
-              alignment: Alignment(0, 0.85),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+              alignment: Alignment(0, 0.95),
               child: onLastPage
                   ? OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
                       onPressed: () {
                         for(final c in _lottieController){
                           c.stop();
                         }
                         Navigator.pushReplacementNamed(context, '/auth');
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text('Sign In'),
-                      ),
+                      child: Text('Sign In'),
                     )
                   : SizedBox(),
             ),
@@ -242,7 +244,22 @@ class _SignupPageState extends State<SignupPage> {
         child: Column(
           children: [
             const SizedBox(height: 20,),
-            Text("Step ${currentPage+1} out of $_totalSteps", style: Theme.of(context).textTheme.labelMedium,),
+            Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+              if(currentPage == 0)
+                const SizedBox(height: 40, width: 20,)
+              else
+              Padding(
+                padding: const EdgeInsetsGeometry.only(left: 10),
+                child: IconButton(onPressed: (){
+                    _pageController.previousPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                }, icon: Icon(Icons.chevron_left)),
+              ),
+              Expanded(child: Center(child: Text("Step ${currentPage+1} out of $_totalSteps", style: Theme.of(context).textTheme.labelMedium,)))]),
             SizedBox(
               height: 60,
               child: SingleChildScrollView(
@@ -291,10 +308,13 @@ class _SignupPageState extends State<SignupPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
                 child: Text(
-                  currentPage == _totalSteps - 1 ? "Finish Setup" : "Next",
+                  currentPage == _totalSteps - 2 ? "Finish Setup" : currentPage == _totalSteps - 1 ? "Go to dashboard" : "Next",
                 ),
                 onPressed: () {
                   if (currentPage < _totalSteps - 1) {
@@ -356,3 +376,4 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 }
+
