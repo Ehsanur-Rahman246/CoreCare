@@ -168,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.pushNamed(context, '/signup');
                     },
-                    child: Text("Register now"),
+                    child: Text("Register"),
                   ),
                 ],
               ),

@@ -248,7 +248,7 @@ class _SignupPageState extends State<SignupPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
               if(currentPage == 0)
-                const SizedBox(height: 40, width: 20,)
+                const SizedBox(height: 40, width: 40,)
               else
               Padding(
                 padding: const EdgeInsetsGeometry.only(left: 10),
