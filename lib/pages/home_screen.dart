@@ -11,7 +11,8 @@ class HomeScreen extends StatefulWidget {
   final Function(int) onNavigate;
 
   const HomeScreen({super.key, required this.onNavigate});
-  static Future<void> logUserOut() async{
+
+  static Future<void> logUserOut() async {
     FirebaseAuth.instance.signOut();
   }
 
@@ -163,7 +164,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Emoji.fire,
                             Text(
                               "3-day Streak",
-                              style: TextStyle(color: CustomColors.black(context)),
+                              style: TextStyle(
+                                color: CustomColors.black(context),
+                              ),
                             ),
                           ],
                         ),
@@ -171,165 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20,
-                      horizontal: 15,
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 140,
-                                  height: 140,
-                                  child: CircularProgressIndicator(
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.tertiary,
-                                    value: (1300 / 2000).clamp(0.0, 1.0),
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.secondary,
-                                    strokeWidth: 10,
-                                  ),
-                                ),
-                                Center(
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        "1300",
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.titleMedium,
-                                      ),
-                                      const SizedBox(height: 7),
-                                      Text("Calories left", style: Theme.of(context).textTheme.labelLarge,),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: CustomColors.greenPrimary(
-                                    context,
-                                  ),
-                                  child: Icon(Symbols.fork_spoon),
-                                ),
-                                const SizedBox(height: 10),
-                                Text("2500 cal"),
-                                Text(
-                                  "Eaten",
-                                  style: Theme.of(context).textTheme.labelMedium,
-                                ),
-                              ],
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: CustomColors.orangePrimary(
-                                    context,
-                                  ),
-                                  child: Icon(
-                                    Icons.local_fire_department_rounded,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text("1200 cal"),
-                                Text(
-                                  "Burned",
-                                  style: Theme.of(context).textTheme.labelMedium,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 25),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("🍞 Carbs"),
-                                SizedBox(height: 8),
-                                SizedBox(
-                                  width: 100,
-                                  child: LinearProgressIndicator(
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.tertiary,
-                                    value: 0.7,
-                                    color: CustomColors.yellowOutline(context),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "70/100 g",
-                                  style: Theme.of(context).textTheme.labelMedium,
-                                ),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("🥩 Protein"),
-                                SizedBox(height: 8),
-                                SizedBox(
-                                  width: 100,
-                                  child: LinearProgressIndicator(
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.tertiary,
-                                    value: 0.8,
-                                    color: CustomColors.blueOutline(context),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "70/100 g",
-                                  style: Theme.of(context).textTheme.labelMedium,
-                                ),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("🧈 Fat"),
-                                SizedBox(height: 8),
-                                SizedBox(
-                                  width: 100,
-                                  child: LinearProgressIndicator(
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.tertiary,
-                                    value: 0.6,
-                                    color: CustomColors.redOutline(context),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "70/100 g",
-                                  style: Theme.of(context).textTheme.labelMedium,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                Dashboard(),
                 const SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.only(left: 10),
@@ -562,6 +407,193 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
+
+  @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 20,
+          horizontal: 15,
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 140,
+                      height: 140,
+                      child: CircularProgressIndicator(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.tertiary,
+                        value: (1300 / 2000).clamp(0.0, 1.0),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.secondary,
+                        strokeWidth: 10,
+                      ),
+                    ),
+                    Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            "1300",
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 7),
+                          Text(
+                            "Calories left",
+                            style: Theme.of(
+                              context,
+                            ).textTheme.labelLarge,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: CustomColors.greenPrimary(
+                        context,
+                      ),
+                      child: Icon(Symbols.fork_spoon),
+                    ),
+                    const SizedBox(height: 10),
+                    Text("2500 cal"),
+                    Text(
+                      "Eaten",
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelMedium,
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: CustomColors.orangePrimary(
+                        context,
+                      ),
+                      child: Icon(
+                        Icons.local_fire_department_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text("1200 cal"),
+                    Text(
+                      "Burned",
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelMedium,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 25),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("🍞 Carbs"),
+                    SizedBox(height: 8),
+                    SizedBox(
+                      width: 100,
+                      child: LinearProgressIndicator(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.tertiary,
+                        value: 0.7,
+                        color: CustomColors.yellowOutline(context),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "70/100 g",
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelMedium,
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("🥩 Protein"),
+                    SizedBox(height: 8),
+                    SizedBox(
+                      width: 100,
+                      child: LinearProgressIndicator(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.tertiary,
+                        value: 0.8,
+                        color: CustomColors.blueOutline(context),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "70/100 g",
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelMedium,
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("🧈 Fat"),
+                    SizedBox(height: 8),
+                    SizedBox(
+                      width: 100,
+                      child: LinearProgressIndicator(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.tertiary,
+                        value: 0.6,
+                        color: CustomColors.redOutline(context),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "70/100 g",
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelMedium,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class SettingsPage extends StatefulWidget {
   final ThemeMode currentTheme;
   final Function(ThemeMode) onThemeChanged;
@@ -690,10 +722,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     leading: Icon(Icons.language),
                     title: Text('Language'),
                     trailing: languageButton(context),
-                    ),
-                ),
+                  ),
                 ),
               ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: Card(
@@ -718,30 +750,25 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
-  Widget languageButton(BuildContext context){
+
+  Widget languageButton(BuildContext context) {
     return DropdownButtonHideUnderline(
       child: DropdownButton<String>(
         style: Theme.of(context).textTheme.bodyMedium,
         elevation: 4,
-          value: shownValue,
-          items: const [
-            DropdownMenuItem(
-                value: 'English',
-                child: Text('English')),
-            DropdownMenuItem(
-                value: 'Spanish',
-                child: Text('Spanish')),
-            DropdownMenuItem(
-                value: 'French',
-                child: Text('French')),
-            DropdownMenuItem(
-                value: 'Bangla',
-                child: Text('Bangla')),
-      ], onChanged: (String? value){
-        setState(() {
-          shownValue = value!;
-        });
-      }),
+        value: shownValue,
+        items: const [
+          DropdownMenuItem(value: 'English', child: Text('English')),
+          DropdownMenuItem(value: 'Spanish', child: Text('Spanish')),
+          DropdownMenuItem(value: 'French', child: Text('French')),
+          DropdownMenuItem(value: 'Bangla', child: Text('Bangla')),
+        ],
+        onChanged: (String? value) {
+          setState(() {
+            shownValue = value!;
+          });
+        },
+      ),
     );
   }
 
@@ -846,4 +873,3 @@ class _NotificationsPageState extends State<NotificationsPage> {
     );
   }
 }
-
