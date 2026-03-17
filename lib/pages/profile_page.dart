@@ -25,8 +25,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 floating: false,
                 delegate: ProfileHeader(maxHeight: MediaQuery.of(context).size.height * 0.3, minHeight: MediaQuery.of(context).size.height * 0.1),
             ),
+            SliverPersistentHeader(delegate: SpacerDelegate(maxSpace: 170, minSpace: 20)),
             SliverPadding(
-              padding: const EdgeInsetsGeometry.fromLTRB(10, 160, 10, 20),
+              padding: const EdgeInsetsGeometry.symmetric(horizontal: 15),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   profileTile(
@@ -89,29 +90,107 @@ class _ProfilePageState extends State<ProfilePage> {
                     context,
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
+                  ExpansionTile(
+                    collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
+                    collapsedShape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
+                      side: BorderSide.none,
                     ),
-                    child: ListTile(
-                      title: Text('App Settings'),
-                      leading: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.tertiary,
-                          borderRadius: BorderRadius.circular(12),
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                    ),
+                    leading: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Emoji.id,
+                    ),
+                    title: Text('Account Settings'),
+                    subtitle: Text('User account information', style: Theme.of(context).textTheme.labelSmall),
+                    children: [
+                      Divider(height: 1, color: CustomColors.greyDark(context)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        child: Column(
+                          children: [
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Username', style: Theme.of(context).textTheme.labelLarge,), Text('user_new', style: Theme.of(context).textTheme.bodyMedium,)],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('UID', style: Theme.of(context).textTheme.labelLarge,), Text('#3334jhj764', style: Theme.of(context).textTheme.bodyMedium,)],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Mobile no.', style: Theme.of(context).textTheme.labelLarge,), Text('00275767832321', style: Theme.of(context).textTheme.bodyMedium,)],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 15,),
+                              Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 15,
+                                runSpacing: 10,
+                                children: [
+                                  OutlinedButton(onPressed: (){}, child: Padding(
+                                    padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
+                                    child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [Icon(Icons.person), const SizedBox(width: 10,),Text('Edit username')]),
+                                  )),
+                                  const SizedBox(width: 20,),
+                                  OutlinedButton(onPressed: (){}, child: Padding(padding: const EdgeInsetsGeometry.symmetric(vertical: 15),child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [Icon(Icons.phone), const SizedBox(width: 10,),Text('Edit mobile no')]))),
+                                  OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: CustomColors.orangeOutline(context),
+                                        ),
+                                        foregroundColor: CustomColors.orangeOutline(context),
+                                      ),
+                                      onPressed: (){}, child: Padding(
+                                    padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [Icon(Icons.edit), const SizedBox(width: 10,), Text('Change Password')],),
+                                  )),
+                                ],
+                              ),
+                            const SizedBox(height: 20,),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Theme.of(context).colorScheme.tertiary),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ListTile(
+                                leading: Emoji.google,
+                                title: Text('Google ID'),
+                                subtitle: Text('not connected'),
+                                subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                                trailing: IconButton(onPressed: (){}, icon: Icon(Icons.sync)),
+                              ),
+                            ),
+                            const SizedBox(height: 15,),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Theme.of(context).colorScheme.tertiary),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ListTile(
+                                leading: Emoji.apple,
+                                title: Text('Apple ID'),
+                                subtitle: Text('not connected'),
+                                subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                                trailing: IconButton(onPressed: (){},icon: Icon(Icons.sync)),
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Emoji.settings,
                       ),
-                      trailing: IconButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/settings');
-                        },
-                        icon: Icon(Icons.chevron_right),
-                      ),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   Padding(
@@ -283,18 +362,16 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         Divider(height: 1, color: CustomColors.greyDark(context)),
         list,
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 120),
-          child: Center(
-            child: OutlinedButton(
-              onPressed: () => function(context),
-              child: Row(
-                children: [
-                  Icon(Icons.edit),
-                  const SizedBox(width: 8),
-                  Text("Edit $edit"),
-                ],
-              ),
+        Center(
+          child: OutlinedButton(
+            onPressed: () => function(context),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.edit),
+                const SizedBox(width: 8),
+                Text("Edit $edit"),
+              ],
             ),
           ),
         ),
@@ -338,8 +415,38 @@ class ProfileHeader extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return true;
+    return false;
   }
+}
+
+class SpacerDelegate extends SliverPersistentHeaderDelegate{
+  final double maxSpace;
+  final double minSpace;
+
+  SpacerDelegate({
+    required this.maxSpace,
+    required this.minSpace,
+});
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final space = (maxExtent - shrinkOffset).clamp(minExtent, maxExtent);
+    return Container(
+      height: space,
+      color: Colors.transparent,
+    );
+  }
+
+  @override
+  double get maxExtent => maxSpace;
+
+  @override
+  double get minExtent => minSpace;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
+  }
+
 }
 
 class ExpandedProfileHeader extends StatefulWidget {
@@ -408,6 +515,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
       clipBehavior: Clip.none,
       children: [
         Container(
+          alignment: Alignment.topLeft,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.vertical(
@@ -418,7 +526,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
         Container(
           alignment: Alignment.topCenter,
           child: Padding(
-            padding: EdgeInsets.all(25),
+            padding: EdgeInsets.symmetric(vertical: 15),
             child: Text(
               "Profile",
               style: Theme.of(context).textTheme.headlineLarge,
@@ -428,19 +536,15 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
         Positioned(
           left: 20,
           right: 20,
-          bottom: -150,
+          bottom: -120,
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 60, 20, 15),
+              padding: const EdgeInsets.fromLTRB(20, 40, 20, 15),
               child: Column(
                 children: [
                   Text(
                     "User",
                     style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Text(
-                    "user.new@aust.edu",
-                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                   Divider(color: Theme.of(context).colorScheme.tertiary,),
                   const SizedBox(height: 20),
@@ -531,8 +635,24 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
           },
           icon: Icon(Icons.chevron_left_rounded, size: 40),
         ),
+        Container(
+          padding: const EdgeInsets.all(15),
+          alignment: Alignment.topRight,
+          child: InkWell(
+            onTap: (){
+              Navigator.pushNamed(context, '/settings');
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: CustomColors.greyDark(context),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(padding: const EdgeInsetsGeometry.all(5),child: Emoji.settings),
+            ),
+          ),
+        ),
         Positioned(
-          bottom: 70,
+          bottom: 80,
           left: 0,
           right: 0,
           child: CircleAvatar(
@@ -635,6 +755,23 @@ class _CollapsedProfileHeaderState extends State<CollapsedProfileHeader> {
           ),
           const SizedBox(width: 15,),
           Text('USER', style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600)),
+          Spacer(),
+          Container(
+            padding: const EdgeInsets.all(15),
+            alignment: Alignment.topRight,
+            child: InkWell(
+              onTap: (){
+                Navigator.pushNamed(context, '/settings');
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: CustomColors.greyDark(context),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(padding: const EdgeInsetsGeometry.all(5),child: Emoji.settings),
+              ),
+            ),
+          ),
         ],
       ),
     );

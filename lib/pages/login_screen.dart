@@ -94,8 +94,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       controller: emailController,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.email_outlined),
-                        labelText: "E-mail",
+                        prefixIcon: Icon(Icons.account_circle_outlined),
+                        labelText: "Username",
                         errorText: emailError,
                       ),
                       onChanged: (_){
@@ -168,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.pushNamed(context, '/signup');
                     },
-                    child: Text("Register now"),
+                    child: Text("Register"),
                   ),
                 ],
               ),

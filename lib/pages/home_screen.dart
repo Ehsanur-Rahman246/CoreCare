@@ -579,6 +579,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   late ThemeMode themeMode;
   late bool isNotificationsOn;
+  String shownValue = 'English';
 
   @override
   void initState() {
@@ -643,7 +644,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 50),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: Card(
                 child: ListTile(
                   isThreeLine: true,
@@ -662,7 +663,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: Card(
                 child: ListTile(
                   leading: Icon(Icons.notifications_active),
@@ -681,17 +682,20 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: Card(
-                child: ListTile(
-                  leading: Icon(Icons.language),
-                  title: Text('Language'),
-                  trailing: Text('English'),
-                  ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: ListTile(
+                    leading: Icon(Icons.language),
+                    title: Text('Language'),
+                    trailing: languageButton(context),
+                    ),
+                ),
                 ),
               ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: Card(
                 child: ListTile(
                   leading: Icon(Icons.watch_later_outlined),
@@ -712,6 +716,32 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
       ),
+    );
+  }
+  Widget languageButton(BuildContext context){
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+        style: Theme.of(context).textTheme.bodyMedium,
+        elevation: 4,
+          value: shownValue,
+          items: const [
+            DropdownMenuItem(
+                value: 'English',
+                child: Text('English')),
+            DropdownMenuItem(
+                value: 'Spanish',
+                child: Text('Spanish')),
+            DropdownMenuItem(
+                value: 'French',
+                child: Text('French')),
+            DropdownMenuItem(
+                value: 'Bangla',
+                child: Text('Bangla')),
+      ], onChanged: (String? value){
+        setState(() {
+          shownValue = value!;
+        });
+      }),
     );
   }
 
