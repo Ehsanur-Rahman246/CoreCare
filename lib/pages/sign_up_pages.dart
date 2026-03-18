@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:core_care/decoration.dart';
 
 class SignupPageOne extends StatefulWidget {
   const SignupPageOne({super.key});
@@ -122,7 +123,61 @@ class SignupPageNine extends StatefulWidget {
 class _SignupPageNineState extends State<SignupPageNine> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final th = Theme.of(context).textTheme.labelMedium;
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsetsGeometry.symmetric(horizontal: 25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Emoji.id,
+                Text('Create Your Account', style: Theme.of(context).textTheme.displaySmall,),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Text('Add login details to secure progress and get started', style: Theme.of(context).textTheme.labelMedium,),
+            const SizedBox(height: 20,),
+            Text('Username', style: th,),
+            const SizedBox(height: 8,),
+            TextField(),
+            const SizedBox(height: 20,),
+            Text('Email or Apple id', style: th,),
+            const SizedBox(height: 8,),
+            TextField(),
+            const SizedBox(height: 20,),
+            Text('Phone', style: th,),
+            const SizedBox(height: 8,),
+            Row(children: [
+              SizedBox(
+                  height: 56,
+                  width: 75,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  )),
+              const SizedBox(width: 8,),
+              Expanded(child: TextField())]),
+            const SizedBox(height: 20,),
+            Text('Password', style: th,),
+            const SizedBox(height: 8,),
+            TextField(),
+            const SizedBox(height: 20,),
+            Text('Confirm Password', style: th,),
+            const SizedBox(height: 8,),
+            TextField(),
+            const SizedBox(height: 20,),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget countryCode(BuildContext context){
+    return DropdownButton<String>(items: items, onChanged: (){});
   }
 }
 

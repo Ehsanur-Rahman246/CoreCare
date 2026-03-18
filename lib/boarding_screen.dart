@@ -1,3 +1,4 @@
+import 'package:core_care/pages/sign_up_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -302,7 +303,7 @@ class _SignupPageState extends State<SignupPage> {
                   Container(color: Colors.purple),
                   Container(color: Colors.black),
                   Container(color: Colors.white),
-                  Container(color: Colors.cyan),
+                  SignupPageNine(),
                   Container(color: Colors.brown),
                 ],
               ),
