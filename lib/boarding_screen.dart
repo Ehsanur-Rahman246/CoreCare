@@ -51,7 +51,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                   });
                   for(int i=0;i<_lottieController.length;i++){
                     if(i == index){
-                      if(_lottieController[i].duration != Duration.zero){
+                      if(_lottieController[i].duration != null){
                         _lottieController[i].repeat();
                       }
                     }
@@ -94,7 +94,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                               controller: _lottieController[index],
                               onLoaded: (play){
                                 _lottieController[index].duration = play.duration;
-                                _lottieController[index].repeat();
+                                if(_controller.page?.round() == index){
+                                  _lottieController[index].repeat();
+                                }
                               }
                             ),
                           ),
