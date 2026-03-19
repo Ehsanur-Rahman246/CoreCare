@@ -27,6 +27,17 @@ class Emoji{
   static final Image stat = Image.asset('assets/emojis/muscle.png', width: logoSize, height: logoSize,);
   static final Image id = Image.asset('assets/emojis/technologist.png', width: logoSize, height: logoSize,);
 
+  static final Image page1 = Image.asset('assets/emojis/bust_in_silhouette.png', width: logoSize, height: logoSize,);
+  static final Image page2 = Image.asset('assets/emojis/stethoscope.png', width: logoSize, height: logoSize,);
+  static final Image page3 = Image.asset('assets/emojis/crescent_moon.png', width: logoSize, height: logoSize,);
+  static final Image page4 = Image.asset('assets/emojis/man-lifting-weights.png', width: logoSize, height: logoSize,);
+  static final Image page5 = Image.asset('assets/emojis/dart.png', width: logoSize, height: logoSize,);
+  static final Image page6 = Image.asset('assets/emojis/clock2.png', width: logoSize, height: logoSize,);
+  static final Image page7 = Image.asset('assets/emojis/knife_fork_plate.png', width: logoSize, height: logoSize,);
+  static final Image page8 = Image.asset('assets/emojis/no_entry_sign.png', width: logoSize, height: logoSize,);
+  static final Image page9 = Image.asset('assets/emojis/closed_lock_with_key.png', width: logoSize, height: logoSize,);
+  static final Image page10 = Image.asset('assets/emojis/bar_chart.png', width: logoSize, height: logoSize,);
+
   static final Image google = Image.asset('assets/logo/google.png', width: logoSize, height: logoSize,);
   static final Image apple = Image.asset('assets/logo/apple.png', width: logoSize, height: logoSize,);
 }

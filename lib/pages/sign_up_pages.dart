@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:core_care/decoration.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class SignupPageOne extends StatefulWidget {
   const SignupPageOne({super.key});
@@ -9,9 +10,265 @@ class SignupPageOne extends StatefulWidget {
 }
 
 class _SignupPageOneState extends State<SignupPageOne> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController heightController = TextEditingController();
+  final TextEditingController weightController = TextEditingController();
+
+  DateTime? selectedDate;
+  final TextEditingController dateController = TextEditingController();
+
+  Future<void> pickDate() async{
+    DateTime? picked = await showDatePicker(context: context,
+        initialDate: DateTime(2000),
+        firstDate: DateTime(1900),
+        lastDate: DateTime.now()
+    );
+
+    if(picked != null){
+      setState(() {
+        selectedDate = picked;
+        dateController.text = formattedDate(picked);
+      });
+    }
+  }
+
+  String formattedDate(DateTime date){
+    String day = date.day.toString().padLeft(2, '0');
+    String month = date.month.toString().padLeft(2, '0');
+    String year = date.year.toString();
+
+    return '$year-$month-$day';
+  }
+
+  int? genderSelected;
+  void selectGender(int g){
+    setState(() {
+      genderSelected = g;
+    });
+  }
+
+  bool isHeightUnitOne = true;
+  bool isWeightUnitOne = true;
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final ch = Theme.of(context).colorScheme;
+    final th = Theme.of(context).textTheme;
+    return SingleChildScrollView(
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,children: [
+        Row(
+          children: [
+            Emoji.page1,
+            const SizedBox(width: 10,),
+            Text('Let\'s Get to Know You', style: th.displaySmall,),
+          ],
+        ),
+        const SizedBox(height: 10,),
+        Text('A few details to set things up for you', style: th.labelMedium,),
+        const SizedBox(height: 20,),
+        TextField(
+          controller: nameController,
+          decoration: InputDecoration(
+            labelText: 'Name',
+            prefixIcon: Icon(Icons.person_rounded),
+          ),
+        ),
+        const SizedBox(height: 20,),
+        TextField(
+          controller: dateController,
+          readOnly: true,
+          decoration: InputDecoration(
+            labelText: 'Date of Birth',
+            prefixIcon: Icon(Icons.calendar_month_outlined),
+          ),
+          onTap: pickDate,
+        ),
+        const SizedBox(height: 20,),
+        Text('Gender'),
+        const SizedBox(height: 10,),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () =>  selectGender(1),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ch.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: genderSelected == 1 ? ch.primary : Colors.transparent),
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                      child: Column(
+                        children: [
+                          Icon(Icons.male_rounded),
+                          const SizedBox(height: 5,),
+                          Text('Male'),
+                          const SizedBox(height: 15,),
+                          genderSelected == 1 ?
+                          Icon(Icons.circle, color: ch.primary,) : Icon(Icons.circle_outlined),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 20,),
+            Expanded(
+                child: GestureDetector(
+                  onTap: () => selectGender(2),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: ch.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: genderSelected == 2 ? ch.primary : Colors.transparent),
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                        child: Column(
+                          children: [
+                            Icon(Icons.female_rounded),
+                            const SizedBox(height: 5,),
+                            Text('Female'),
+                            const SizedBox(height: 15,),
+                            genderSelected == 2 ?
+                            Icon(Icons.circle, color: ch.primary,) : Icon(Icons.circle_outlined),
+                          ],
+                        ),
+                      ),
+                    ),
+                              ),
+                ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20,),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: heightController,
+                decoration: InputDecoration(
+                  labelText: 'Height',
+                  prefixIcon: Icon(Icons.height_rounded),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10,),
+            GestureDetector(
+              onTap: (){
+                setState(() {
+                  isHeightUnitOne = true;
+                });
+              },
+              child: Container(
+                height: 56,
+                width: 70,
+                decoration: BoxDecoration(
+                  color: isHeightUnitOne ? ch.primary : ch.surface,
+                  borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
+                  border: Border(
+                    top: BorderSide(color: ch.primary),
+                    bottom: BorderSide(color: ch.primary),
+                    left: BorderSide(color: ch.primary),
+                    right: BorderSide.none,
+                  ),
+                ),
+                child: Center(child: Text('ft', style: TextStyle(color: !isHeightUnitOne ? ch.onSurface : ch.onPrimary, fontSize: 16, fontWeight: FontWeight.w600),)),
+              ),
+            ),
+            GestureDetector(
+              onTap: (){
+                setState(() {
+                  isHeightUnitOne = false;
+                });
+              },
+              child: Container(
+                height: 56,
+                width: 70,
+                decoration: BoxDecoration(
+                  color: !isHeightUnitOne ? ch.primary : ch.surface,
+                  borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
+                  border: Border(
+                    top: BorderSide(color: ch.primary),
+                    bottom: BorderSide(color: ch.primary),
+                    right: BorderSide(color: ch.primary),
+                    left: BorderSide.none,
+                  ),
+                ),
+                child: Center(child: Text('cm', style: TextStyle(color: isHeightUnitOne ? ch.onSurface : ch.onPrimary,  fontSize: 16, fontWeight: FontWeight.w600),)),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20,),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: weightController,
+                decoration: InputDecoration(
+                  labelText: 'Weight',
+                  prefixIcon: Icon(Symbols.weight_rounded),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10,),
+            GestureDetector(
+              onTap: (){
+                setState(() {
+                  isWeightUnitOne = true;
+                });
+              },
+              child: Container(
+                height: 56,
+                width: 70,
+                decoration: BoxDecoration(
+                  color: isWeightUnitOne ? ch.primary : ch.surface,
+                  borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
+                  border: Border(
+                    top: BorderSide(color: ch.primary),
+                    bottom: BorderSide(color: ch.primary),
+                    left: BorderSide(color: ch.primary),
+                    right: BorderSide.none,
+                  ),
+                ),
+                child: Center(child: Text('kg', style: TextStyle(color: !isWeightUnitOne ? ch.onSurface : ch.onPrimary, fontSize: 16, fontWeight: FontWeight.w600),)),
+              ),
+            ),
+            GestureDetector(
+              onTap: (){
+                setState(() {
+                  isWeightUnitOne = false;
+                });
+              },
+              child: Container(
+                height: 56,
+                width: 70,
+                decoration: BoxDecoration(
+                  color: !isWeightUnitOne ? ch.primary : ch.surface,
+                  borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
+                  border: Border(
+                    top: BorderSide(color: ch.primary),
+                    bottom: BorderSide(color: ch.primary),
+                    right: BorderSide(color: ch.primary),
+                    left: BorderSide.none,
+                  ),
+                ),
+                child: Center(child: Text('lb', style: TextStyle(color: isWeightUnitOne ? ch.onSurface : ch.onPrimary,  fontSize: 16, fontWeight: FontWeight.w600),)),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20,),
+      ],),
+      ),
+    );
   }
 }
 
@@ -25,7 +282,22 @@ class SignupPageTwo extends StatefulWidget {
 class _SignupPageTwoState extends State<SignupPageTwo> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SingleChildScrollView(
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+          Row(
+            children: [
+              Emoji.page2,
+              const SizedBox(width: 10,),
+              Text('Health Considerations', style: Theme.of(context).textTheme.displaySmall,),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Text('Share anything we should be aware of', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+        ],),
+      ),
+    );
   }
 }
 
@@ -39,7 +311,22 @@ class SignupPageThree extends StatefulWidget {
 class _SignupPageThreeState extends State<SignupPageThree> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SingleChildScrollView(
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+          Row(
+            children: [
+              Emoji.page3,
+              const SizedBox(width: 10,),
+              Text('Your Daily Routine', style: Theme.of(context).textTheme.displaySmall,),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Text('This helps match your plan to your lifestyle', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+        ],),
+      ),
+    );
   }
 }
 
@@ -53,7 +340,22 @@ class SignupPageFour extends StatefulWidget {
 class _SignupPageFourState extends State<SignupPageFour> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SingleChildScrollView(
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+          Row(
+            children: [
+              Emoji.page4,
+              const SizedBox(width: 10,),
+              Text('Your experience level', style: Theme.of(context).textTheme.displaySmall,),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Text('Tell us where you’re starting from.', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+        ],),
+      ),
+    );
   }
 }
 
@@ -67,7 +369,22 @@ class SignupPageFive extends StatefulWidget {
 class _SignupPageFiveState extends State<SignupPageFive> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SingleChildScrollView(
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+          Row(
+            children: [
+              Emoji.page5,
+              const SizedBox(width: 10,),
+              Text('What are you working toward?', style: Theme.of(context).textTheme.displaySmall,),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Text('We’ll use this to guide your plan', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+        ],),
+      ),
+    );
   }
 }
 
@@ -81,7 +398,22 @@ class SignupPageSix extends StatefulWidget {
 class _SignupPageSixState extends State<SignupPageSix> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SingleChildScrollView(
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+          Row(
+            children: [
+              Emoji.page6,
+              const SizedBox(width: 10,),
+              Text('How do you like to train?', style: Theme.of(context).textTheme.displaySmall,),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Text('Pick what fits your schedule and preferences', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+        ],),
+      ),
+    );
   }
 }
 
@@ -95,7 +427,22 @@ class SignupPageSeven extends StatefulWidget {
 class _SignupPageSevenState extends State<SignupPageSeven> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SingleChildScrollView(
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+          Row(
+            children: [
+              Emoji.page7,
+              const SizedBox(width: 10,),
+              Text('Your Eating Habits', style: Theme.of(context).textTheme.displaySmall,),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Text('Help us shape a plan that works for you', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+        ],),
+      ),
+    );
   }
 }
 
@@ -109,7 +456,22 @@ class SignupPageEight extends StatefulWidget {
 class _SignupPageEightState extends State<SignupPageEight> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SingleChildScrollView(
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+          Row(
+            children: [
+              Emoji.page8,
+              const SizedBox(width: 10,),
+              Text('Foods you want to Avoid', style: Theme.of(context).textTheme.displaySmall,),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Text('We’ll leave these out of your plan', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+        ],),
+      ),
+    );
   }
 }
 
@@ -135,12 +497,13 @@ class _SignupPageNineState extends State<SignupPageNine> {
           children: [
             Row(
               children: [
-                Emoji.id,
+                Emoji.page9,
+                const SizedBox(width: 10,),
                 Text('Create Your Account', style: Theme.of(context).textTheme.displaySmall,),
               ],
             ),
             const SizedBox(height: 10,),
-            Text('Add login details to secure progress and get started', style: Theme.of(context).textTheme.labelMedium,),
+            Text('Save your progress and access your plan anytime', style: Theme.of(context).textTheme.labelMedium,),
             const SizedBox(height: 20,),
             TextField(
               decoration: InputDecoration(
@@ -275,6 +638,21 @@ class SignupPageTen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SingleChildScrollView(
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+          Row(
+            children: [
+              Emoji.page10,
+              const SizedBox(width: 10,),
+              Text('Your Plan is Ready', style: Theme.of(context).textTheme.displaySmall,),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Text('Review your details and see your personalized setup', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+        ],),
+      ),
+    );
   }
 }
