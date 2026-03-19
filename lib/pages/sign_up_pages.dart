@@ -1,18 +1,55 @@
+import 'package:core_care/main.dart';
 import 'package:flutter/material.dart';
 import 'package:core_care/decoration.dart';
+import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+class SignupPageOneData{
+  String? name;
+  DateTime? dob;
+  int? gender;
+  double? height;
+  double? weight;
+  bool isHeightFt;
+  bool isWeightKg;
+
+  SignupPageOneData({
+    this.name,
+    this.dob,
+    this.gender,
+    this.height,
+    this.weight,
+    this.isHeightFt = true,
+    this.isWeightKg = true,
+});
+}
+
 class SignupPageOne extends StatefulWidget {
-  const SignupPageOne({super.key});
+  final SignupPageOneData data;
+  const SignupPageOne({super.key, required this.data});
 
   @override
   State<SignupPageOne> createState() => _SignupPageOneState();
 }
 
 class _SignupPageOneState extends State<SignupPageOne> {
+  late SignupPageOneData data;
+  String? nameError;
+  String? dobError;
+  String? genderError;
+  String? heightError;
+  String? weightError;
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
+
+  double? getHeight(){
+    return double.tryParse(heightController.text);
+  }
+  double? getWeight(){
+    return double.tryParse(weightController.text);
+  }
 
   DateTime? selectedDate;
   final TextEditingController dateController = TextEditingController();
@@ -50,6 +87,92 @@ class _SignupPageOneState extends State<SignupPageOne> {
   bool isHeightUnitOne = true;
   bool isWeightUnitOne = true;
 
+  bool validateInput(){
+    bool isValid = true;
+    setState(() {
+      if(nameController.text.isEmpty){
+        nameError = 'Name is required';
+        isValid = false;
+      }else{
+        nameError = null;
+      }
+
+      if(selectedDate == null){
+        dobError = 'Date of birth is required';
+        isValid = false;
+      }else{
+        dobError = null;
+      }
+
+      if(genderSelected == null){
+        genderError = 'Select gender';
+        isValid = false;
+      }else{
+        genderError = null;
+      }
+
+      final h = double.tryParse(heightController.text);
+      if(heightController.text.isEmpty){
+        heightError = 'Height is required';
+        isValid = false;
+      }else if(h == null || h <= 0){
+        heightError = 'Enter valid height';
+        isValid = false;
+      }else{
+        heightError = null;
+      }
+
+      final w = double.tryParse(weightController.text);
+      if(weightController.text.isEmpty){
+        weightError = 'Weight is required';
+        isValid = false;
+      }else if(w == null || w <= 0){
+        weightError = 'Enter valid weight';
+        isValid = false;
+      }else{
+        weightError = null;
+      }
+    });
+
+    return isValid;
+  }
+
+  void saveData(){
+    data.name = nameController.text.trim();
+    data.dob = selectedDate;
+    data.gender = genderSelected;
+    data.height = double.tryParse(heightController.text);
+    data.weight = double.tryParse(weightController.text);
+    data.isHeightFt = isHeightUnitOne;
+    data.isWeightKg = isWeightUnitOne;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    data = widget.data;
+
+    nameController.text = data.name ?? '';
+    heightController.text = data.height?.toString() ?? '';
+    weightController.text = data.weight?.toString() ?? '';
+    selectedDate = data.dob;
+    genderSelected = data.gender;
+    isHeightUnitOne = data.isHeightFt;
+    isWeightUnitOne = data.isWeightKg;
+    if(selectedDate != null){
+      dateController.text = formattedDate(selectedDate!);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
+    dateController.dispose();
+    heightController.dispose();
+    weightController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ch = Theme.of(context).colorScheme;
@@ -73,6 +196,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
           decoration: InputDecoration(
             labelText: 'Name',
             prefixIcon: Icon(Icons.person_rounded),
+            errorText: nameError,
           ),
         ),
         const SizedBox(height: 20,),
@@ -82,6 +206,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
           decoration: InputDecoration(
             labelText: 'Date of Birth',
             prefixIcon: Icon(Icons.calendar_month_outlined),
+            errorText: dobError,
           ),
           onTap: pickDate,
         ),
@@ -95,7 +220,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
                 onTap: () =>  selectGender(1),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: ch.surface,
+                    color: genderSelected != 1 ? ch.surface : CustomColors.primaryMuted(context),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: genderSelected == 1 ? ch.primary : Colors.transparent),
                   ),
@@ -123,7 +248,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
                   onTap: () => selectGender(2),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: ch.surface,
+                      color: genderSelected != 2 ? ch.surface : CustomColors.primaryMuted(context),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: genderSelected == 2 ? ch.primary : Colors.transparent),
                     ),
@@ -147,15 +272,33 @@ class _SignupPageOneState extends State<SignupPageOne> {
             ),
           ],
         ),
+        const SizedBox(height: 5,),
+        if(genderError != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Text(genderError!,
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                fontSize: 12,
+              ),
+            ),
+          ),
         const SizedBox(height: 20,),
         Row(
           children: [
             Expanded(
               child: TextField(
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'^\d*\.?\d{0,2}'),
+                  ),
+                ],
                 controller: heightController,
                 decoration: InputDecoration(
                   labelText: 'Height',
                   prefixIcon: Icon(Icons.height_rounded),
+                  errorText: heightError,
                 ),
               ),
             ),
@@ -211,10 +354,17 @@ class _SignupPageOneState extends State<SignupPageOne> {
           children: [
             Expanded(
               child: TextField(
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'^\d*\.?\d{0,2}'),
+                  ),
+                ],
                 controller: weightController,
                 decoration: InputDecoration(
                   labelText: 'Weight',
                   prefixIcon: Icon(Symbols.weight_rounded),
+                  errorText: weightError,
                 ),
               ),
             ),
@@ -272,8 +422,13 @@ class _SignupPageOneState extends State<SignupPageOne> {
   }
 }
 
+class SignupPageTwoData{
+
+}
+
 class SignupPageTwo extends StatefulWidget {
-  const SignupPageTwo({super.key});
+  final SignupPageTwoData data;
+  const SignupPageTwo({super.key, required this.data});
 
   @override
   State<SignupPageTwo> createState() => _SignupPageTwoState();

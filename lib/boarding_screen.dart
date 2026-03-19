@@ -214,6 +214,9 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  SignupPageOneData pageOne = SignupPageOneData();
+  SignupPageTwoData pageTwo = SignupPageTwoData();
+
   final PageController _pageController = PageController();
   final ScrollController _timelineController = ScrollController();
   int currentPage = 0;
@@ -297,8 +300,8 @@ class _SignupPageState extends State<SignupPage> {
                 },
 
                 children: [
-                  SignupPageOne(),
-                  SignupPageTwo(),
+                  SignupPageOne(data: pageOne,),
+                  SignupPageTwo(data: pageTwo,),
                   SignupPageThree(),
                   SignupPageFour(),
                   SignupPageFive(),

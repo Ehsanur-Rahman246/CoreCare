@@ -378,9 +378,10 @@ class CustomColors {
   static Color black(BuildContext context) =>
       _isDark(context) ? const Color(0xff000000) : Color(0xff080808);
 
-  static Color back(BuildContext context) => _isDark(context)
-      ? const Color(0xff000000).withValues(alpha: 0.6)
-      : Color(0xff000000).withValues(alpha: 0.4);
+  static Color primaryMuted(BuildContext context) => _isDark(context)
+      ? const Color(0xff2a3f3f)
+      : Color(0xffd1e6e6);
+
 }
 
 class ScreenState extends StatefulWidget {

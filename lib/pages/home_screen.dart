@@ -612,6 +612,7 @@ class _SettingsPageState extends State<SettingsPage> {
   late ThemeMode themeMode;
   late bool isNotificationsOn;
   String shownValue = 'English';
+  //bool isMetric = true;
 
   @override
   void initState() {
@@ -745,15 +746,83 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
             ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+            //   child: Card(
+            //     child: Padding(
+            //       padding: const EdgeInsets.symmetric(vertical: 5),
+            //       child: ListTile(
+            //         leading: Icon(Icons.language),
+            //         title: Text('Unit of measurement'),
+            //         subtitle: isMetric ? Text('kg, g, cm') : Text('lb, ft, oz'),
+            //         trailing: unitButton(context),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
     );
   }
+  
+  // Widget unitButton(BuildContext context){
+  //   final ch = Theme.of(context).colorScheme;
+  //   return Row(
+  //     children: [
+  //       GestureDetector(
+  //         onTap: (){
+  //           setState(() {
+  //             isMetric = true;
+  //           });
+  //         },
+  //         child: Container(
+  //           height: 46,
+  //           width: 70,
+  //           decoration: BoxDecoration(
+  //             color: isMetric ? ch.primary : ch.surface,
+  //             borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
+  //             border: Border(
+  //               top: BorderSide(color: ch.primary),
+  //               bottom: BorderSide(color: ch.primary),
+  //               left: BorderSide(color: ch.primary),
+  //               right: BorderSide.none,
+  //             ),
+  //           ),
+  //           child: Center(child: Text('Metric', style: TextStyle(color: !isMetric ? ch.onSurface : ch.onPrimary, fontSize: 16, fontWeight: FontWeight.w600),)),
+  //         ),
+  //       ),
+  //       GestureDetector(
+  //         onTap: (){
+  //           setState(() {
+  //             isMetric = false;
+  //           });
+  //         },
+  //         child: Container(
+  //           height: 46,
+  //           width: 70,
+  //           decoration: BoxDecoration(
+  //             color: !isMetric ? ch.primary : ch.surface,
+  //             borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
+  //             border: Border(
+  //               top: BorderSide(color: ch.primary),
+  //               bottom: BorderSide(color: ch.primary),
+  //               right: BorderSide(color: ch.primary),
+  //               left: BorderSide.none,
+  //             ),
+  //           ),
+  //           child: Center(child: Text('Imperial', style: TextStyle(color: isMetric ? ch.onSurface : ch.onPrimary,  fontSize: 16, fontWeight: FontWeight.w600),)),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget languageButton(BuildContext context) {
     return DropdownButtonHideUnderline(
       child: DropdownButton<String>(
+        borderRadius: BorderRadius.circular(10),
+        focusColor: Colors.transparent,
         style: Theme.of(context).textTheme.bodyMedium,
         elevation: 4,
         value: shownValue,
