@@ -612,7 +612,7 @@ class _SettingsPageState extends State<SettingsPage> {
   late ThemeMode themeMode;
   late bool isNotificationsOn;
   String shownValue = 'English';
-  //bool isMetric = true;
+  bool isMetric = true;
 
   @override
   void initState() {
@@ -634,189 +634,201 @@ class _SettingsPageState extends State<SettingsPage> {
     }
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.25,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.vertical(
-                      bottom: Radius.circular(20),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(20),
+                      ),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  child: Center(
-                    child: Text(
-                      "SETTINGS",
-                      style: Theme.of(context).textTheme.displayLarge,
+                    child: Center(
+                      child: Text(
+                        "SETTINGS",
+                        style: Theme.of(context).textTheme.displayLarge,
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: -45,
-                  child: Icon(
-                    Icons.settings_rounded,
-                    size: 100,
-                    color: Theme.of(context).colorScheme.primary,
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: -45,
+                    child: Icon(
+                      Icons.settings_rounded,
+                      size: 100,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
-                ),
-                Positioned(
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.chevron_left_rounded, size: 40),
+                  Positioned(
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.chevron_left_rounded, size: 40),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              child: Card(
-                child: ListTile(
-                  isThreeLine: true,
-                  leading: Icon(Icons.dark_mode_rounded),
-                  title: Text('Dark Mode'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      isDark ? Text('ON') : Text('OFF'),
-                      SizedBox(height: 8),
-                      Center(child: modeSelect(context)),
-                    ],
-                  ),
-                  subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                ),
+                ],
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              child: Card(
-                child: ListTile(
-                  leading: Icon(Icons.notifications_active),
-                  title: Text('Notifications'),
-                  subtitle: isNotificationsOn ? Text('ON') : Text('OFF'),
-                  subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                  trailing: Switch(
-                    value: isNotificationsOn,
-                    onChanged: (value) {
-                      setState(() {
-                        isNotificationsOn = value;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
+              const SizedBox(height: 50),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Card(
                   child: ListTile(
-                    leading: Icon(Icons.language),
-                    title: Text('Language'),
-                    trailing: languageButton(context),
+                    isThreeLine: true,
+                    leading: Icon(Icons.dark_mode_rounded),
+                    title: Text('Dark Mode'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        isDark ? Text('ON') : Text('OFF'),
+                        SizedBox(height: 8),
+                        Center(child: modeSelect(context)),
+                      ],
+                    ),
+                    subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              child: Card(
-                child: ListTile(
-                  leading: Icon(Icons.watch_later_outlined),
-                  title: Text('Time Format'),
-                  subtitle: hourFormat.is24Hour
-                      ? Text('24-hour')
-                      : Text('12-hour'),
-                  subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                  trailing: Switch(
-                    value: hourFormat.is24Hour,
-                    onChanged: (bool value) {
-                      hourFormat.toggleFormat();
-                    },
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Card(
+                  child: ListTile(
+                    leading: Icon(Icons.notifications_active),
+                    title: Text('Notifications'),
+                    subtitle: isNotificationsOn ? Text('ON') : Text('OFF'),
+                    subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                    trailing: Switch(
+                      value: isNotificationsOn,
+                      onChanged: (value) {
+                        setState(() {
+                          isNotificationsOn = value;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            //   child: Card(
-            //     child: Padding(
-            //       padding: const EdgeInsets.symmetric(vertical: 5),
-            //       child: ListTile(
-            //         leading: Icon(Icons.language),
-            //         title: Text('Unit of measurement'),
-            //         subtitle: isMetric ? Text('kg, g, cm') : Text('lb, ft, oz'),
-            //         trailing: unitButton(context),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: ListTile(
+                      leading: Icon(Icons.language),
+                      title: Text('Language'),
+                      trailing: languageButton(context),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Card(
+                  child: ListTile(
+                    leading: Icon(Icons.watch_later_outlined),
+                    title: Text('Time Format'),
+                    subtitle: hourFormat.is24Hour
+                        ? Text('24-hour')
+                        : Text('12-hour'),
+                    subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                    trailing: Switch(
+                      value: hourFormat.is24Hour,
+                      onChanged: (bool value) {
+                        hourFormat.toggleFormat();
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: ListTile(
+                      leading: Icon(Icons.square_foot_outlined),
+                      title: Text('Unit of measurement'),
+                      subtitle: isMetric ? Text('kg . g . cm') : Text('lb . ft . oz'),
+                      subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                      trailing: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: unitButton(context)),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
   
-  // Widget unitButton(BuildContext context){
-  //   final ch = Theme.of(context).colorScheme;
-  //   return Row(
-  //     children: [
-  //       GestureDetector(
-  //         onTap: (){
-  //           setState(() {
-  //             isMetric = true;
-  //           });
-  //         },
-  //         child: Container(
-  //           height: 46,
-  //           width: 70,
-  //           decoration: BoxDecoration(
-  //             color: isMetric ? ch.primary : ch.surface,
-  //             borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
-  //             border: Border(
-  //               top: BorderSide(color: ch.primary),
-  //               bottom: BorderSide(color: ch.primary),
-  //               left: BorderSide(color: ch.primary),
-  //               right: BorderSide.none,
-  //             ),
-  //           ),
-  //           child: Center(child: Text('Metric', style: TextStyle(color: !isMetric ? ch.onSurface : ch.onPrimary, fontSize: 16, fontWeight: FontWeight.w600),)),
-  //         ),
-  //       ),
-  //       GestureDetector(
-  //         onTap: (){
-  //           setState(() {
-  //             isMetric = false;
-  //           });
-  //         },
-  //         child: Container(
-  //           height: 46,
-  //           width: 70,
-  //           decoration: BoxDecoration(
-  //             color: !isMetric ? ch.primary : ch.surface,
-  //             borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
-  //             border: Border(
-  //               top: BorderSide(color: ch.primary),
-  //               bottom: BorderSide(color: ch.primary),
-  //               right: BorderSide(color: ch.primary),
-  //               left: BorderSide.none,
-  //             ),
-  //           ),
-  //           child: Center(child: Text('Imperial', style: TextStyle(color: isMetric ? ch.onSurface : ch.onPrimary,  fontSize: 16, fontWeight: FontWeight.w600),)),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
+  Widget unitButton(BuildContext context){
+    final ch = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        InkWell(
+          hoverColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          onTap: (){
+            setState(() {
+              isMetric = true;
+            });
+          },
+          child: Container(
+            height: 46,
+            width: 60,
+            decoration: BoxDecoration(
+              color: isMetric ? ch.primary : ch.surface,
+              borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
+              border: Border(
+                top: BorderSide(color: ch.primary),
+                bottom: BorderSide(color: ch.primary),
+                left: BorderSide(color: ch.primary),
+                right: BorderSide.none,
+              ),
+            ),
+            child: Center(child: Text('Metric', style: TextStyle(color: !isMetric ? ch.onSurface : ch.onPrimary, fontSize: 12, fontWeight: FontWeight.w400),)),
+          ),
+        ),
+        InkWell(
+          hoverColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          onTap: (){
+            setState(() {
+              isMetric = false;
+            });
+          },
+          child: Container(
+            height: 46,
+            width: 60,
+            decoration: BoxDecoration(
+              color: !isMetric ? ch.primary : ch.surface,
+              borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
+              border: Border(
+                top: BorderSide(color: ch.primary),
+                bottom: BorderSide(color: ch.primary),
+                right: BorderSide(color: ch.primary),
+                left: BorderSide.none,
+              ),
+            ),
+            child: Center(child: Text('Imperial', style: TextStyle(color: isMetric ? ch.onSurface : ch.onPrimary,  fontSize: 12, fontWeight: FontWeight.w400),)),
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget languageButton(BuildContext context) {
     return DropdownButtonHideUnderline(

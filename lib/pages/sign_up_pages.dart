@@ -1,4 +1,5 @@
 import 'package:core_care/main.dart';
+import 'package:core_care/tags.dart';
 import 'package:flutter/material.dart';
 import 'package:core_care/decoration.dart';
 import 'package:flutter/services.dart';
@@ -311,7 +312,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
               },
               child: Container(
                 height: 56,
-                width: 70,
+                width: 60,
                 decoration: BoxDecoration(
                   color: isHeightUnitOne ? ch.primary : ch.surface,
                   borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
@@ -333,7 +334,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
               },
               child: Container(
                 height: 56,
-                width: 70,
+                width: 60,
                 decoration: BoxDecoration(
                   color: !isHeightUnitOne ? ch.primary : ch.surface,
                   borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
@@ -377,7 +378,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
               },
               child: Container(
                 height: 56,
-                width: 70,
+                width: 60,
                 decoration: BoxDecoration(
                   color: isWeightUnitOne ? ch.primary : ch.surface,
                   borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
@@ -399,7 +400,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
               },
               child: Container(
                 height: 56,
-                width: 70,
+                width: 60,
                 decoration: BoxDecoration(
                   color: !isWeightUnitOne ? ch.primary : ch.surface,
                   borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
@@ -449,6 +450,38 @@ class _SignupPageTwoState extends State<SignupPageTwo> {
           ),
           const SizedBox(height: 10,),
           Text('Share anything we should be aware of', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+          Text('Select those which applies, tap next if none applies', style: Theme.of(context).textTheme.labelLarge,),
+          const SizedBox(height: 10,),
+          Row(children: [
+            Icon(Icons.medical_services_rounded),
+            const SizedBox(width: 10,),
+            Text('Medical Conditions'),
+          ],),
+          const SizedBox(height: 10,),
+          OutlinedButton(onPressed: (){}, child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.add),
+              const SizedBox(width: 8,),
+              Text('Add'),
+            ],
+          )),
+          const SizedBox(height: 20,),
+          Row(children: [
+            Icon(Icons.personal_injury_rounded),
+            const SizedBox(width: 10,),
+            Text('Current Injuries'),
+          ],),
+          const SizedBox(height: 10,),
+          OutlinedButton(onPressed: (){}, child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.add),
+              const SizedBox(width: 8,),
+              Text('Add'),
+            ],
+          )),
           const SizedBox(height: 20,),
         ],),
       ),
@@ -502,7 +535,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
             children: [
               Emoji.page4,
               const SizedBox(width: 10,),
-              Text('Your experience level', style: Theme.of(context).textTheme.displaySmall,),
+              Text('Your fitness experience', style: Theme.of(context).textTheme.displaySmall,),
             ],
           ),
           const SizedBox(height: 10,),
@@ -594,6 +627,36 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
           ),
           const SizedBox(height: 10,),
           Text('Help us shape a plan that works for you', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+          Row(children: [
+            Icon(Symbols.allergies_rounded),
+            const SizedBox(width: 10,),
+            Text('Your Allergies'),
+          ],),
+          const SizedBox(height: 10,),
+          OutlinedButton(onPressed: (){}, child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.add),
+              const SizedBox(width: 8,),
+              Text('Add'),
+            ],
+          )),
+          const SizedBox(height: 20,),
+          Row(children: [
+            Icon(Symbols.gastroenterology_rounded),
+            const SizedBox(width: 10,),
+            Text('Your Intolerances'),
+          ],),
+          const SizedBox(height: 10,),
+          OutlinedButton(onPressed: (){}, child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.add),
+              const SizedBox(width: 8,),
+              Text('Add'),
+            ],
+          )),
           const SizedBox(height: 20,),
         ],),
       ),
