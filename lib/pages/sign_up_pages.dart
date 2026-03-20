@@ -813,7 +813,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
       {'name': 'GER', 'code': '+49'},
       {'name': 'FRA', 'code': '+33'},
       {'name': 'UAE', 'code': '+971'},
-      {'name': 'SA', 'code': '+966'},
+      {'name': 'SAU', 'code': '+966'},
     ];
 
     return Center(
