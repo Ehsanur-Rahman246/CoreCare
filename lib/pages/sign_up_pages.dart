@@ -704,6 +704,8 @@ class _SignupPageNineState extends State<SignupPageNine> {
   bool isHiddenOne = true;
   bool isHiddenTwo = true;
   String selectedCode = 'BAN';
+  bool isGoogleConnected = true;
+  bool isAppleConnected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -732,9 +734,33 @@ class _SignupPageNineState extends State<SignupPageNine> {
             ),
             const SizedBox(height: 20,),
             TextField(
+              obscureText: isHiddenOne,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.email_outlined),
-                labelText: 'Email or Apple id'
+                prefixIcon: Icon(Icons.lock_outline_rounded),
+                labelText: 'Password',
+                helperText: '*At least 8 characters',
+                suffixIcon: IconButton(
+                  onPressed: (){
+                    setState(() {
+                      isHiddenOne = !isHiddenOne;
+                    });
+                  }, icon: isHiddenOne ? Icon(Icons.visibility_rounded) : Icon(Icons.visibility_off_rounded),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20,),
+            TextField(
+              obscureText: isHiddenTwo,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.lock_clock_outlined),
+                labelText: 'Confirm Password',
+                suffixIcon: IconButton(
+                  onPressed: (){
+                    setState(() {
+                      isHiddenTwo = !isHiddenTwo;
+                    });
+                  }, icon: isHiddenTwo ? Icon(Icons.visibility_rounded) : Icon(Icons.visibility_off_rounded),
+                ),
               ),
             ),
             const SizedBox(height: 20,),
@@ -766,36 +792,41 @@ class _SignupPageNineState extends State<SignupPageNine> {
               ),
             ),
             const SizedBox(height: 20,),
-            TextField(
-              obscureText: isHiddenOne,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock_outline_rounded),
-                labelText: 'Password',
-                helperText: '*At least 8 characters',
-                suffixIcon: IconButton(
-                  onPressed: (){
-                    setState(() {
-                      isHiddenOne = !isHiddenOne;
-                    });
-                  }, icon: isHiddenOne ? Icon(Icons.visibility_rounded) : Icon(Icons.visibility_off_rounded),
+            Text('Link with your Google or Apple id'),
+            const SizedBox(height: 10,),
+            FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  foregroundColor: Theme.of(context).colorScheme.onSurface
                 ),
-              ),
-            ),
+                onPressed: (){}, child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Row(
+                  children: [
+                   Emoji.google,
+                    Expanded(child: Center(child: Text('Connect with Google', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
+                    isGoogleConnected ?
+                    Icon(Icons.check_circle_outline, size: 24, color: CustomColors.greenPrimary(context),) : const SizedBox(height: 24, width: 24,),
+                  ],
+                ),
+            )),
             const SizedBox(height: 20,),
-            TextField(
-              obscureText: isHiddenTwo,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock_clock_outlined),
-                labelText: 'Confirm Password',
-                  suffixIcon: IconButton(
-                      onPressed: (){
-                        setState(() {
-                          isHiddenTwo = !isHiddenTwo;
-                        });
-                      }, icon: isHiddenTwo ? Icon(Icons.visibility_rounded) : Icon(Icons.visibility_off_rounded),
-                  ),
-              ),
-            ),
+            FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  foregroundColor: Theme.of(context).colorScheme.onSurface
+                ),
+                onPressed: (){}, child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Row(
+                  children: [
+                    Emoji.apple,
+                    Expanded(child: Center(child: Text('Connect with Apple', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
+                    isAppleConnected ?
+                    Icon(Icons.check_circle_outline, size: 24, color: CustomColors.greenPrimary(context),) : const SizedBox(height: 24, width: 24,),
+                  ],
+                ),
+            )),
             const SizedBox(height: 20,),
           ],
         ),
