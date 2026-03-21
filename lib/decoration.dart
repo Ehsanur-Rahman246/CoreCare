@@ -40,4 +40,16 @@ class Emoji{
 
   static final Image google = Image.asset('assets/logo/google.png', width: logoSize, height: logoSize,);
   static final Image apple = Image.asset('assets/logo/apple.png', width: logoSize, height: logoSize,);
+
+  static final Image o1 = Image.asset('assets/emojis/chair.png', width: logoSize, height: logoSize,);
+  static final Image o2 = Image.asset('assets/emojis/walking.png', width: logoSize, height: logoSize,);
+  static final Image o3 = Image.asset('assets/emojis/runner.png', width: logoSize, height: logoSize,);
+
+  static final Image a1 = Image.asset('assets/emojis/chair.png', width: logoSize, height: logoSize,);
+  static final Image a2 = Image.asset('assets/emojis/walking.png', width: logoSize, height: logoSize,);
+  static final Image a3 = Image.asset('assets/emojis/runner.png', width: logoSize, height: logoSize,);
+
+  static final Image f1 = Image.asset('assets/emojis/chair.png', width: logoSize, height: logoSize,);
+  static final Image f2 = Image.asset('assets/emojis/walking.png', width: logoSize, height: logoSize,);
+  static final Image f3 = Image.asset('assets/emojis/runner.png', width: logoSize, height: logoSize,);
 }

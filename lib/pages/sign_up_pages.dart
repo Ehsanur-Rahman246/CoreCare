@@ -497,8 +497,15 @@ class SignupPageThree extends StatefulWidget {
 }
 
 class _SignupPageThreeState extends State<SignupPageThree> {
+  int selectedWork = -1;
+  int selectedActive = -1;
+  int selectedSleep = -1;
+  
   @override
   Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
@@ -506,11 +513,275 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             children: [
               Emoji.page3,
               const SizedBox(width: 10,),
-              Text('Your Daily Routine', style: Theme.of(context).textTheme.displaySmall,),
+              Text('Your Daily Routine', style: th.displaySmall,),
             ],
           ),
           const SizedBox(height: 10,),
-          Text('This helps match your plan to your lifestyle', style: Theme.of(context).textTheme.labelMedium,),
+          Text('This helps match your plan to your lifestyle', style: th.labelMedium,),
+          const SizedBox(height: 20,),
+          Text('Work / Occupation type'),
+          const SizedBox(height: 5,),
+          Text('What is your everyday work?', style: th.labelSmall,),
+          const SizedBox(height: 5,),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                selectedWork = 0;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                color: selectedWork != 0 ? ch.surface : CustomColors.primaryMuted(context),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: selectedWork == 0 ? ch.primary : Colors.transparent)
+              ),
+              child: ListTile(
+                leading: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: ch.tertiary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),child: Emoji.o1,
+                ),
+                title: Text('Sedentary'),
+                subtitle: Text('desk job . student . driver'),
+                subtitleTextStyle: th.labelMedium,
+                trailing: selectedWork == 0 ? Icon(Icons.check) : SizedBox(),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                selectedWork = 1;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                  color: selectedWork != 1 ? ch.surface : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: selectedWork == 1 ? ch.primary : Colors.transparent)
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: ch.tertiary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),child: Emoji.o2,
+                ),
+                title: Text('Moderately Active'),
+                subtitle: Text('teacher . retail worker . nurse'),
+                subtitleTextStyle: th.labelMedium,
+                trailing: selectedWork == 1 ? Icon(Icons.check) : SizedBox(),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                selectedWork = 2;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                  color: selectedWork != 2 ? ch.surface : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: selectedWork == 2 ? ch.primary : Colors.transparent)
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: ch.tertiary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),child: Emoji.o3,
+                ),
+                title: Text('Physically Active'),
+                subtitle: Text('construction worker . farmer . athlete'),
+                subtitleTextStyle: th.labelMedium,
+                trailing: selectedWork == 2 ? Icon(Icons.check) : SizedBox(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20,),
+          Text('Daily activity level'),
+          const SizedBox(height: 5,),
+          Text('How often do you exercise?', style: th.labelSmall,),
+          const SizedBox(height: 5,),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                selectedActive = 0;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                  color: selectedActive != 0 ? ch.surface : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: selectedActive == 0 ? ch.primary : Colors.transparent)
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: ch.tertiary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),child: Emoji.a1,
+                ),
+                title: Text('Low'),
+                subtitle: Text('rarely'),
+                subtitleTextStyle: th.labelMedium,
+                trailing: selectedActive == 0 ? Icon(Icons.check) : SizedBox(),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                selectedActive = 1;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                  color: selectedActive != 1 ? ch.surface : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: selectedActive == 1 ? ch.primary : Colors.transparent)
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: ch.tertiary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),child: Emoji.a2,
+                ),
+                title: Text('Moderate'),
+                subtitle: Text('2-4 days/week'),
+                subtitleTextStyle: th.labelMedium,
+                trailing: selectedActive == 1 ? Icon(Icons.check) : SizedBox(),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                selectedActive = 2;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                  color: selectedActive != 2 ? ch.surface : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: selectedActive == 2 ? ch.primary : Colors.transparent)
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: ch.tertiary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),child: Emoji.a3,
+                ),
+                title: Text('High'),
+                subtitle: Text('5-7 days/week'),
+                subtitleTextStyle: th.labelMedium,
+                trailing: selectedActive == 2 ? Icon(Icons.check) : SizedBox(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20,),
+          Text('Sleep Pattern'),
+          const SizedBox(height: 5,),
+          Text('How much sleep do you get everyday?', style: th.labelSmall,),
+          const SizedBox(height: 10,),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    selectedSleep = 0;
+                  });
+                },
+                child: Container(
+                  height: 70,
+                  width: (MediaQuery.of(context).size.width - 80) / 4,
+                  decoration: BoxDecoration(
+                      color: selectedSleep != 0 ? ch.surface : CustomColors.primaryMuted(context),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: selectedSleep == 0 ? ch.primary : Colors.transparent)
+                  ),
+                  child: Center(child: Text('< 5h')),
+                ),
+              ),
+              const SizedBox(width: 10,),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    selectedSleep = 1;
+                  });
+                },
+                child: Container(
+                  height: 70,
+                  width: (MediaQuery.of(context).size.width - 80) / 4,
+                  decoration: BoxDecoration(
+                      color: selectedSleep != 1 ? ch.surface : CustomColors.primaryMuted(context),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: selectedSleep == 1 ? ch.primary : Colors.transparent)
+                  ),
+                  child: Center(child: Text('5 - 7h')),
+                ),
+              ),
+              const SizedBox(width: 10,),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    selectedSleep = 2;
+                  });
+                },
+                child: Container(
+                  height: 70,
+                  width: (MediaQuery.of(context).size.width - 80) / 4,
+                  decoration: BoxDecoration(
+                      color: selectedSleep != 2 ? ch.surface : CustomColors.primaryMuted(context),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: selectedSleep == 2 ? ch.primary : Colors.transparent)
+                  ),
+                  child: Center(child: Text('7 - 9h')),
+                ),
+              ),
+              const SizedBox(width: 10,),
+              GestureDetector(
+                onTap: (){
+                  setState(() {
+                    selectedSleep = 3;
+                  });
+                },
+                child: Container(
+                  height: 70,
+                  width: (MediaQuery.of(context).size.width - 80) / 4,
+                  decoration: BoxDecoration(
+                      color: selectedSleep != 3 ? ch.surface : CustomColors.primaryMuted(context),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: selectedSleep == 3 ? ch.primary : Colors.transparent)
+                  ),
+                  child: Center(child: Text('9h +')),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 20,),
         ],),
       ),
@@ -528,6 +799,9 @@ class SignupPageFour extends StatefulWidget {
 class _SignupPageFourState extends State<SignupPageFour> {
   @override
   Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
@@ -535,11 +809,11 @@ class _SignupPageFourState extends State<SignupPageFour> {
             children: [
               Emoji.page4,
               const SizedBox(width: 10,),
-              Text('Your fitness experience', style: Theme.of(context).textTheme.displaySmall,),
+              Text('Your fitness experience', style: th.displaySmall,),
             ],
           ),
           const SizedBox(height: 10,),
-          Text('Tell us where you’re starting from.', style: Theme.of(context).textTheme.labelMedium,),
+          Text('Tell us where you’re starting from.', style: th.labelMedium,),
           const SizedBox(height: 20,),
         ],),
       ),
