@@ -12,7 +12,8 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> with TickerProviderStateMixin{
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with TickerProviderStateMixin {
   final PageController _controller = PageController();
   bool onLastPage = false;
   late final List<AnimationController> _lottieController;
@@ -20,13 +21,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
   @override
   void initState() {
     super.initState();
-    _lottieController = List.generate(4, (_) => AnimationController(vsync: this));
+    _lottieController = List.generate(
+      4,
+      (_) => AnimationController(vsync: this),
+    );
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    for(final c in _lottieController){
+    for (final c in _lottieController) {
       c.dispose();
     }
     super.dispose();
@@ -49,19 +53,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                   setState(() {
                     onLastPage = (index == 3);
                   });
-                  for(int i=0;i<_lottieController.length;i++){
-                    if(i == index){
-                      if(_lottieController[i].duration != null){
+                  for (int i = 0; i < _lottieController.length; i++) {
+                    if (i == index) {
+                      if (_lottieController[i].duration != null) {
                         _lottieController[i].repeat();
                       }
-                    }
-                    else{
+                    } else {
                       _lottieController[i].stop();
                     }
                   }
                 },
                 controller: _controller,
-                children: List.generate(4, (index){
+                children: List.generate(4, (index) {
                   final lottie = [
                     'assets/logo/sc1.json',
                     'assets/logo/sc2.json',
@@ -80,8 +83,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                     'Personalized advice and motivation—your commitment makes it work.',
                     'Build habits, celebrate milestones, and watch your progress grow.',
                   ];
-                  return  Center(
+                  return Center(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         SizedBox(
@@ -92,19 +97,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                             child: Lottie.asset(
                               lottie[index],
                               controller: _lottieController[index],
-                              onLoaded: (play){
-                                _lottieController[index].duration = play.duration;
-                                if(_controller.page?.round() == index){
+                              onLoaded: (play) {
+                                _lottieController[index].duration =
+                                    play.duration;
+                                if (_controller.page?.round() == index) {
                                   _lottieController[index].repeat();
                                 }
-                              }
+                              },
                             ),
                           ),
                         ),
                         const SizedBox(height: 20),
-                        Text(
-                          title[index],
-                          style: Theme.of(context).textTheme.displayLarge,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25),
+                          child: Text(
+                                title[index],
+                                style: Theme.of(context).textTheme.displayLarge,
+                            textAlign: TextAlign.center,
+                              ),
                         ),
                         const SizedBox(height: 8),
                         Padding(
@@ -157,11 +167,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
               alignment: Alignment(0, 0.77),
               child: onLastPage
                   ? FilledButton(
-                style: FilledButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
-                ),
+                      style: FilledButton.styleFrom(
+                        minimumSize: Size(double.infinity, 50),
+                      ),
                       onPressed: () {
-                        for(final c in _lottieController){
+                        for (final c in _lottieController) {
                           c.stop();
                         }
                         Navigator.pushReplacementNamed(context, '/signup');
@@ -169,9 +179,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
                       child: Text('Get Started'),
                     )
                   : FilledButton(
-                style: FilledButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
-                ),
+                      style: FilledButton.styleFrom(
+                        minimumSize: Size(double.infinity, 50),
+                      ),
                       onPressed: () {
                         _controller.nextPage(
                           duration: const Duration(milliseconds: 500),
@@ -186,11 +196,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
               alignment: Alignment(0, 0.95),
               child: onLastPage
                   ? OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
-                ),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: Size(double.infinity, 50),
+                      ),
                       onPressed: () {
-                        for(final c in _lottieController){
+                        for (final c in _lottieController) {
                           c.stop();
                         }
                         Navigator.pushReplacementNamed(context, '/auth');
@@ -249,23 +259,35 @@ class _SignupPageState extends State<SignupPage> {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 20,),
+            const SizedBox(height: 20),
             Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-              if(currentPage == 0)
-                const SizedBox(height: 40, width: 40,)
-              else
-              Padding(
-                padding: const EdgeInsetsGeometry.only(left: 10),
-                child: IconButton(onPressed: (){
-                    _pageController.previousPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                }, icon: Icon(Icons.chevron_left)),
-              ),
-              Expanded(child: Center(child: Text("Step ${currentPage+1} out of $_totalSteps", style: Theme.of(context).textTheme.labelMedium,)))]),
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (currentPage == 0)
+                  const SizedBox(height: 40, width: 40)
+                else
+                  Padding(
+                    padding: const EdgeInsetsGeometry.only(left: 10),
+                    child: IconButton(
+                      onPressed: () {
+                        _pageController.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      icon: Icon(Icons.chevron_left),
+                    ),
+                  ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      "Step ${currentPage + 1} out of $_totalSteps",
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             SizedBox(
               height: 60,
               child: SingleChildScrollView(
@@ -300,8 +322,8 @@ class _SignupPageState extends State<SignupPage> {
                 },
 
                 children: [
-                  SignupPageOne(data: pageOne,),
-                  SignupPageTwo(data: pageTwo,),
+                  SignupPageOne(data: pageOne),
+                  SignupPageTwo(data: pageTwo),
                   SignupPageThree(),
                   SignupPageFour(),
                   SignupPageFive(),
@@ -320,7 +342,11 @@ class _SignupPageState extends State<SignupPage> {
                   minimumSize: Size(double.infinity, 50),
                 ),
                 child: Text(
-                  currentPage == _totalSteps - 2 ? "Finish Setup" : currentPage == _totalSteps - 1 ? "Go to dashboard" : "Next",
+                  currentPage == _totalSteps - 2
+                      ? "Finish Setup"
+                      : currentPage == _totalSteps - 1
+                      ? "Go to dashboard"
+                      : "Next",
                 ),
                 onPressed: () {
                   if (currentPage < _totalSteps - 1) {
@@ -382,4 +408,3 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 }
-

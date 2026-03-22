@@ -464,7 +464,7 @@ class _SignupPageTwoState extends State<SignupPageTwo> {
             children: [
               Icon(Icons.add),
               const SizedBox(width: 8,),
-              Text('Add'),
+              Text('Other'),
             ],
           )),
           const SizedBox(height: 20,),
@@ -479,7 +479,7 @@ class _SignupPageTwoState extends State<SignupPageTwo> {
             children: [
               Icon(Icons.add),
               const SizedBox(width: 8,),
-              Text('Add'),
+              Text('Other'),
             ],
           )),
           const SizedBox(height: 20,),
@@ -797,6 +797,9 @@ class SignupPageFour extends StatefulWidget {
 }
 
 class _SignupPageFourState extends State<SignupPageFour> {
+  int selectedFit = -1;
+  bool selectionFinal = false;
+
   @override
   Widget build(BuildContext context) {
     final th = Theme.of(context).textTheme;
@@ -815,6 +818,103 @@ class _SignupPageFourState extends State<SignupPageFour> {
           const SizedBox(height: 10,),
           Text('Tell us where you’re starting from.', style: th.labelMedium,),
           const SizedBox(height: 20,),
+          Text('Fitness Level'),
+          const SizedBox(height: 5,),
+          Text('What is your current fitness ability?', style: th.labelSmall,),
+          const SizedBox(height: 5,),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                selectedFit = 0;
+                selectionFinal = true;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                  color: selectedFit != 0 ? ch.surface : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: selectedFit == 0 ? ch.primary : Colors.transparent)
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: ch.tertiary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),child: Emoji.o1,
+                ),
+                title: Text('Beginner'),
+                subtitle: Text('new to exercise'),
+                subtitleTextStyle: th.labelMedium,
+                trailing: selectedFit == 0 ? Icon(Icons.check) : SizedBox(),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                selectedFit = 1;
+                selectionFinal = true;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                  color: selectedFit != 1 ? ch.surface : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: selectedFit == 1 ? ch.primary : Colors.transparent)
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: ch.tertiary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),child: Emoji.o2,
+                ),
+                title: Text('Intermediate'),
+                subtitle: Text('Regular workouts'),
+                subtitleTextStyle: th.labelMedium,
+                trailing: selectedFit == 1 ? Icon(Icons.check) : SizedBox(),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                selectedFit = 2;
+                selectionFinal = true;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                  color: selectedFit != 2 ? ch.surface : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: selectedFit == 2 ? ch.primary : Colors.transparent)
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: ch.tertiary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),child: Emoji.o3,
+                ),
+                title: Text('Advanced'),
+                subtitle: Text('Intense training'),
+                subtitleTextStyle: th.labelMedium,
+                trailing: selectedFit == 2 ? Icon(Icons.check) : SizedBox(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20,),
+          if(selectionFinal)
+            Text('Based on your data, we recommend you to choose this goal. Go to next page to choose.'),
         ],),
       ),
     );
@@ -829,8 +929,21 @@ class SignupPageFive extends StatefulWidget {
 }
 
 class _SignupPageFiveState extends State<SignupPageFive> {
+  int selectedFund = -1;
+  bool hasFundSelected = false;
+  bool isRecommended = false;
+
+  void selectFund (int f){
+    setState(() {
+      selectedFund = f;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
@@ -838,13 +951,85 @@ class _SignupPageFiveState extends State<SignupPageFive> {
             children: [
               Emoji.page5,
               const SizedBox(width: 10,),
-              Text('What are you working toward?', style: Theme.of(context).textTheme.displaySmall,),
+              Column(children: [Text('What are your goals?', style: th.displaySmall,)]),
             ],
           ),
           const SizedBox(height: 10,),
-          Text('We’ll use this to guide your plan', style: Theme.of(context).textTheme.labelMedium,),
+          Text('We’ll use this to guide your plan', style: th.labelMedium,),
           const SizedBox(height: 20,),
+          Text('Focus Area'),
+          const SizedBox(height: 5,),
+          Text('Select your starting point', style: th.labelSmall,),
+          const SizedBox(height: 10,),
+          Row(
+            children: [
+              Expanded(child: selectFundamental(context, 0, Emoji.fund1, 'Energy & Fuel')),
+              const SizedBox(width: 10,),
+              Expanded(child: selectFundamental(context, 1, Emoji.fund2, 'Strength & build')),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            children: [
+              Expanded(child: selectFundamental(context, 2, Emoji.fund3, 'Mobility & ease')),
+              const SizedBox(width: 10,),
+              Expanded(child: selectFundamental(context, 3, Emoji.fund4, 'Stability & control')),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+            children: [
+              Expanded(child: selectFundamental(context, 4, Emoji.fund5, ' Composition & vitals')),
+              const SizedBox(width: 10,),
+              Expanded(child: selectFundamental(context, 5, Emoji.fund6, 'Function & posture')),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Row(
+              children: [selectFundamental(context, 6, Emoji.fund7, 'Growth & adaptation '),
+                Expanded(child: const SizedBox(),),
+              ],
+          ),
+          const SizedBox(height: 20,),
+          if(hasFundSelected)
+          Text('Now choose your goal'),
+          const SizedBox(height: 10,),
         ],),
+      ),
+    );
+  }
+
+  Widget selectFundamental(BuildContext context, int select, Image icon, String label){
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: () {
+        selectFund(select);
+        hasFundSelected = true;
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: selectedFund != select ? ch.surface : CustomColors.primaryMuted(context),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: selectedFund == select ? ch.primary : Colors.transparent),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                icon,
+                const SizedBox(height: 5,),
+                Text(label, style: th.labelMedium,),
+                const SizedBox(height: 15,),
+                selectedFund == select ?
+                Icon(Icons.circle, color: ch.primary,) : Icon(Icons.circle_outlined),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -858,6 +1043,14 @@ class SignupPageSix extends StatefulWidget {
 }
 
 class _SignupPageSixState extends State<SignupPageSix> {
+  int? styleSelected;
+  int? equipSelected;
+  int? placeSelected;
+  int? daySelected;
+  int? timeSelected;
+  int? durationSelected;
+  int? freeSelected;
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -873,8 +1066,216 @@ class _SignupPageSixState extends State<SignupPageSix> {
           const SizedBox(height: 10,),
           Text('Pick what fits your schedule and preferences', style: Theme.of(context).textTheme.labelMedium,),
           const SizedBox(height: 20,),
+          Text('Training Style Preference'),
+          Wrap(
+            spacing: 10,
+            children: [
+              trainingStyle('Strength Training', Emoji.o1, 0),
+              trainingStyle('Cardio', Emoji.o1, 1),
+              trainingStyle('HIIT', Emoji.o1, 2),
+              trainingStyle('Yoga & Stretching', Emoji.o1, 3),
+              trainingStyle('Pilates', Emoji.o1, 4),
+              trainingStyle('Calisthenics', Emoji.o1, 5),
+              trainingStyle('Sports & Athletics', Emoji.o1, 6),
+              trainingStyle('Functional Training', Emoji.o1, 7),
+              trainingStyle('Low Impact', Emoji.o1, 8),
+              trainingStyle('Any', Emoji.o1, 9),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Text('Equipment Access'),
+          Wrap(
+            spacing: 10,
+            children: [
+              ChoiceChip(
+                label: Text('None'),
+                showCheckmark: false,
+                avatar: Emoji.o1,
+                selected: equipSelected == 0,
+                onSelected: (selected){
+                  setState(() {
+                    equipSelected = selected ? 0 : null;
+                  });
+                },
+              ),
+              ChoiceChip(
+                label: Text('Minimal'),
+                showCheckmark: false,
+                avatar: Emoji.o1,
+                selected: equipSelected == 1,
+                onSelected: (selected){
+                  setState(() {
+                    equipSelected = selected ? 1 : null;
+                  });
+                },
+              ),
+              ChoiceChip(
+                label: Text('Full Gym'),
+                showCheckmark: false,
+                avatar: Emoji.o1,
+                selected: equipSelected == 2,
+                onSelected: (selected){
+                  setState(() {
+                    equipSelected = selected ? 2 : null;
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Text('Location Preference'),
+          Wrap(
+            spacing: 10,
+            children: [
+              ChoiceChip(
+                label: Text('Home'),
+                showCheckmark: false,
+                avatar: Emoji.o1,
+                selected: placeSelected == 0,
+                onSelected: (selected){
+                  setState(() {
+                    placeSelected = selected ? 0 : null;
+                  });
+                },
+              ),
+              ChoiceChip(
+                label: Text('Gym'),
+                showCheckmark: false,
+                avatar: Emoji.o1,
+                selected: placeSelected == 1,
+                onSelected: (selected){
+                  setState(() {
+                    placeSelected = selected ? 1 : null;
+                  });
+                },
+              ),
+              ChoiceChip(
+                label: Text('Outdoors'),
+                showCheckmark: false,
+                avatar: Emoji.o1,
+                selected: placeSelected == 2,
+                onSelected: (selected){
+                  setState(() {
+                    placeSelected = selected ? 2 : null;
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Text('Workout days per week'),
+          const SizedBox(height: 5,),
+          Wrap(
+            spacing: 10,
+            children: [
+              dayChip('2', 0),
+              dayChip('3', 1),
+              dayChip('4', 2),
+              dayChip('5', 3),
+              dayChip('6', 4),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Text('Session Time'),
+          const SizedBox(height: 5,),
+          Wrap(
+            spacing: 10,
+            children: [
+              timeChip('15-30 min', 0),
+              timeChip('30-45 min', 1),
+              timeChip('45-60 min', 2),
+              timeChip('60+ min', 3),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Text('Session Duration'),
+          const SizedBox(height: 5,),
+          Wrap(
+            spacing: 10,
+            children: [
+              sessionChip('Early Morning', Emoji.s1, 0),
+              sessionChip('Late Morning', Emoji.s2, 1),
+              sessionChip('Afternoon', Emoji.s3, 2),
+              sessionChip('Evening', Emoji.s4, 3),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          Text('Your Free Days'),
+          const SizedBox(height: 5,),
+          Wrap(
+            spacing: 10,
+            children: [
+              freeChip('Son', 0),
+              freeChip('Mon', 1),
+              freeChip('Tue', 2),
+              freeChip('Wed', 3),
+              freeChip('Thu', 4),
+              freeChip('Fri', 5),
+              freeChip('Sat', 6),
+            ],
+          ),
         ],),
       ),
+    );
+  }
+
+  Widget trainingStyle(String label, Image avatar, int value){
+    return ChoiceChip(
+        label: Text(label),
+        showCheckmark: false,
+        avatar: avatar,
+        selected: styleSelected == value,
+      onSelected: (selected){
+          setState(() {
+            styleSelected = selected ? value : null;
+          });
+      },
+    );
+  }
+  Widget dayChip(String label, int value){
+    return ChoiceChip(
+      label: Text(label),
+      selected: daySelected == value,
+      onSelected: (selected){
+        setState(() {
+          daySelected = selected ? value : null;
+        });
+      },
+    );
+  }
+  Widget timeChip(String label, int value){
+    return ChoiceChip(
+      label: Text(label),
+      selected: timeSelected == value,
+      onSelected: (selected){
+        setState(() {
+          timeSelected = selected ? value : null;
+        });
+      },
+    );
+  }
+  Widget sessionChip(String label, Image avatar, int value){
+    return ChoiceChip(
+      showCheckmark: false,
+      label: Text(label),
+      avatar: avatar,
+      selected: durationSelected == value,
+      onSelected: (selected){
+        setState(() {
+          durationSelected = selected ? value : null;
+        });
+      },
+    );
+  }
+  Widget freeChip(String label, int value){
+    return ChoiceChip(
+      label: Text(label),
+      selected: freeSelected == value,
+      onSelected: (selected){
+        setState(() {
+          freeSelected = selected ? value : null;
+        });
+      },
     );
   }
 }
@@ -887,8 +1288,15 @@ class SignupPageSeven extends StatefulWidget {
 }
 
 class _SignupPageSevenState extends State<SignupPageSeven> {
+  int? meal;
+  int? diet;
+  int? region;
+  bool isHalal = false;
+
   @override
   Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
@@ -902,6 +1310,95 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
           const SizedBox(height: 10,),
           Text('Help us shape a plan that works for you', style: Theme.of(context).textTheme.labelMedium,),
           const SizedBox(height: 20,),
+          Text('Meals per day'),
+          Wrap(
+            spacing: 10,
+            children: [
+              ChoiceChip(
+                label: Text('2'),
+                selected: meal == 0,
+                onSelected: (selected){
+                  setState(() {
+                    meal = selected ? 0 : null;
+                  });
+                },
+              ),
+              ChoiceChip(
+                label: Text('3'),
+                selected: meal == 1,
+                onSelected: (selected){
+                  setState(() {
+                    meal = selected ? 1 : null;
+                  });
+                },
+              ),
+              ChoiceChip(
+                label: Text('4'),
+                selected: meal == 2,
+                onSelected: (selected){
+                  setState(() {
+                    meal = selected ? 2 : null;
+                  });
+                },
+              ),
+              ChoiceChip(
+                label: Text('5+'),
+                selected: meal == 3,
+                onSelected: (selected){
+                  setState(() {
+                    meal = selected ? 3 : null;
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 10,),
+          Text('Your Diet Preference'),
+          const SizedBox(height: 5,),
+          Wrap(
+            spacing: 10,
+            children: [
+              dietChip('Omnivore', Emoji.omni, 0),
+              dietChip('Vegetarian', Emoji.veg, 1),
+              dietChip('Vegan', Emoji.vegan, 2),
+              dietChip('Pescatarian', Emoji.fish, 3),
+              dietChip('Paleo', Emoji.paleo, 4),
+              dietChip('Keto', Emoji.keto, 5),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          CheckboxListTile(
+              controlAffinity: ListTileControlAffinity.leading,
+              title: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [Text('Halal'), const SizedBox(width: 10,), Icon(Symbols.prayer_times_rounded)]),
+              value: isHalal,
+              onChanged: (bool? value){
+                setState(() {
+                  isHalal = value!;
+                });
+              }
+          ),
+          const SizedBox(height: 5,),
+          Text('Your Regional Preference for food'),
+          const SizedBox(height: 5,),
+          Text('This\'ll be suggested to you more', style: th.labelSmall,),
+          const SizedBox(height: 5,),
+          Wrap(
+            spacing: 10,
+            children: [
+              regionChip('South Asian', Symbols.temple_hindu_rounded, 0),
+              regionChip('East Asian', Symbols.temple_buddhist_rounded, 1),
+              regionChip('Southeast Asian', Symbols.forest_rounded, 2),
+              regionChip('Middle Eastern', Symbols.mosque_rounded, 3),
+              regionChip('Mediterranean', Symbols.waves_rounded, 4),
+              regionChip('East African', Symbols.float_landscape_2_rounded, 5),
+              regionChip('North African', Symbols.sunny_rounded, 6),
+              regionChip('Western', Symbols.account_balance_rounded, 7),
+              regionChip('No preference', Symbols.all_inclusive_rounded, 8),
+            ],
+          ),
+          const SizedBox(height: 10,),
           Row(children: [
             Icon(Symbols.allergies_rounded),
             const SizedBox(width: 10,),
@@ -913,27 +1410,38 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
             children: [
               Icon(Icons.add),
               const SizedBox(width: 8,),
-              Text('Add'),
-            ],
-          )),
-          const SizedBox(height: 20,),
-          Row(children: [
-            Icon(Symbols.gastroenterology_rounded),
-            const SizedBox(width: 10,),
-            Text('Your Intolerances'),
-          ],),
-          const SizedBox(height: 10,),
-          OutlinedButton(onPressed: (){}, child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add),
-              const SizedBox(width: 8,),
-              Text('Add'),
+              Text('Other'),
             ],
           )),
           const SizedBox(height: 20,),
         ],),
       ),
+    );
+  }
+  Widget dietChip(String label, Image avatar, int value){
+    return ChoiceChip(
+      label: Text(label),
+      selected: diet == value,
+      showCheckmark: false,
+      avatar: avatar,
+      onSelected: (selected){
+        setState(() {
+          diet = selected ? value : null;
+        });
+      },
+    );
+  }
+  Widget regionChip(String label, IconData icon, int value){
+    return ChoiceChip(
+      label: Text(label),
+      selected: region == value,
+      showCheckmark: false,
+      avatar: Icon(icon),
+      onSelected: (selected){
+        setState(() {
+          region = selected ? value : null;
+        });
+      },
     );
   }
 }
@@ -960,6 +1468,36 @@ class _SignupPageEightState extends State<SignupPageEight> {
           ),
           const SizedBox(height: 10,),
           Text('We’ll leave these out of your plan', style: Theme.of(context).textTheme.labelMedium,),
+          const SizedBox(height: 20,),
+          Row(children: [
+            Icon(Symbols.gastroenterology_rounded),
+            const SizedBox(width: 10,),
+            Text('Your Intolerances'),
+          ],),
+          const SizedBox(height: 10,),
+          OutlinedButton(onPressed: (){}, child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.add),
+              const SizedBox(width: 8,),
+              Text('Other'),
+            ],
+          )),
+          const SizedBox(height: 10,),
+          Row(children: [
+            Icon(Symbols.sentiment_dissatisfied_rounded),
+            const SizedBox(width: 10,),
+            Text('Your dislikes'),
+          ],),
+          const SizedBox(height: 10,),
+          OutlinedButton(onPressed: (){}, child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.add),
+              const SizedBox(width: 8,),
+              Text('Other'),
+            ],
+          )),
           const SizedBox(height: 20,),
         ],),
       ),
@@ -1156,9 +1694,14 @@ class _SignupPageNineState extends State<SignupPageNine> {
   }
 }
 
-class SignupPageTen extends StatelessWidget {
+class SignupPageTen extends StatefulWidget {
   const SignupPageTen({super.key});
 
+  @override
+  State<SignupPageTen> createState() => _SignupPageTenState();
+}
+
+class _SignupPageTenState extends State<SignupPageTen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

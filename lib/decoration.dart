@@ -52,4 +52,24 @@ class Emoji{
   static final Image f1 = Image.asset('assets/emojis/chair.png', width: logoSize, height: logoSize,);
   static final Image f2 = Image.asset('assets/emojis/walking.png', width: logoSize, height: logoSize,);
   static final Image f3 = Image.asset('assets/emojis/runner.png', width: logoSize, height: logoSize,);
+
+  static final Image fund1 = Image.asset('assets/emojis/runner.png', width: iconSize, height: iconSize,);
+  static final Image fund2 = Image.asset('assets/emojis/runner.png', width: iconSize, height: iconSize,);
+  static final Image fund3 = Image.asset('assets/emojis/runner.png', width: iconSize, height: iconSize,);
+  static final Image fund4 = Image.asset('assets/emojis/runner.png', width: iconSize, height: iconSize,);
+  static final Image fund5 = Image.asset('assets/emojis/runner.png', width: iconSize, height: iconSize,);
+  static final Image fund6 = Image.asset('assets/emojis/runner.png', width: iconSize, height: iconSize,);
+  static final Image fund7 = Image.asset('assets/emojis/runner.png', width: iconSize, height: iconSize,);
+
+  static final Image s1 = Image.asset('assets/emojis/city_sunrise.png');
+  static final Image s2 = Image.asset('assets/emojis/cityscape.png');
+  static final Image s3 = Image.asset('assets/emojis/city_sunset.png');
+  static final Image s4 = Image.asset('assets/emojis/night_with_stars.png');
+
+  static final Image omni = Image.asset('assets/emojis/bento.png');
+  static final Image veg = Image.asset('assets/emojis/green_salad.png');
+  static final Image vegan = Image.asset('assets/emojis/seedling.png');
+  static final Image fish = Image.asset('assets/emojis/fish.png');
+  static final Image paleo = Image.asset('assets/emojis/cut_of_meat.png');
+  static final Image keto = Image.asset('assets/emojis/avocado.png');
 }
