@@ -17,15 +17,12 @@ class MedChips extends StatefulWidget {
 }
 
 class _MedChipsState extends State<MedChips> {
-  final List<String> medCommon = [
+
+  static final List<String> meds = [
     'High blood pressure', 'High cholesterol', 'Type 2 diabetes', 'Pre-diabetes',
     'Obesity', 'Acid reflux', 'Irritable bowel', 'Asthma', 'PCOS',
     'Painful periods', 'Chronic fatigue', 'Burnout', 'Post-illness',
-    'Deconditioning', 'Tension headaches',
-  ];
-
-  final List<String> medMore = [
-    'Low blood pressure', 'Anaemia', 'Insulin resistance', 'Metabolic syndrome',
+    'Deconditioning', 'Tension headaches', 'Low blood pressure', 'Anaemia', 'Insulin resistance', 'Metabolic syndrome',
     'Underactive thyroid', 'Overactive thyroid', 'Adrenal fatigue', 'Perimenopause',
     'Menopause', 'Low testosterone', 'Endometriosis', 'Pelvic floor weakness',
     'Diastasis recti', 'Post-partum', 'Pregnancy', 'Exercise-induced asthma',
@@ -40,38 +37,161 @@ class _MedChipsState extends State<MedChips> {
 
   final Set<String> selectedMeds = {};
 
+  static Future<List<String>?> openBottomSheet(BuildContext context, List<String> list){
+    List<String> tempSelection = [];
+    return showModalBottomSheet<List<String>>(isScrollControlled: true,context: context, builder: (context){
+      return StatefulBuilder(
+          builder: (context, setModalState){
+            List<Widget> chips = [];
+            for(int i=0;i<list.length;i++){
+              String med = list[i];
+              bool isSelected = tempSelection.contains(med);
+
+              chips.add(
+                InputChip(label: Text(med),
+                selected: isSelected,
+                onPressed: (){
+                  setModalState((){
+                    if(isSelected){
+                      tempSelection.remove(med);
+                    }else{
+                      tempSelection.add(med);
+                    }
+                  });
+                },
+                ),
+              );
+            }
+            return SizedBox(
+              height: MediaQuery.of(context).size.height * 0.85,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text('Other Medical Conditions',), IconButton(onPressed: (){
+                          Navigator.pop(context);
+                        }, icon: Icon(Icons.close))]),
+                    Divider(),
+                    const SizedBox(height: 15,),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: chips,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20,),
+                    FilledButton(onPressed: (){
+                      Navigator.pop(context, tempSelection);
+                    }, child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                        child: Text('Save')))
+                  ],
+                ),
+              ),
+            );
+          }
+      );
+    });
+  }
+
+  List<String> getRemainingMeds(){
+    List<String> remains = [];
+    for(int i=8;i<meds.length;i++){
+      String med = meds[i];
+      if(!selectedMeds.contains(med)){
+        remains.add(med);
+      }
+    }
+    return remains;
+  }
+
+  Future<void> handleOpenSheet() async{
+    List<String> remainingMeds = getRemainingMeds();
+    final sheet = await openBottomSheet(context, remainingMeds);
+    if(sheet != null){
+      setState(() {
+        for(int i=0;i<sheet.length;i++){
+          selectedMeds.add(sheet[i]);
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ch = Theme.of(context).colorScheme;
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: medCommon.map((med){
-            final isSelected = selectedMeds.contains(med);
-            return FilterChip(label: Text(med),
-                selected: isSelected,
-                onSelected: (_) => setState(() {
-                  if(isSelected){
-                    selectedMeds.remove(med);
-                  }else{
-                    selectedMeds.add(med);
-                  }
-                }),
-              showCheckmark: false,
-              selectedColor: CustomColors.primaryMuted(context),
-              side: BorderSide(
-                color: isSelected ? ch.primary : ch.onSurface,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-            );
-          }).toList(),
+    List<Widget> chips = [];
+
+    for(int i=0;i<=7;i++){
+      String med = meds[i];
+      chips.add(
+        FilterChip(
+            label: Text(med),
+            selected: selectedMeds.contains(med),
+            onSelected: (bool selected){
+              setState(() {
+                if(selected){
+                  selectedMeds.add(med);
+                }else{
+                  selectedMeds.remove(med);
+                }
+              });
+            }
         ),
-      ),
+      );
+    }
+    for(int i=8;i<meds.length;i++){
+      String med = meds[i];
+      if(selectedMeds.contains(med)){
+        chips.add(
+          FilterChip(
+              label: Text(med),
+              selected: true,
+              onSelected: (bool selected){
+                setState(() {
+                  selectedMeds.remove(med);
+                });
+              }
+          )
+        );
+      }
+    }
+    chips.add(
+      OutlinedButton(onPressed: (){
+        handleOpenSheet();
+      }, child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.add),
+          const SizedBox(width: 8,),
+          Text('Other'),
+        ],
+      )),
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        children: chips,
+    ),
     );
   }
 }

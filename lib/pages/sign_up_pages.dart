@@ -459,14 +459,7 @@ class _SignupPageTwoState extends State<SignupPageTwo> {
             Text('Medical Conditions'),
           ],),
           const SizedBox(height: 10,),
-          OutlinedButton(onPressed: (){}, child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add),
-              const SizedBox(width: 8,),
-              Text('Other'),
-            ],
-          )),
+          MedChips(),
           const SizedBox(height: 20,),
           Row(children: [
             Icon(Icons.personal_injury_rounded),
@@ -942,7 +935,6 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   @override
   Widget build(BuildContext context) {
     final th = Theme.of(context).textTheme;
-    final ch = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
