@@ -1,5 +1,5 @@
 import 'package:core_care/main.dart';
-import 'package:core_care/time_provider.dart';
+import 'package:core_care/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -56,7 +56,7 @@ class _FitScreenState extends State<FitScreen>
                 return weekBox(text, state);
               })
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.only(left: 10),
               alignment: Alignment.centerLeft,

@@ -1,7 +1,7 @@
 import 'package:core_care/decoration.dart';
 import 'package:core_care/main.dart';
 import 'package:core_care/pages/profile_page.dart';
-import 'package:core_care/time_provider.dart';
+import 'package:core_care/data_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';

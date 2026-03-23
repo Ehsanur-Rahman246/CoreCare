@@ -13,6 +13,11 @@ class SignupPageOneData{
   double? weight;
   bool isHeightFt;
   bool isWeightKg;
+  double? bmi;
+  double? bmr;
+  String? ageGroup;
+  int? age;
+  String? category;
 
   SignupPageOneData({
     this.name,
@@ -22,6 +27,11 @@ class SignupPageOneData{
     this.weight,
     this.isHeightFt = true,
     this.isWeightKg = true,
+    this.bmi,
+    this.bmr,
+    this.ageGroup,
+    this.age,
+    this.category,
 });
 }
 
@@ -52,6 +62,14 @@ class _SignupPageOneState extends State<SignupPageOne> {
     return double.tryParse(weightController.text);
   }
 
+  double toHeightCm(double value, bool isFt){
+    return isFt ? value * 30.48 : value;
+  }
+
+  double toWeightKg(double value, bool isKg){
+    return isKg ? value : value * 0.453592;
+  }
+
   DateTime? selectedDate;
   final TextEditingController dateController = TextEditingController();
 
@@ -77,6 +95,22 @@ class _SignupPageOneState extends State<SignupPageOne> {
 
     return '$year-$month-$day';
   }
+  int calculateAge(DateTime dob){
+    final today = DateTime.now();
+    int age = today.year - dob.year;
+    if(today.month < dob.month || (today.month == dob.month && today.day < dob.day)){
+      age--;
+    }
+    return age;
+  }
+
+  String getAgeGroup(int age){
+    if(age < 13) return 'Child';
+    if(age < 18) return 'Teen';
+    if(age < 30) return 'Young Adult';
+    if(age < 60) return 'Adult';
+    return 'Senior';
+  }
 
   int? genderSelected;
   void selectGender(int g){
@@ -87,6 +121,15 @@ class _SignupPageOneState extends State<SignupPageOne> {
 
   bool isHeightUnitOne = true;
   bool isWeightUnitOne = true;
+
+  double calculateBMI(double h, double w){
+    final height = h / 100;
+    return w / (height * height);
+  }
+  double calculateBMR(double h, double w, int age, int gender){
+    final base = (10 * w) + (6.25 * h) - (5 * age);
+    return gender == 1 ? base + 5 : base - 161;
+  }
 
   bool validateInput(){
     bool isValid = true;
@@ -146,6 +189,21 @@ class _SignupPageOneState extends State<SignupPageOne> {
     data.weight = double.tryParse(weightController.text);
     data.isHeightFt = isHeightUnitOne;
     data.isWeightKg = isWeightUnitOne;
+
+    final h = data.height;
+    final w = data.weight;
+    final dob = data.dob;
+    final gender = data.gender;
+
+    if(h != null && w != null && dob != null && gender != null){
+      final heightCm = toHeightCm(h, data.isHeightFt);
+      final weightKg = toWeightKg(w, data.isWeightKg);
+      final age = calculateAge(dob);
+      data.age = age;
+      data.bmi = double.parse(calculateBMI(heightCm, weightKg).toStringAsFixed(1));
+      data.bmr = double.parse(calculateBMR(heightCm, weightKg, age, gender).toStringAsFixed(1));
+      data.ageGroup = getAgeGroup(age);
+     }
   }
 
   @override
@@ -424,7 +482,14 @@ class _SignupPageOneState extends State<SignupPageOne> {
 }
 
 class SignupPageTwoData{
+  List<String> selectedMeds = [];
+  List<String> selectedInjuries = [];
 
+  SignupPageTwoData({
+    List<String>? selectedMeds,
+    List<String>? selectedInjuries,
+  }) : selectedMeds = selectedMeds ?? [],
+       selectedInjuries = selectedInjuries ?? [];
 }
 
 class SignupPageTwo extends StatefulWidget {
@@ -467,14 +532,7 @@ class _SignupPageTwoState extends State<SignupPageTwo> {
             Text('Current Injuries'),
           ],),
           const SizedBox(height: 10,),
-          OutlinedButton(onPressed: (){}, child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add),
-              const SizedBox(width: 8,),
-              Text('Other'),
-            ],
-          )),
+          InjuryChips(),
           const SizedBox(height: 20,),
         ],),
       ),
@@ -482,8 +540,34 @@ class _SignupPageTwoState extends State<SignupPageTwo> {
   }
 }
 
+class SignupPageThreeData{
+  int? workIndex;
+  int? activeIndex;
+  int? sleepIndex;
+
+  SignupPageThreeData({
+    this.workIndex,
+    this.activeIndex,
+    this.sleepIndex,
+  });
+
+  String get workType{
+    const types = ['Sedentary', 'Moderately Active', 'Physically Active'];
+    return types[workIndex!];
+  }
+  String get activityLevel{
+    const levels = ['Low', 'Moderate', 'High'];
+    return levels[activeIndex!];
+  }
+  String get sleepPattern{
+    const patterns = ['Less than 5 hours', '5 to 7 hours', '7 to 9 hours', 'More than 9 hours'];
+    return patterns[sleepIndex!];
+  }
+}
+
 class SignupPageThree extends StatefulWidget {
-  const SignupPageThree({super.key});
+  final SignupPageThreeData data;
+  const SignupPageThree({super.key, required this.data});
 
   @override
   State<SignupPageThree> createState() => _SignupPageThreeState();
@@ -493,6 +577,30 @@ class _SignupPageThreeState extends State<SignupPageThree> {
   int selectedWork = -1;
   int selectedActive = -1;
   int selectedSleep = -1;
+
+  bool validateInput(){
+    bool isValid = true;
+    setState(() {
+      if(selectedWork == -1) isValid = false;
+      if(selectedActive == -1) isValid = false;
+      if(selectedSleep == -1) isValid = false;
+    });
+    return isValid;
+  }
+
+  void saveData(){
+    widget.data.workIndex = selectedWork;
+    widget.data.activeIndex = selectedActive;
+    widget.data.sleepIndex = selectedSleep;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    selectedWork = widget.data.workIndex ?? -1;
+    selectedActive = widget.data.activeIndex ?? -1;
+    selectedSleep = widget.data.sleepIndex ?? -1;
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -782,8 +890,11 @@ class _SignupPageThreeState extends State<SignupPageThree> {
   }
 }
 
+class SignupPageFourData{}
+
 class SignupPageFour extends StatefulWidget {
-  const SignupPageFour({super.key});
+  final SignupPageFourData data;
+  const SignupPageFour({super.key, required this.data});
 
   @override
   State<SignupPageFour> createState() => _SignupPageFourState();
@@ -914,8 +1025,11 @@ class _SignupPageFourState extends State<SignupPageFour> {
   }
 }
 
+class SignupPageFiveData{}
+
 class SignupPageFive extends StatefulWidget {
-  const SignupPageFive({super.key});
+  final SignupPageFiveData data;
+  const SignupPageFive({super.key, required this.data});
 
   @override
   State<SignupPageFive> createState() => _SignupPageFiveState();
@@ -955,30 +1069,31 @@ class _SignupPageFiveState extends State<SignupPageFive> {
           const SizedBox(height: 10,),
           Row(
             children: [
-              Expanded(child: selectFundamental(context, 0, Emoji.fund1, 'Energy & Fuel')),
+              selectFundamental(context, 0, Emoji.fund1, 'Energy & Fuel'),
               const SizedBox(width: 10,),
-              Expanded(child: selectFundamental(context, 1, Emoji.fund2, 'Strength & build')),
+              selectFundamental(context, 1, Emoji.fund2, 'Strength & build'),
             ],
           ),
           const SizedBox(height: 5,),
           Row(
             children: [
-              Expanded(child: selectFundamental(context, 2, Emoji.fund3, 'Mobility & ease')),
+              selectFundamental(context, 2, Emoji.fund3, 'Mobility & ease'),
               const SizedBox(width: 10,),
-              Expanded(child: selectFundamental(context, 3, Emoji.fund4, 'Stability & control')),
+              selectFundamental(context, 3, Emoji.fund4, 'Stability & control'),
             ],
           ),
           const SizedBox(height: 5,),
           Row(
             children: [
-              Expanded(child: selectFundamental(context, 4, Emoji.fund5, ' Composition & vitals')),
+              selectFundamental(context, 4, Emoji.fund5, ' Composition & vitals'),
               const SizedBox(width: 10,),
-              Expanded(child: selectFundamental(context, 5, Emoji.fund6, 'Function & posture')),
+              selectFundamental(context, 5, Emoji.fund6, 'Function & posture'),
             ],
           ),
           const SizedBox(height: 5,),
           Row(
               children: [selectFundamental(context, 6, Emoji.fund7, 'Growth & adaptation '),
+                const SizedBox(width: 10,),
                 Expanded(child: const SizedBox(),),
               ],
           ),
@@ -995,30 +1110,32 @@ class _SignupPageFiveState extends State<SignupPageFive> {
     final th = Theme.of(context).textTheme;
     final ch = Theme.of(context).colorScheme;
 
-    return GestureDetector(
-      onTap: () {
-        selectFund(select);
-        hasFundSelected = true;
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: selectedFund != select ? ch.surface : CustomColors.primaryMuted(context),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: selectedFund == select ? ch.primary : Colors.transparent),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                icon,
-                const SizedBox(height: 5,),
-                Text(label, style: th.labelMedium,),
-                const SizedBox(height: 15,),
-                selectedFund == select ?
-                Icon(Icons.circle, color: ch.primary,) : Icon(Icons.circle_outlined),
-              ],
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          selectFund(select);
+          hasFundSelected = true;
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: selectedFund != select ? ch.surface : CustomColors.primaryMuted(context),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: selectedFund == select ? ch.primary : Colors.transparent),
+          ),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  icon,
+                  const SizedBox(height: 5,),
+                  Text(label, style: th.labelMedium,),
+                  const SizedBox(height: 15,),
+                  selectedFund == select ?
+                  Icon(Icons.circle, color: ch.primary,) : Icon(Icons.circle_outlined),
+                ],
+              ),
             ),
           ),
         ),
@@ -1027,8 +1144,11 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   }
 }
 
+class SignupPageSixData{}
+
 class SignupPageSix extends StatefulWidget {
-  const SignupPageSix({super.key});
+  final SignupPageSixData data;
+  const SignupPageSix({super.key, required this.data});
 
   @override
   State<SignupPageSix> createState() => _SignupPageSixState();
@@ -1059,8 +1179,10 @@ class _SignupPageSixState extends State<SignupPageSix> {
           Text('Pick what fits your schedule and preferences', style: Theme.of(context).textTheme.labelMedium,),
           const SizedBox(height: 20,),
           Text('Training Style Preference'),
+          const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               trainingStyle('Strength Training', Emoji.o1, 0),
               trainingStyle('Cardio', Emoji.o1, 1),
@@ -1074,10 +1196,12 @@ class _SignupPageSixState extends State<SignupPageSix> {
               trainingStyle('Any', Emoji.o1, 9),
             ],
           ),
-          const SizedBox(height: 5,),
+          const SizedBox(height: 15,),
           Text('Equipment Access'),
+          const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               ChoiceChip(
                 label: Text('None'),
@@ -1114,10 +1238,12 @@ class _SignupPageSixState extends State<SignupPageSix> {
               ),
             ],
           ),
-          const SizedBox(height: 5,),
+          const SizedBox(height: 15,),
           Text('Location Preference'),
+          const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               ChoiceChip(
                 label: Text('Home'),
@@ -1154,11 +1280,12 @@ class _SignupPageSixState extends State<SignupPageSix> {
               ),
             ],
           ),
-          const SizedBox(height: 5,),
+          const SizedBox(height: 15,),
           Text('Workout days per week'),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               dayChip('2', 0),
               dayChip('3', 1),
@@ -1167,11 +1294,12 @@ class _SignupPageSixState extends State<SignupPageSix> {
               dayChip('6', 4),
             ],
           ),
-          const SizedBox(height: 5,),
+          const SizedBox(height: 15,),
           Text('Session Time'),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               timeChip('15-30 min', 0),
               timeChip('30-45 min', 1),
@@ -1179,11 +1307,12 @@ class _SignupPageSixState extends State<SignupPageSix> {
               timeChip('60+ min', 3),
             ],
           ),
-          const SizedBox(height: 5,),
+          const SizedBox(height: 15,),
           Text('Session Duration'),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               sessionChip('Early Morning', Emoji.s1, 0),
               sessionChip('Late Morning', Emoji.s2, 1),
@@ -1191,11 +1320,12 @@ class _SignupPageSixState extends State<SignupPageSix> {
               sessionChip('Evening', Emoji.s4, 3),
             ],
           ),
-          const SizedBox(height: 5,),
+          const SizedBox(height: 15,),
           Text('Your Free Days'),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               freeChip('Son', 0),
               freeChip('Mon', 1),
@@ -1206,6 +1336,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
               freeChip('Sat', 6),
             ],
           ),
+          const SizedBox(height: 20,),
         ],),
       ),
     );
@@ -1272,8 +1403,11 @@ class _SignupPageSixState extends State<SignupPageSix> {
   }
 }
 
+class SignupPageSevenData{}
+
 class SignupPageSeven extends StatefulWidget {
-  const SignupPageSeven({super.key});
+  final SignupPageSevenData data;
+  const SignupPageSeven({super.key, required this.data});
 
   @override
   State<SignupPageSeven> createState() => _SignupPageSevenState();
@@ -1303,8 +1437,10 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
           Text('Help us shape a plan that works for you', style: Theme.of(context).textTheme.labelMedium,),
           const SizedBox(height: 20,),
           Text('Meals per day'),
+          const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               ChoiceChip(
                 label: Text('2'),
@@ -1344,11 +1480,12 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
               ),
             ],
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(height: 15,),
           Text('Your Diet Preference'),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               dietChip('Omnivore', Emoji.omni, 0),
               dietChip('Vegetarian', Emoji.veg, 1),
@@ -1378,6 +1515,7 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               regionChip('South Asian', Symbols.temple_hindu_rounded, 0),
               regionChip('East Asian', Symbols.temple_buddhist_rounded, 1),
@@ -1390,21 +1528,14 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
               regionChip('No preference', Symbols.all_inclusive_rounded, 8),
             ],
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(height: 15,),
           Row(children: [
             Icon(Symbols.allergies_rounded),
             const SizedBox(width: 10,),
             Text('Your Allergies'),
           ],),
-          const SizedBox(height: 10,),
-          OutlinedButton(onPressed: (){}, child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add),
-              const SizedBox(width: 8,),
-              Text('Other'),
-            ],
-          )),
+          const SizedBox(height: 5,),
+          AllergenChips(),
           const SizedBox(height: 20,),
         ],),
       ),
@@ -1424,7 +1555,7 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
     );
   }
   Widget regionChip(String label, IconData icon, int value){
-    return ChoiceChip(
+    return FilterChip(
       label: Text(label),
       selected: region == value,
       showCheckmark: false,
@@ -1438,8 +1569,11 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
   }
 }
 
+class SignupPageEightData{}
+
 class SignupPageEight extends StatefulWidget {
-  const SignupPageEight({super.key});
+  final SignupPageEightData data;
+  const SignupPageEight({super.key, required this.data});
 
   @override
   State<SignupPageEight> createState() => _SignupPageEightState();
@@ -1466,30 +1600,14 @@ class _SignupPageEightState extends State<SignupPageEight> {
             const SizedBox(width: 10,),
             Text('Your Intolerances'),
           ],),
-          const SizedBox(height: 10,),
-          OutlinedButton(onPressed: (){}, child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add),
-              const SizedBox(width: 8,),
-              Text('Other'),
-            ],
-          )),
-          const SizedBox(height: 10,),
+          const SizedBox(height: 5,),
+          IntoleranceChips(),
+          const SizedBox(height: 15,),
           Row(children: [
             Icon(Symbols.sentiment_dissatisfied_rounded),
             const SizedBox(width: 10,),
             Text('Your dislikes'),
           ],),
-          const SizedBox(height: 10,),
-          OutlinedButton(onPressed: (){}, child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add),
-              const SizedBox(width: 8,),
-              Text('Other'),
-            ],
-          )),
           const SizedBox(height: 20,),
         ],),
       ),
@@ -1497,8 +1615,11 @@ class _SignupPageEightState extends State<SignupPageEight> {
   }
 }
 
+class SignupPageNineData{}
+
 class SignupPageNine extends StatefulWidget {
-  const SignupPageNine({super.key});
+  final SignupPageNineData data;
+  const SignupPageNine({super.key, required this.data});
 
   @override
   State<SignupPageNine> createState() => _SignupPageNineState();

@@ -226,6 +226,13 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   SignupPageOneData pageOne = SignupPageOneData();
   SignupPageTwoData pageTwo = SignupPageTwoData();
+  SignupPageThreeData pageThree = SignupPageThreeData();
+  SignupPageFourData pageFour = SignupPageFourData();
+  SignupPageFiveData pageFive = SignupPageFiveData();
+  SignupPageSixData pageSix = SignupPageSixData();
+  SignupPageSevenData pageSeven = SignupPageSevenData();
+  SignupPageEightData pageEight = SignupPageEightData();
+  SignupPageNineData pageNine = SignupPageNineData();
 
   final PageController _pageController = PageController();
   final ScrollController _timelineController = ScrollController();
@@ -324,13 +331,13 @@ class _SignupPageState extends State<SignupPage> {
                 children: [
                   SignupPageOne(data: pageOne),
                   SignupPageTwo(data: pageTwo),
-                  SignupPageThree(),
-                  SignupPageFour(),
-                  SignupPageFive(),
-                  SignupPageSix(),
-                  SignupPageSeven(),
-                  SignupPageEight(),
-                  SignupPageNine(),
+                  SignupPageThree(data: pageThree,),
+                  SignupPageFour(data: pageFour,),
+                  SignupPageFive(data: pageFive,),
+                  SignupPageSix(data: pageSix,),
+                  SignupPageSeven(data: pageSeven,),
+                  SignupPageEight(data: pageEight,),
+                  SignupPageNine(data: pageNine,),
                   SignupPageTen(),
                 ],
               ),

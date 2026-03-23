@@ -5,7 +5,7 @@ import 'package:core_care/pages/home_screen.dart';
 import 'package:core_care/pages/login_screen.dart';
 import 'package:core_care/pages/profile_page.dart';
 import 'package:core_care/pages/shop_module.dart';
-import 'package:core_care/time_provider.dart';
+import 'package:core_care/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -18,7 +18,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(ChangeNotifierProvider(create: (_) => TimeProvider(), child: MyApp()));
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => TimeProvider()),
+    ChangeNotifierProvider(create: (_) => DataProvider()),
+  ],
+  child: MyApp())
+  );
 }
 
 class MyApp extends StatefulWidget {

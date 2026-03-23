@@ -1,4 +1,4 @@
-import 'package:core_care/time_provider.dart';
+import 'package:core_care/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:core_care/main.dart';
 import 'package:material_symbols_icons/symbols.dart';
