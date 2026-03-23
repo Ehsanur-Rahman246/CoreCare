@@ -890,7 +890,17 @@ class _SignupPageThreeState extends State<SignupPageThree> {
   }
 }
 
-class SignupPageFourData{}
+class SignupPageFourData{
+  int? fitIndex;
+  SignupPageFourData({
+    this.fitIndex,
+  });
+
+  String get fitType{
+    const types = ['Beginner', 'Intermediate', 'Advanced'];
+    return types[fitIndex!];
+  }
+}
 
 class SignupPageFour extends StatefulWidget {
   final SignupPageFourData data;
@@ -1025,7 +1035,17 @@ class _SignupPageFourState extends State<SignupPageFour> {
   }
 }
 
-class SignupPageFiveData{}
+class SignupPageFiveData{
+  int? fundIndex;
+  SignupPageFiveData({
+    this.fundIndex,
+  });
+
+  String get fundType{
+    const types = ['Energy & Fuel', 'Strength & build', 'Mobility & ease', 'Stability & control', 'Composition & vitals', 'Function & posture', 'Growth & adaptation'];
+    return types[fundIndex!];
+  }
+}
 
 class SignupPageFive extends StatefulWidget {
   final SignupPageFiveData data;
@@ -1085,14 +1105,14 @@ class _SignupPageFiveState extends State<SignupPageFive> {
           const SizedBox(height: 5,),
           Row(
             children: [
-              selectFundamental(context, 4, Emoji.fund5, ' Composition & vitals'),
+              selectFundamental(context, 4, Emoji.fund5, 'Composition & vitals'),
               const SizedBox(width: 10,),
               selectFundamental(context, 5, Emoji.fund6, 'Function & posture'),
             ],
           ),
           const SizedBox(height: 5,),
           Row(
-              children: [selectFundamental(context, 6, Emoji.fund7, 'Growth & adaptation '),
+              children: [selectFundamental(context, 6, Emoji.fund7, 'Growth & adaptation'),
                 const SizedBox(width: 10,),
                 Expanded(child: const SizedBox(),),
               ],
@@ -1144,7 +1164,25 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   }
 }
 
-class SignupPageSixData{}
+class SignupPageSixData{
+  int? styleIndex;
+  int? equipIndex;
+  int? placeIndex;
+  int? dayIndex;
+  int? timeIndex;
+  int? durationIndex;
+  int? freeIndex;
+
+  SignupPageSixData({
+    this.styleIndex,
+    this.equipIndex,
+    this.placeIndex,
+    this.dayIndex,
+    this.timeIndex,
+    this.durationIndex,
+    this.freeIndex,
+  });
+}
 
 class SignupPageSix extends StatefulWidget {
   final SignupPageSixData data;
