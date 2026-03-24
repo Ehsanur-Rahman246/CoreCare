@@ -116,6 +116,8 @@ class _MedChipsState extends State<MedChips> {
     super.initState();
     final gender = context.read<DataProvider>().pageOne.gender;
     meds = gender == 1 ? maleMeds : femaleMeds;
+    final saved = context.read<DataProvider>().pageTwo.selectedMeds;
+    selectedMeds.addAll(saved);
   }
 
   final Set<String> selectedMeds = {};
@@ -144,8 +146,10 @@ class _MedChipsState extends State<MedChips> {
 
               chips.add(
                 InputChip(
-                  label: Text(med),
+                  label: Text(med, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
                   selected: isSelected,
+                  showCheckmark: false,
+                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add,),
                   onPressed: () {
                     setModalState(() {
                       if (isSelected) {
@@ -352,6 +356,13 @@ class _InjuryChipsState extends State<InjuryChips> {
     'Post-fracture',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    final saved = context.read<DataProvider>().pageTwo.selectedInjuries;
+    selectedIns.addAll(saved);
+  }
+
   final Set<String> selectedIns = {};
 
   void updateInjuries(){
@@ -378,8 +389,10 @@ class _InjuryChipsState extends State<InjuryChips> {
 
               chips.add(
                 InputChip(
-                  label: Text(ins),
+                  label: Text(ins, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
                   selected: isSelected,
+                  showCheckmark: false,
+                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add,),
                   onPressed: () {
                     setModalState(() {
                       if (isSelected) {
@@ -543,7 +556,7 @@ class AllergenChips extends StatefulWidget {
 }
 
 class _AllergenChipsState extends State<AllergenChips> {
-  List<String> allergens = [
+  final List<String> allergens = [
     "Peanuts",
     "Tree nuts",
     "Almonds",
@@ -588,8 +601,10 @@ class _AllergenChipsState extends State<AllergenChips> {
 
               chips.add(
                 InputChip(
-                  label: Text(allergy),
+                  label: Text(allergy, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
                   selected: isSelected,
+                  showCheckmark: false,
+                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add,),
                   onPressed: () {
                     setModalState(() {
                       if (isSelected) {
@@ -791,8 +806,10 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
 
               chips.add(
                 InputChip(
-                  label: Text(ints),
+                  label: Text(ints, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
                   selected: isSelected,
+                  showCheckmark: false,
+                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add,),
                   onPressed: () {
                     setModalState(() {
                       if (isSelected) {
@@ -1242,6 +1259,21 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Chewy",
     "Seedy / grainy",
   ];
+
+  late List<String> dislikes;
+
+  // {
+  //   super.initState();
+  //   final gender = context.read<DataProvider>().pageOne.gender;
+  //   meds = gender == 1 ? maleMeds : femaleMeds;
+  // }
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   final diet = context.read<DataProvider>().pageSeven.diet;
+  //
+  // }
 
   @override
   Widget build(BuildContext context) {

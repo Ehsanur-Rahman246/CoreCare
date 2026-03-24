@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:core_care/decoration.dart';
 import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:core_care/data_provider.dart';
+import 'package:provider/provider.dart';
 
 class SignupPageOneData{
   String? name;
@@ -105,7 +107,6 @@ class _SignupPageOneState extends State<SignupPageOne> {
   }
 
   String getAgeGroup(int age){
-    if(age < 13) return 'Child';
     if(age < 18) return 'Teen';
     if(age < 30) return 'Young Adult';
     if(age < 60) return 'Adult';
@@ -146,6 +147,12 @@ class _SignupPageOneState extends State<SignupPageOne> {
         isValid = false;
       }else{
         dobError = null;
+
+        final age = calculateAge(selectedDate!);
+        if(age < 13){
+          dobError = 'You must be at least 13 years old';
+          isValid = false;
+        }
       }
 
       if(genderSelected == null){
@@ -916,6 +923,8 @@ class _SignupPageFourState extends State<SignupPageFour> {
 
   @override
   Widget build(BuildContext context) {
+    final data1 = context.read<DataProvider>().pageOne;
+    final data3 = context.read<DataProvider>().pageThree;
     final th = Theme.of(context).textTheme;
     final ch = Theme.of(context).colorScheme;
 
@@ -932,7 +941,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
           const SizedBox(height: 10,),
           Text('Tell us where you’re starting from.', style: th.labelMedium,),
           const SizedBox(height: 20,),
-          Text('Fitness Level'),
+          Text('Workout Level'),
           const SizedBox(height: 5,),
           Text('What is your current fitness ability?', style: th.labelSmall,),
           const SizedBox(height: 5,),
@@ -1165,23 +1174,52 @@ class _SignupPageFiveState extends State<SignupPageFive> {
 }
 
 class SignupPageSixData{
-  int? styleIndex;
+  List<int> styleIndex;
   int? equipIndex;
   int? placeIndex;
   int? dayIndex;
-  int? timeIndex;
   int? durationIndex;
-  int? freeIndex;
+  List<int> timeIndex;
+  List<int> freeIndex;
 
   SignupPageSixData({
-    this.styleIndex,
+    this.styleIndex = const [],
     this.equipIndex,
     this.placeIndex,
     this.dayIndex,
-    this.timeIndex,
     this.durationIndex,
-    this.freeIndex,
+    this.timeIndex = const [],
+    this.freeIndex = const [],
   });
+
+  List<String> get styleType{
+    const styles = ['Strength Training', 'Cardio', 'HIIT', 'Yoga & Stretching', 'Pilates', 'Calisthenics', 'Sports & Athletics', 'Functional Training', 'Low Impact', 'Any'];
+    return styleIndex.map((i) => styles[i]).toList();
+  }
+  String get equipType{
+    const equips = ['None', 'Minimal', 'Full Gym'];
+    return equips[equipIndex!];
+  }
+  String get placeType{
+    const places = ['Home', 'Gym', 'Outdoors', 'Any'];
+    return places[placeIndex!];
+  }
+  String get dayType{
+    const days = ['2', '3', '4', '5', '6'];
+    return days[dayIndex!];
+  }
+  String get durationType{
+    const durations = ['15-30 min', '30-45 min', '45-60 min', '60+ min'];
+    return durations[durationIndex!];
+  }
+  List<String> get timeType{
+    const times = ['Early Morning', 'Late Morning', 'Afternoon', 'Evening'];
+    return timeIndex.map((i) => times[i]).toList();
+  }
+  List<String> get freeType{
+    const frees = ['Son', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return freeIndex.map((i) => frees[i]).toList();
+  }
 }
 
 class SignupPageSix extends StatefulWidget {
@@ -1193,13 +1231,13 @@ class SignupPageSix extends StatefulWidget {
 }
 
 class _SignupPageSixState extends State<SignupPageSix> {
-  int? styleSelected;
+  Set<int> styleSelected = {};
   int? equipSelected;
   int? placeSelected;
   int? daySelected;
-  int? timeSelected;
   int? durationSelected;
-  int? freeSelected;
+  Set<int> timeSelected = {};
+  Set<int> freeSelected = {};
 
   @override
   Widget build(BuildContext context) {
@@ -1241,39 +1279,9 @@ class _SignupPageSixState extends State<SignupPageSix> {
             spacing: 10,
             runSpacing: 10,
             children: [
-              ChoiceChip(
-                label: Text('None'),
-                showCheckmark: false,
-                avatar: Emoji.o1,
-                selected: equipSelected == 0,
-                onSelected: (selected){
-                  setState(() {
-                    equipSelected = selected ? 0 : null;
-                  });
-                },
-              ),
-              ChoiceChip(
-                label: Text('Minimal'),
-                showCheckmark: false,
-                avatar: Emoji.o1,
-                selected: equipSelected == 1,
-                onSelected: (selected){
-                  setState(() {
-                    equipSelected = selected ? 1 : null;
-                  });
-                },
-              ),
-              ChoiceChip(
-                label: Text('Full Gym'),
-                showCheckmark: false,
-                avatar: Emoji.o1,
-                selected: equipSelected == 2,
-                onSelected: (selected){
-                  setState(() {
-                    equipSelected = selected ? 2 : null;
-                  });
-                },
-              ),
+              equipChip('None', Emoji.o1, 0),
+              equipChip('Minimal', Emoji.o1, 1),
+              equipChip('Full Gym', Emoji.o1, 2),
             ],
           ),
           const SizedBox(height: 15,),
@@ -1283,39 +1291,10 @@ class _SignupPageSixState extends State<SignupPageSix> {
             spacing: 10,
             runSpacing: 10,
             children: [
-              ChoiceChip(
-                label: Text('Home'),
-                showCheckmark: false,
-                avatar: Emoji.o1,
-                selected: placeSelected == 0,
-                onSelected: (selected){
-                  setState(() {
-                    placeSelected = selected ? 0 : null;
-                  });
-                },
-              ),
-              ChoiceChip(
-                label: Text('Gym'),
-                showCheckmark: false,
-                avatar: Emoji.o1,
-                selected: placeSelected == 1,
-                onSelected: (selected){
-                  setState(() {
-                    placeSelected = selected ? 1 : null;
-                  });
-                },
-              ),
-              ChoiceChip(
-                label: Text('Outdoors'),
-                showCheckmark: false,
-                avatar: Emoji.o1,
-                selected: placeSelected == 2,
-                onSelected: (selected){
-                  setState(() {
-                    placeSelected = selected ? 2 : null;
-                  });
-                },
-              ),
+              placeChip('Home', Emoji.keto, 0),
+              placeChip('Gym', Emoji.keto, 1),
+              placeChip('Outdoors', Emoji.keto, 2),
+              placeChip('Any', Emoji.keto, 3),
             ],
           ),
           const SizedBox(height: 15,),
@@ -1381,15 +1360,45 @@ class _SignupPageSixState extends State<SignupPageSix> {
   }
 
   Widget trainingStyle(String label, Image avatar, int value){
-    return ChoiceChip(
+    return FilterChip(
         label: Text(label),
         showCheckmark: false,
         avatar: avatar,
-        selected: styleSelected == value,
+        selected: styleSelected.contains(value),
       onSelected: (selected){
           setState(() {
-            styleSelected = selected ? value : null;
+            if(selected){
+              styleSelected.add(value);
+            }else{
+              styleSelected.remove(value);
+            }
           });
+      },
+    );
+  }
+  Widget equipChip(String label, Image avatar, int value){
+    return ChoiceChip(
+      label: Text(label),
+      showCheckmark: false,
+      avatar: avatar,
+      selected: equipSelected == value,
+      onSelected: (selected){
+        setState(() {
+          equipSelected = selected ? value : null;
+        });
+      },
+    );
+  }
+  Widget placeChip(String label, Image avatar, int value){
+    return ChoiceChip(
+      label: Text(label),
+      showCheckmark: false,
+      avatar: avatar,
+      selected: placeSelected == value,
+      onSelected: (selected){
+        setState(() {
+          placeSelected = selected ? value : null;
+        });
       },
     );
   }
@@ -1407,19 +1416,6 @@ class _SignupPageSixState extends State<SignupPageSix> {
   Widget timeChip(String label, int value){
     return ChoiceChip(
       label: Text(label),
-      selected: timeSelected == value,
-      onSelected: (selected){
-        setState(() {
-          timeSelected = selected ? value : null;
-        });
-      },
-    );
-  }
-  Widget sessionChip(String label, Image avatar, int value){
-    return ChoiceChip(
-      showCheckmark: false,
-      label: Text(label),
-      avatar: avatar,
       selected: durationSelected == value,
       onSelected: (selected){
         setState(() {
@@ -1428,20 +1424,66 @@ class _SignupPageSixState extends State<SignupPageSix> {
       },
     );
   }
+  Widget sessionChip(String label, Image avatar, int value){
+    return FilterChip(
+      showCheckmark: false,
+      label: Text(label),
+      avatar: avatar,
+      selected: timeSelected.contains(value),
+      onSelected: (selected){
+        setState(() {
+          if(selected){
+           timeSelected.add(value);
+          }else{
+            timeSelected.remove(value);
+          }
+        });
+      },
+    );
+  }
   Widget freeChip(String label, int value){
     return ChoiceChip(
       label: Text(label),
-      selected: freeSelected == value,
+      selected: freeSelected.contains(value),
       onSelected: (selected){
         setState(() {
-          freeSelected = selected ? value : null;
+          if(selected){
+            freeSelected.add(value);
+          }else{
+            freeSelected.remove(value);
+          }
         });
       },
     );
   }
 }
 
-class SignupPageSevenData{}
+class SignupPageSevenData{
+  int? mealIndex;
+  int? dietIndex;
+  List<int> regionIndex;
+  List<String> selectedAllergens = [];
+
+  SignupPageSevenData({
+    this.mealIndex,
+    this.dietIndex,
+    this.regionIndex = const [],
+    List<String>? selectedAllergens,
+  }) : selectedAllergens = selectedAllergens ?? [];
+
+  String get mealType{
+    const meals = ['2 meals/day', '3 meals/day', '4 meals/day', '5+ meals/day'];
+    return meals[mealIndex!];
+  }
+  String get dietType{
+    const diets = ['Omnivore', 'Vegetarian', 'Vegan', 'Pescatarian', 'Paleo', 'Keto'];
+    return diets[dietIndex!];
+  }
+  List<String> get regionType{
+    const regions = ['South Asian', 'East Asian', 'Southeast Asian', 'Middle Eastern', 'Mediterranean', 'East African', 'North African', 'Western', 'No preference'];
+    return regionIndex.map((i) => regions[i]).toList();
+  }
+}
 
 class SignupPageSeven extends StatefulWidget {
   final SignupPageSevenData data;
@@ -1454,7 +1496,7 @@ class SignupPageSeven extends StatefulWidget {
 class _SignupPageSevenState extends State<SignupPageSeven> {
   int? meal;
   int? diet;
-  int? region;
+  Set<int> region = {};
   bool isHalal = false;
 
   @override
@@ -1480,42 +1522,10 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
             spacing: 10,
             runSpacing: 10,
             children: [
-              ChoiceChip(
-                label: Text('2'),
-                selected: meal == 0,
-                onSelected: (selected){
-                  setState(() {
-                    meal = selected ? 0 : null;
-                  });
-                },
-              ),
-              ChoiceChip(
-                label: Text('3'),
-                selected: meal == 1,
-                onSelected: (selected){
-                  setState(() {
-                    meal = selected ? 1 : null;
-                  });
-                },
-              ),
-              ChoiceChip(
-                label: Text('4'),
-                selected: meal == 2,
-                onSelected: (selected){
-                  setState(() {
-                    meal = selected ? 2 : null;
-                  });
-                },
-              ),
-              ChoiceChip(
-                label: Text('5+'),
-                selected: meal == 3,
-                onSelected: (selected){
-                  setState(() {
-                    meal = selected ? 3 : null;
-                  });
-                },
-              ),
+              mealChip('2', 0),
+              mealChip('3', 1),
+              mealChip('4', 2),
+              mealChip('5+', 3),
             ],
           ),
           const SizedBox(height: 15,),
@@ -1579,6 +1589,17 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
       ),
     );
   }
+  Widget mealChip(String label, int value){
+    return ChoiceChip(
+      label: Text(label),
+      selected: meal == value,
+      onSelected: (selected){
+        setState(() {
+          meal = selected ? value : null;
+        });
+      },
+    );
+  }
   Widget dietChip(String label, Image avatar, int value){
     return ChoiceChip(
       label: Text(label),
@@ -1595,12 +1616,16 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
   Widget regionChip(String label, IconData icon, int value){
     return FilterChip(
       label: Text(label),
-      selected: region == value,
+      selected: region.contains(value),
       showCheckmark: false,
       avatar: Icon(icon),
       onSelected: (selected){
         setState(() {
-          region = selected ? value : null;
+          if(selected){
+            region.add(value);
+          }else{
+            region.remove(value);
+          }
         });
       },
     );

@@ -141,6 +141,9 @@ final ThemeData lightTheme = ThemeData(
     backgroundColor: Color(0xffe53935),
     alignment: Alignment.topRight,
   ),
+  chipTheme: ChipThemeData(
+    selectedColor: Color(0xff2a3f3f),
+  ),
 );
 
 final ColorScheme darkMode = ColorScheme(
@@ -214,6 +217,9 @@ final ThemeData darkTheme = ThemeData(
     largeSize: 20,
     padding: const EdgeInsets.all(8),
     alignment: Alignment.topRight,
+  ),
+  chipTheme: ChipThemeData(
+    selectedColor: Color(0xffd1e6e6),
   ),
 );
 
