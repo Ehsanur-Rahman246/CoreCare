@@ -34,7 +34,50 @@ class SignupPageOneData{
     this.ageGroup,
     this.age,
     this.category,
-});
+  });
+
+  double toHeightCm(double value, bool isFt){
+    return isFt ? value * 30.48 : value;
+  }
+
+  double toWeightKg(double value, bool isKg){
+    return isKg ? value : value * 0.453592;
+  }
+
+  double calculateBMI(double h, double w){
+    final height = h / 100;
+    return w / (height * height);
+  }
+  double calculateBMR(double h, double w, int age, int gender){
+    final base = (10 * w) + (6.25 * h) - (5 * age);
+    return gender == 1 ? base + 5 : base - 161;
+  }
+  int calculateAge(DateTime dob){
+    final today = DateTime.now();
+    int age = today.year - dob.year;
+    if(today.month < dob.month || (today.month == dob.month && today.day < dob.day)){
+      age--;
+    }
+    return age;
+  }
+
+  String getAgeGroup(int age){
+    if(age < 18) return 'Teen';
+    if(age < 30) return 'Young Adult';
+    if(age < 60) return 'Adult';
+    return 'Senior';
+  }
+  void calculateAndSave(){
+    if(height != null && weight != null && dob != null && gender != null){
+      final heightCm = toHeightCm(height!, isHeightFt);
+      final weightKg = toWeightKg(weight!, isWeightKg);
+      final calculatedAge = calculateAge(dob!);
+      age = calculateAge(dob!);
+      bmi = double.parse(calculateBMI(heightCm, weightKg).toStringAsFixed(1));
+      bmr = double.parse(calculateBMR(heightCm, weightKg, calculatedAge, gender!).toStringAsFixed(1));
+      ageGroup = getAgeGroup(calculatedAge);
+    }
+  }
 }
 
 class SignupPageOne extends StatefulWidget {
@@ -56,21 +99,6 @@ class _SignupPageOneState extends State<SignupPageOne> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
-
-  double? getHeight(){
-    return double.tryParse(heightController.text);
-  }
-  double? getWeight(){
-    return double.tryParse(weightController.text);
-  }
-
-  double toHeightCm(double value, bool isFt){
-    return isFt ? value * 30.48 : value;
-  }
-
-  double toWeightKg(double value, bool isKg){
-    return isKg ? value : value * 0.453592;
-  }
 
   DateTime? selectedDate;
   final TextEditingController dateController = TextEditingController();
@@ -97,21 +125,6 @@ class _SignupPageOneState extends State<SignupPageOne> {
 
     return '$year-$month-$day';
   }
-  int calculateAge(DateTime dob){
-    final today = DateTime.now();
-    int age = today.year - dob.year;
-    if(today.month < dob.month || (today.month == dob.month && today.day < dob.day)){
-      age--;
-    }
-    return age;
-  }
-
-  String getAgeGroup(int age){
-    if(age < 18) return 'Teen';
-    if(age < 30) return 'Young Adult';
-    if(age < 60) return 'Adult';
-    return 'Senior';
-  }
 
   int? genderSelected;
   void selectGender(int g){
@@ -122,15 +135,6 @@ class _SignupPageOneState extends State<SignupPageOne> {
 
   bool isHeightUnitOne = true;
   bool isWeightUnitOne = true;
-
-  double calculateBMI(double h, double w){
-    final height = h / 100;
-    return w / (height * height);
-  }
-  double calculateBMR(double h, double w, int age, int gender){
-    final base = (10 * w) + (6.25 * h) - (5 * age);
-    return gender == 1 ? base + 5 : base - 161;
-  }
 
   bool validateInput(){
     bool isValid = true;
@@ -148,7 +152,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
       }else{
         dobError = null;
 
-        final age = calculateAge(selectedDate!);
+        final age = data.calculateAge(selectedDate!);
         if(age < 13){
           dobError = 'You must be at least 13 years old';
           isValid = false;
@@ -196,21 +200,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
     data.weight = double.tryParse(weightController.text);
     data.isHeightFt = isHeightUnitOne;
     data.isWeightKg = isWeightUnitOne;
-
-    final h = data.height;
-    final w = data.weight;
-    final dob = data.dob;
-    final gender = data.gender;
-
-    if(h != null && w != null && dob != null && gender != null){
-      final heightCm = toHeightCm(h, data.isHeightFt);
-      final weightKg = toWeightKg(w, data.isWeightKg);
-      final age = calculateAge(dob);
-      data.age = age;
-      data.bmi = double.parse(calculateBMI(heightCm, weightKg).toStringAsFixed(1));
-      data.bmr = double.parse(calculateBMR(heightCm, weightKg, age, gender).toStringAsFixed(1));
-      data.ageGroup = getAgeGroup(age);
-     }
+    data.calculateAndSave();
   }
 
   @override
@@ -333,12 +323,11 @@ class _SignupPageOneState extends State<SignupPageOne> {
                         ),
                       ),
                     ),
-                              ),
+                  ),
                 ),
             ),
           ],
         ),
-        const SizedBox(height: 5,),
         if(genderError != null)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5),
@@ -569,6 +558,14 @@ class SignupPageThreeData{
   String get sleepPattern{
     const patterns = ['Less than 5 hours', '5 to 7 hours', '7 to 9 hours', 'More than 9 hours'];
     return patterns[sleepIndex!];
+  }
+  double get workFactor{
+    const factors = [1.2, 1.35, 1.55];
+    return factors[workIndex!];
+  }
+  double get activeFactor{
+    const factors = [1.0, 1.1, 1.2];
+    return factors[activeIndex!];
   }
 }
 
@@ -899,6 +896,7 @@ class _SignupPageThreeState extends State<SignupPageThree> {
 
 class SignupPageFourData{
   int? fitIndex;
+  double? tdee;
   SignupPageFourData({
     this.fitIndex,
   });
@@ -906,6 +904,10 @@ class SignupPageFourData{
   String get fitType{
     const types = ['Beginner', 'Intermediate', 'Advanced'];
     return types[fitIndex!];
+  }
+  double get fitFactor{
+    const factors = [0.95, 1.0, 1.05];
+    return factors[fitIndex!];
   }
 }
 
@@ -919,12 +921,35 @@ class SignupPageFour extends StatefulWidget {
 
 class _SignupPageFourState extends State<SignupPageFour> {
   int selectedFit = -1;
-  bool selectionFinal = false;
+  String? fitError;
+
+  double? get previewTDEE{
+    if(selectedFit == -1) return null;
+    final data1 = context.read<DataProvider>().pageOne;
+    final data3 = context.read<DataProvider>().pageThree;
+    const factors = [0.95, 1.0, 1.05];
+    return data1.bmr! * data3.workFactor * data3.activeFactor * factors[selectedFit];
+  }
+
+  bool validateInput() {
+   bool isValid = true;
+   if(selectedFit == -1){
+     fitError = 'Select your fitness level';
+     isValid = false;
+   }else{
+     fitError= null;
+   }
+   return isValid;
+  }
+
+  void saveData(){
+    widget.data.fitIndex = selectedFit;
+    widget.data.tdee = previewTDEE;
+  }
 
   @override
   Widget build(BuildContext context) {
     final data1 = context.read<DataProvider>().pageOne;
-    final data3 = context.read<DataProvider>().pageThree;
     final th = Theme.of(context).textTheme;
     final ch = Theme.of(context).colorScheme;
 
@@ -949,7 +974,6 @@ class _SignupPageFourState extends State<SignupPageFour> {
             onTap: (){
               setState(() {
                 selectedFit = 0;
-                selectionFinal = true;
               });
             },
             child: Container(
@@ -979,7 +1003,6 @@ class _SignupPageFourState extends State<SignupPageFour> {
             onTap: (){
               setState(() {
                 selectedFit = 1;
-                selectionFinal = true;
               });
             },
             child: Container(
@@ -1009,7 +1032,6 @@ class _SignupPageFourState extends State<SignupPageFour> {
             onTap: (){
               setState(() {
                 selectedFit = 2;
-                selectionFinal = true;
               });
             },
             child: Container(
@@ -1036,8 +1058,15 @@ class _SignupPageFourState extends State<SignupPageFour> {
             ),
           ),
           const SizedBox(height: 20,),
-          if(selectionFinal)
-            Text('Based on your data, we recommend you to choose this goal. Go to next page to choose.'),
+          if(selectedFit != -1)
+            Column(children: [
+              Text('Based on your given data,'),
+              Text('Your BMI is ${data1.bmi} - ${data1.category}.'),
+              Text('Your body needs ${data1.bmr} calories at rest and $previewTDEE calories are burnt in a day.'),
+              Text('Your belong to group ${data1.ageGroup}.'),
+              Text('See our recommendation next, or choose your own focus.'),
+            ]),
+          const SizedBox(height: 20,),
         ],),
       ),
     );
