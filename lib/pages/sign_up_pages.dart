@@ -67,6 +67,13 @@ class SignupPageOneData{
     if(age < 60) return 'Adult';
     return 'Senior';
   }
+  String getCategory(double bmi){
+    if(bmi < 18.5) return 'Underweight';
+    if(bmi < 25) return 'Normal';
+    if(bmi < 30) return 'Overweight';
+    return 'Obese';
+  }
+
   void calculateAndSave(){
     if(height != null && weight != null && dob != null && gender != null){
       final heightCm = toHeightCm(height!, isHeightFt);
@@ -76,6 +83,7 @@ class SignupPageOneData{
       bmi = double.parse(calculateBMI(heightCm, weightKg).toStringAsFixed(1));
       bmr = double.parse(calculateBMR(heightCm, weightKg, calculatedAge, gender!).toStringAsFixed(1));
       ageGroup = getAgeGroup(calculatedAge);
+      category = getCategory(bmi!);
     }
   }
 }
@@ -95,12 +103,14 @@ class _SignupPageOneState extends State<SignupPageOne> {
   String? genderError;
   String? heightError;
   String? weightError;
+  int? genderSelected;
+  bool isHeightUnitOne = true;
+  bool isWeightUnitOne = true;
+  DateTime? selectedDate;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
-
-  DateTime? selectedDate;
   final TextEditingController dateController = TextEditingController();
 
   Future<void> pickDate() async{
@@ -126,15 +136,11 @@ class _SignupPageOneState extends State<SignupPageOne> {
     return '$year-$month-$day';
   }
 
-  int? genderSelected;
   void selectGender(int g){
     setState(() {
       genderSelected = g;
     });
   }
-
-  bool isHeightUnitOne = true;
-  bool isWeightUnitOne = true;
 
   bool validateInput(){
     bool isValid = true;
@@ -581,13 +587,31 @@ class _SignupPageThreeState extends State<SignupPageThree> {
   int selectedWork = -1;
   int selectedActive = -1;
   int selectedSleep = -1;
+  String? workError;
+  String? activeError;
+  String? sleepError;
 
   bool validateInput(){
     bool isValid = true;
     setState(() {
-      if(selectedWork == -1) isValid = false;
-      if(selectedActive == -1) isValid = false;
-      if(selectedSleep == -1) isValid = false;
+      if(selectedWork == -1) {
+        workError = 'Select your work type';
+        isValid = false;
+      }else{
+        workError = null;
+      }
+      if(selectedActive == -1) {
+        activeError = 'Select your activity level';
+        isValid = false;
+      }else{
+        activeError = null;
+      }
+      if(selectedSleep == -1) {
+        sleepError = 'Select your average sleep time';
+        isValid = false;
+      }else{
+        sleepError = null;
+      }
     });
     return isValid;
   }
@@ -625,6 +649,16 @@ class _SignupPageThreeState extends State<SignupPageThree> {
           Text('This helps match your plan to your lifestyle', style: th.labelMedium,),
           const SizedBox(height: 20,),
           Text('Work / Occupation type'),
+          if(workError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(workError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Text('What is your everyday work?', style: th.labelSmall,),
           const SizedBox(height: 5,),
@@ -717,6 +751,16 @@ class _SignupPageThreeState extends State<SignupPageThree> {
           ),
           const SizedBox(height: 20,),
           Text('Daily activity level'),
+          if(activeError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(activeError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Text('How often do you exercise?', style: th.labelSmall,),
           const SizedBox(height: 5,),
@@ -809,6 +853,16 @@ class _SignupPageThreeState extends State<SignupPageThree> {
           ),
           const SizedBox(height: 20,),
           Text('Sleep Pattern'),
+          if(sleepError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(sleepError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Text('How much sleep do you get everyday?', style: th.labelSmall,),
           const SizedBox(height: 10,),
@@ -933,18 +987,26 @@ class _SignupPageFourState extends State<SignupPageFour> {
 
   bool validateInput() {
    bool isValid = true;
-   if(selectedFit == -1){
-     fitError = 'Select your fitness level';
-     isValid = false;
-   }else{
-     fitError= null;
-   }
+   setState(() {
+     if(selectedFit == -1){
+       fitError = 'Select your fitness level';
+       isValid = false;
+     }else{
+       fitError= null;
+     }
+   });
    return isValid;
   }
 
   void saveData(){
     widget.data.fitIndex = selectedFit;
     widget.data.tdee = previewTDEE;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    selectedFit = widget.data.fitIndex ?? -1;
   }
 
   @override
@@ -967,6 +1029,16 @@ class _SignupPageFourState extends State<SignupPageFour> {
           Text('Tell us where you’re starting from.', style: th.labelMedium,),
           const SizedBox(height: 20,),
           Text('Workout Level'),
+          if(fitError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(fitError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Text('What is your current fitness ability?', style: th.labelSmall,),
           const SizedBox(height: 5,),
@@ -990,7 +1062,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.o1,
+                  ),child: Emoji.f1,
                 ),
                 title: Text('Beginner'),
                 subtitle: Text('new to exercise'),
@@ -1019,7 +1091,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.o2,
+                  ),child: Emoji.f2,
                 ),
                 title: Text('Intermediate'),
                 subtitle: Text('Regular workouts'),
@@ -1048,7 +1120,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.o3,
+                  ),child: Emoji.f3,
                 ),
                 title: Text('Advanced'),
                 subtitle: Text('Intense training'),
@@ -1066,7 +1138,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
               Text('Your belong to group ${data1.ageGroup}.'),
               Text('See our recommendation next, or choose your own focus.'),
             ]),
-          const SizedBox(height: 20,),
+          const SizedBox(height: 30,),
         ],),
       ),
     );
@@ -1075,8 +1147,10 @@ class _SignupPageFourState extends State<SignupPageFour> {
 
 class SignupPageFiveData{
   int? fundIndex;
+  int? goalIndex;
   SignupPageFiveData({
     this.fundIndex,
+    this.goalIndex,
   });
 
   String get fundType{
@@ -1094,9 +1168,9 @@ class SignupPageFive extends StatefulWidget {
 }
 
 class _SignupPageFiveState extends State<SignupPageFive> {
-  int selectedFund = -1;
-  bool hasFundSelected = false;
-  bool isRecommended = false;
+  late int selectedFund;
+  int selectedGoal = -1;
+  String? goalError;
 
   void selectFund (int f){
     setState(() {
@@ -1104,9 +1178,34 @@ class _SignupPageFiveState extends State<SignupPageFive> {
     });
   }
 
+  void saveData(){
+    widget.data.fundIndex = selectedFund;
+    widget.data.goalIndex = selectedGoal;
+  }
+  bool validateInput(){
+    bool isValid = true;
+    setState(() {
+      if(selectedGoal == -1){
+        goalError = 'Select your goal to continue';
+        isValid = false;
+      }else{
+        goalError = null;
+      }
+    });
+    return isValid;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final rec = context.read<DataProvider>().finalRecommendation;
+    selectedFund = rec.code;
+  }
+
   @override
   Widget build(BuildContext context) {
     final th = Theme.of(context).textTheme;
+    final rec = context.read<DataProvider>().finalRecommendation;
 
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -1123,7 +1222,7 @@ class _SignupPageFiveState extends State<SignupPageFive> {
           const SizedBox(height: 20,),
           Text('Focus Area'),
           const SizedBox(height: 5,),
-          Text('Select your starting point', style: th.labelSmall,),
+          Column(children: [Text('We have selected a starting point for you. Continue or choose yourself.', style: th.labelSmall,)]),
           const SizedBox(height: 10,),
           Row(
             children: [
@@ -1156,9 +1255,21 @@ class _SignupPageFiveState extends State<SignupPageFive> {
               ],
           ),
           const SizedBox(height: 20,),
-          if(hasFundSelected)
-          Text('Now choose your goal'),
-          const SizedBox(height: 10,),
+          Column(children: [Text('You are categorized as the ${rec.profile}.')]),
+          Text('Choose your goal to start'),
+          if(goalError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(goalError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          const SizedBox(height: 5,),
+
+          const SizedBox(height: 30,),
         ],),
       ),
     );
@@ -1172,7 +1283,6 @@ class _SignupPageFiveState extends State<SignupPageFive> {
       child: GestureDetector(
         onTap: () {
           selectFund(select);
-          hasFundSelected = true;
         },
         child: Container(
           decoration: BoxDecoration(
@@ -1200,6 +1310,12 @@ class _SignupPageFiveState extends State<SignupPageFive> {
       ),
     );
   }
+  // Widget selectGoal(){
+  //   return ChoiceChip(
+  //       label: label,
+  //       selected: selected
+  //   );
+  // }
 }
 
 class SignupPageSixData{
@@ -1261,12 +1377,82 @@ class SignupPageSix extends StatefulWidget {
 
 class _SignupPageSixState extends State<SignupPageSix> {
   Set<int> styleSelected = {};
-  int? equipSelected;
-  int? placeSelected;
-  int? daySelected;
-  int? durationSelected;
+  int equipSelected = -1;
+  int placeSelected = -1;
+  int daySelected = -1;
+  int durationSelected = -1;
   Set<int> timeSelected = {};
   Set<int> freeSelected = {};
+  String? styleError;
+  String? equipError;
+  String? placeError;
+  String? dayError;
+  String? durationError;
+  String? timeError;
+
+  void saveData(){
+    widget.data.styleIndex = styleSelected.toList();
+    widget.data.equipIndex = equipSelected;
+    widget.data.placeIndex = placeSelected;
+    widget.data.dayIndex = daySelected;
+    widget.data.durationIndex = durationSelected;
+    widget.data.timeIndex = timeSelected.toList();
+    widget.data.freeIndex = freeSelected.toList();
+  }
+  bool validateInput(){
+    bool isValid = true;
+    setState(() {
+      if(styleSelected.isEmpty){
+        styleError = 'Please select your preferred style.';
+        isValid = false;
+      }else {
+        styleError = null;
+      }
+      if(equipSelected == -1){
+        styleError = 'Please choose your available equipment options.';
+        isValid = false;
+      }else {
+        styleError = null;
+      }
+      if(placeSelected == -1){
+        styleError = 'Please select where you plan to work out.';
+        isValid = false;
+      }else {
+        styleError = null;
+      }
+      if(daySelected == -1){
+        styleError = 'Please specify how many days you will work out per week.';
+        isValid = false;
+      }else {
+        styleError = null;
+      }
+      if(durationSelected == -1){
+        styleError = 'Please enter how long each workout session will be.';
+        isValid = false;
+      }else {
+        styleError = null;
+      }
+      if(timeSelected.isEmpty){
+        styleError = 'Please select your preferred workout times.';
+        isValid = false;
+      }else {
+        styleError = null;
+      }
+    });
+    return isValid;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    styleSelected = (widget.data.styleIndex).toSet();
+    equipSelected = widget.data.equipIndex ?? -1;
+    placeSelected = widget.data.placeIndex ?? -1;
+    daySelected = widget.data.dayIndex ?? -1;
+    durationSelected = widget.data.durationIndex ?? -1;
+    timeSelected = (widget.data.timeIndex).toSet();
+    freeSelected = (widget.data.freeIndex).toSet();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1284,50 +1470,90 @@ class _SignupPageSixState extends State<SignupPageSix> {
           Text('Pick what fits your schedule and preferences', style: Theme.of(context).textTheme.labelMedium,),
           const SizedBox(height: 20,),
           Text('Training Style Preference'),
+          if(styleError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(styleError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
             runSpacing: 10,
             children: [
-              trainingStyle('Strength Training', Emoji.o1, 0),
-              trainingStyle('Cardio', Emoji.o1, 1),
-              trainingStyle('HIIT', Emoji.o1, 2),
-              trainingStyle('Yoga & Stretching', Emoji.o1, 3),
-              trainingStyle('Pilates', Emoji.o1, 4),
-              trainingStyle('Calisthenics', Emoji.o1, 5),
-              trainingStyle('Sports & Athletics', Emoji.o1, 6),
-              trainingStyle('Functional Training', Emoji.o1, 7),
-              trainingStyle('Low Impact', Emoji.o1, 8),
-              trainingStyle('Any', Emoji.o1, 9),
+              trainingStyle('Strength Training', Emoji.style1, 0),
+              trainingStyle('Cardio', Emoji.style2, 1),
+              trainingStyle('HIIT', Emoji.style3, 2),
+              trainingStyle('Yoga & Stretching', Emoji.style4, 3),
+              trainingStyle('Pilates', Emoji.style5, 4),
+              trainingStyle('Calisthenics', Emoji.style6, 5),
+              trainingStyle('Sports & Athletics', Emoji.style7, 6),
+              trainingStyle('Functional Training', Emoji.style8, 7),
+              trainingStyle('Low Impact', Emoji.style9, 8),
+              trainingStyle('Mixed', Emoji.style10, 9),
             ],
           ),
-          const SizedBox(height: 15,),
+          const SizedBox(height: 20,),
           Text('Equipment Access'),
+          if(equipError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(equipError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
             runSpacing: 10,
             children: [
-              equipChip('None', Emoji.o1, 0),
-              equipChip('Minimal', Emoji.o1, 1),
-              equipChip('Full Gym', Emoji.o1, 2),
+              equipChip('None', Emoji.e1, 0),
+              equipChip('Minimal', Emoji.e2, 1),
+              equipChip('Full Gym', Emoji.e3, 2),
             ],
           ),
-          const SizedBox(height: 15,),
+          const SizedBox(height: 20,),
           Text('Location Preference'),
+          if(placeError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(placeError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
             runSpacing: 10,
             children: [
-              placeChip('Home', Emoji.keto, 0),
-              placeChip('Gym', Emoji.keto, 1),
-              placeChip('Outdoors', Emoji.keto, 2),
-              placeChip('Any', Emoji.keto, 3),
+              placeChip('Home', Emoji.place1, 0),
+              placeChip('Gym', Emoji.place2, 1),
+              placeChip('Outdoors', Emoji.place3, 2),
+              placeChip('Any', Emoji.style10, 3),
             ],
           ),
-          const SizedBox(height: 15,),
+          const SizedBox(height: 20,),
           Text('Workout days per week'),
+          if(dayError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(dayError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
@@ -1340,8 +1566,18 @@ class _SignupPageSixState extends State<SignupPageSix> {
               dayChip('6', 4),
             ],
           ),
-          const SizedBox(height: 15,),
+          const SizedBox(height: 20,),
           Text('Session Time'),
+          if(durationError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(durationError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
@@ -1353,8 +1589,18 @@ class _SignupPageSixState extends State<SignupPageSix> {
               timeChip('60+ min', 3),
             ],
           ),
-          const SizedBox(height: 15,),
+          const SizedBox(height: 20,),
           Text('Session Duration'),
+          if(timeError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(timeError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
@@ -1366,7 +1612,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
               sessionChip('Evening', Emoji.s4, 3),
             ],
           ),
-          const SizedBox(height: 15,),
+          const SizedBox(height: 20,),
           Text('Your Free Days'),
           const SizedBox(height: 5,),
           Wrap(
@@ -1382,7 +1628,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
               freeChip('Sat', 6),
             ],
           ),
-          const SizedBox(height: 20,),
+          const SizedBox(height: 30,),
         ],),
       ),
     );
@@ -1413,7 +1659,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
       selected: equipSelected == value,
       onSelected: (selected){
         setState(() {
-          equipSelected = selected ? value : null;
+          equipSelected = selected ? value : -1;
         });
       },
     );
@@ -1426,7 +1672,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
       selected: placeSelected == value,
       onSelected: (selected){
         setState(() {
-          placeSelected = selected ? value : null;
+          placeSelected = selected ? value : -1;
         });
       },
     );
@@ -1437,7 +1683,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
       selected: daySelected == value,
       onSelected: (selected){
         setState(() {
-          daySelected = selected ? value : null;
+          daySelected = selected ? value : -1;
         });
       },
     );
@@ -1448,7 +1694,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
       selected: durationSelected == value,
       onSelected: (selected){
         setState(() {
-          durationSelected = selected ? value : null;
+          durationSelected = selected ? value : -1;
         });
       },
     );
@@ -1490,12 +1736,14 @@ class _SignupPageSixState extends State<SignupPageSix> {
 class SignupPageSevenData{
   int? mealIndex;
   int? dietIndex;
+  bool isHalal;
   List<int> regionIndex;
   List<String> selectedAllergens = [];
 
   SignupPageSevenData({
     this.mealIndex,
     this.dietIndex,
+    this.isHalal = false,
     this.regionIndex = const [],
     List<String>? selectedAllergens,
   }) : selectedAllergens = selectedAllergens ?? [];
@@ -1527,6 +1775,39 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
   int? diet;
   Set<int> region = {};
   bool isHalal = false;
+  String? mealError;
+  String? dietError;
+
+  void saveData(){
+    widget.data.mealIndex = meal;
+    widget.data.dietIndex = diet;
+    widget.data.isHalal = isHalal;
+    widget.data.regionIndex = region.isEmpty ? [8] : region.toList();
+  }
+
+  bool validateInput(){
+    bool isValid = true;
+    if(meal == null){
+      mealError = 'Please select how many meals you want to take a day.';
+      isValid = false;
+    }else{
+      mealError = null;
+    }
+    if(diet == null){
+      dietError = 'Please select your preferred diet type';
+      isValid = false;
+    }else{
+      dietError = null;
+    }
+    return isValid;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    meal = widget.data.mealIndex;
+    diet = widget.data.dietIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1546,6 +1827,16 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
           Text('Help us shape a plan that works for you', style: Theme.of(context).textTheme.labelMedium,),
           const SizedBox(height: 20,),
           Text('Meals per day'),
+          if(mealError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(mealError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
@@ -1557,8 +1848,18 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
               mealChip('5+', 3),
             ],
           ),
-          const SizedBox(height: 15,),
+          const SizedBox(height: 20,),
           Text('Your Diet Preference'),
+          if(dietError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(dietError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           const SizedBox(height: 5,),
           Wrap(
             spacing: 10,
@@ -1599,13 +1900,13 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
               regionChip('Southeast Asian', Symbols.forest_rounded, 2),
               regionChip('Middle Eastern', Symbols.mosque_rounded, 3),
               regionChip('Mediterranean', Symbols.waves_rounded, 4),
-              regionChip('East African', Symbols.float_landscape_2_rounded, 5),
+              regionChip('East African', Symbols.landscape_2_rounded, 5),
               regionChip('North African', Symbols.sunny_rounded, 6),
               regionChip('Western', Symbols.account_balance_rounded, 7),
               regionChip('No preference', Symbols.all_inclusive_rounded, 8),
             ],
           ),
-          const SizedBox(height: 15,),
+          const SizedBox(height: 20,),
           Row(children: [
             Icon(Symbols.allergies_rounded),
             const SizedBox(width: 10,),
@@ -1613,7 +1914,7 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
           ],),
           const SizedBox(height: 5,),
           AllergenChips(),
-          const SizedBox(height: 20,),
+          const SizedBox(height: 30,),
         ],),
       ),
     );
@@ -1650,10 +1951,26 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
       avatar: Icon(icon),
       onSelected: (selected){
         setState(() {
-          if(selected){
-            region.add(value);
+          const noPreferenceValue = 8;
+          if(value == noPreferenceValue){
+            if(selected){
+              region.clear();
+              region.add(noPreferenceValue);
+            }else{
+              region.remove(noPreferenceValue);
+            }
           }else{
-            region.remove(value);
+            if(selected){
+              region.add(value);
+              region.remove(noPreferenceValue);
+            }else{
+              region.remove(value);
+            }
+          }
+          final allSelected = List.generate(8, (i) => i).every((i) => region.contains(i));
+          if(allSelected){
+            region.clear();
+            region.add(noPreferenceValue);
           }
         });
       },
@@ -1661,7 +1978,16 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
   }
 }
 
-class SignupPageEightData{}
+class SignupPageEightData{
+  List<String> selectedIntolerances = [];
+  List<String> selectedDislikes = [];
+
+  SignupPageEightData({
+    List<String>? selectedIntolerances,
+    List<String>? selectedDislikes,
+  }) :  selectedIntolerances = selectedIntolerances ?? [],
+        selectedDislikes = selectedDislikes ?? [];
+}
 
 class SignupPageEight extends StatefulWidget {
   final SignupPageEightData data;
@@ -1700,6 +2026,8 @@ class _SignupPageEightState extends State<SignupPageEight> {
             const SizedBox(width: 10,),
             Text('Your dislikes'),
           ],),
+          const SizedBox(height: 5,),
+          DislikedChips(),
           const SizedBox(height: 20,),
         ],),
       ),
@@ -1707,7 +2035,9 @@ class _SignupPageEightState extends State<SignupPageEight> {
   }
 }
 
-class SignupPageNineData{}
+class SignupPageNineData{
+
+}
 
 class SignupPageNine extends StatefulWidget {
   final SignupPageNineData data;

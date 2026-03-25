@@ -51,6 +51,29 @@ class TimeProvider extends ChangeNotifier {
   }
 }
 
+class RecommendationData{
+  final int? gender;
+  final String? category;
+  final double? bmr;
+  final String? ageGroup;
+  final int? work;
+  final int? active;
+  final int? sleep;
+  final int? fitness;
+  final double? tdee;
+  RecommendationData({
+    this.gender,
+    this.category,
+    this.bmr,
+    this.ageGroup,
+    this.work,
+    this.active,
+    this.sleep,
+    this.fitness,
+    this.tdee,
+  });
+}
+
 class DataProvider extends ChangeNotifier {
   SignupPageOneData pageOne = SignupPageOneData();
   SignupPageTwoData pageTwo = SignupPageTwoData();
@@ -99,6 +122,29 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  RecommendationData get recommendationData{
+    return RecommendationData(
+      gender: pageOne.gender!,
+      category: pageOne.category!,
+      bmr: pageOne.bmr!,
+      ageGroup: pageOne.ageGroup!,
+      work: pageThree.workIndex!,
+      active: pageThree.activeIndex!,
+      sleep: pageThree.sleepIndex!,
+      fitness: pageFour.fitIndex!,
+      tdee: pageFour.tdee!,
+    );
+  }
+  RuleResult get finalRecommendation{
+    final d = recommendationData;
+    for(final rule in rules){
+      if(rule.condition(d)){
+        return rule.result;
+      }
+    }
+    return RuleResult(code: 5, profile: 'Starter');
+  }
+
   void delete(){
     pageOne = SignupPageOneData();
     pageTwo = SignupPageTwoData();
@@ -112,3 +158,58 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+
+
+class Rule{
+  final bool Function(RecommendationData data) condition;
+  final RuleResult result;
+
+  Rule({
+    required this.condition,
+    required this.result,
+  });
+}
+
+class RuleResult{
+  final int code;
+  final String profile;
+  RuleResult({
+    required this.code,
+    required this.profile,
+  });
+}
+
+final List<Rule> rules = [
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 0, profile: 'Energy Depleted'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Teen', result: RuleResult(code: 0, profile: 'Undernourished'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && (d.ageGroup == 'Young Adult' || d.ageGroup == 'Adult'), result: RuleResult(code: 0, profile: 'Underfueled'),),
+  Rule(condition: (d) => d.category == 'Obese' && d.work == 0 && d.ageGroup == 'Adult', result: RuleResult(code: 3, profile: 'Obese Adult'),),
+  Rule(condition: (d) => d.category == 'Obese' && d.work == 0 && d.ageGroup == 'Young Adult', result: RuleResult(code: 3, profile: 'Overweight Starter'),),
+  Rule(condition: (d) => d.sleep == 0 && d.tdee! > 2600 && d.ageGroup == 'Adult', result: RuleResult(code: 0, profile: 'Sleep Deprived'),),
+  Rule(condition: (d) => d.sleep == 0 && d.tdee! > 2600 && d.ageGroup == 'Young Adult', result: RuleResult(code: 0, profile: 'High Output'),),
+  Rule(condition: (d) => (d.category == 'Overweight' || d.category == 'Obese') && d.active == 0 && d.ageGroup == 'Senior', result: RuleResult(code: 2, profile: 'Stiff Retiree'),),
+  Rule(condition: (d) => d.fitness == 0 && d.ageGroup == 'Teen', result: RuleResult(code: 5, profile: 'Inactive Student'),),
+  Rule(condition: (d) => (d.fitness == 1 || d.fitness == 2) && d.ageGroup == 'Teen', result: RuleResult(code: 6, profile: 'Developing Athlete'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 1, profile: 'Gym Goer'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 6, profile: 'Peak Performer'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 5, profile: 'Desk Bound'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 4, profile: 'Wellness Seeker'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 1, profile: 'Adult Rebuilder'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 3, profile: 'Heavy Carrier'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 4, profile: 'Metabolic Risk'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 2, profile: 'Stiff Mover'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 4, profile: 'Metabolic Struggle'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 1, profile: 'Active Elder'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 3, profile: 'Senior Mover'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 5, profile: 'Frail Elder'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 0, profile: 'Depleted Mover'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 5, profile: 'Sedentary Starter'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 2, profile: 'Overworked Mover'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 1, profile: 'High Performer'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 4, profile: 'Metabolic Drifter'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 5, profile: 'Grounded Beginner'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 1, profile: 'Steady Builder'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 6, profile: 'Elite Performer'),),
+  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 3, profile: 'Controlled Mover'),),
+];

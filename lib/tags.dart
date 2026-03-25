@@ -1,4 +1,5 @@
 import 'package:core_care/data_provider.dart';
+import 'package:core_care/decoration.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -469,7 +470,7 @@ class _InjuryChipsState extends State<InjuryChips> {
     );
   }
 
-  List<String> getRemainingMeds() {
+  List<String> getRemainingInjuries() {
     List<String> remains = [];
     for (int i = 8; i < injuries.length; i++) {
       String ins = injuries[i];
@@ -481,8 +482,8 @@ class _InjuryChipsState extends State<InjuryChips> {
   }
 
   Future<void> handleOpenSheet() async {
-    List<String> remainingMeds = getRemainingMeds();
-    final sheet = await openBottomSheet(context, remainingMeds);
+    List<String> remainingInjuries = getRemainingInjuries();
+    final sheet = await openBottomSheet(context, remainingInjuries);
     if (sheet != null) {
       setState(() {
         for (int i = 0; i < sheet.length; i++) {
@@ -581,11 +582,37 @@ class _AllergenChipsState extends State<AllergenChips> {
     "Poppy seeds",
   ];
 
+  final List<Image> allergenIcons = [
+    Emoji.al1,
+    Emoji.al2,
+    Emoji.al3,
+    Emoji.al4,
+    Emoji.al5,
+    Emoji.al6,
+    Emoji.al7,
+    Emoji.al8,
+    Emoji.al9,
+    Emoji.al10,
+    Emoji.al11,
+    Emoji.al12,
+    Emoji.al13,
+    Emoji.al14,
+    Emoji.al15,
+    Emoji.al16,
+    Emoji.al17,
+    Emoji.al18,
+    Emoji.al19,
+    Emoji.al20,
+    Emoji.al21,
+    Emoji.al22,
+  ];
+
   final Set<String> selectedAllergens = {};
 
   Future<List<String>?> openBottomSheet(
     BuildContext context,
     List<String> list,
+      List<Image> logo,
   ) {
     List<String> tempSelection = [];
     return showModalBottomSheet<List<String>>(
@@ -597,6 +624,7 @@ class _AllergenChipsState extends State<AllergenChips> {
             List<Widget> chips = [];
             for (int i = 0; i < list.length; i++) {
               String allergy = list[i];
+              Image avatar = logo[i];
               bool isSelected = tempSelection.contains(allergy);
 
               chips.add(
@@ -604,7 +632,7 @@ class _AllergenChipsState extends State<AllergenChips> {
                   label: Text(allergy, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
                   selected: isSelected,
                   showCheckmark: false,
-                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add,),
+                  avatar: avatar,
                   onPressed: () {
                     setModalState(() {
                       if (isSelected) {
@@ -681,7 +709,7 @@ class _AllergenChipsState extends State<AllergenChips> {
     );
   }
 
-  List<String> getRemainingMeds() {
+  List<String> getRemainingAllergens() {
     List<String> remains = [];
     for (int i = 8; i < allergens.length; i++) {
       String allergy = allergens[i];
@@ -691,15 +719,24 @@ class _AllergenChipsState extends State<AllergenChips> {
     }
     return remains;
   }
+  List<Image> getRemainingLogos() {
+    List<Image> remains = [];
+    for (int i = 8; i < allergens.length; i++) {
+      String allergy = allergens[i];
+        if(!selectedAllergens.contains(allergy)){
+          remains.add(allergenIcons[i]);
+        }
+    }
+    return remains;
+  }
 
   Future<void> handleOpenSheet() async {
-    List<String> remainingMeds = getRemainingMeds();
-    final sheet = await openBottomSheet(context, remainingMeds);
+    List<String> remainingAllergens = getRemainingAllergens();
+    List<Image> remainingLogos = getRemainingLogos();
+    final sheet = await openBottomSheet(context, remainingAllergens, remainingLogos);
     if (sheet != null) {
       setState(() {
-        for (int i = 0; i < sheet.length; i++) {
-          selectedAllergens.add(sheet[i]);
-        }
+        selectedAllergens.addAll(sheet);
       });
     }
   }
@@ -710,10 +747,13 @@ class _AllergenChipsState extends State<AllergenChips> {
 
     for (int i = 0; i <= 7; i++) {
       String allergy = allergens[i];
+      Image logo = allergenIcons[i];
       chips.add(
         FilterChip(
           label: Text(allergy),
+          showCheckmark: false,
           selected: selectedAllergens.contains(allergy),
+          avatar: logo,
           onSelected: (bool selected) {
             setState(() {
               if (selected) {
@@ -728,11 +768,14 @@ class _AllergenChipsState extends State<AllergenChips> {
     }
     for (int i = 8; i < allergens.length; i++) {
       String allergy = allergens[i];
+      Image logo = allergenIcons[i];
       if (selectedAllergens.contains(allergy)) {
         chips.add(
           FilterChip(
             label: Text(allergy),
             selected: true,
+            showCheckmark: false,
+            avatar: logo,
             onSelected: (bool selected) {
               setState(() {
                 selectedAllergens.remove(allergy);
@@ -768,7 +811,7 @@ class IntoleranceChips extends StatefulWidget {
 }
 
 class _IntoleranceChipsState extends State<IntoleranceChips> {
-  final List<String> intolerances = [
+  final List<String> omnivoreIntolerances = [
     "Lactose",
     "Gluten",
     "Fructose",
@@ -785,6 +828,117 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
     "Carbonated drinks",
     "Artificial sweeteners",
   ];
+
+  final List<String> vegetarianIntolerances = [
+    "Lactose",
+    "Gluten",
+    "Fructose",
+    "FODMAP",
+    "Histamine",
+    "Salicylates",
+    "Nightshades",
+    "Caffeine",
+    "Legumes",
+    "Coconut",
+    "Spicy food",
+    "Raw garlic / onion",
+    "Cruciferous vegetables",
+    "Carbonated drinks",
+    "Artificial sweeteners",
+  ];
+
+  final List<String> veganIntolerances = [
+    "Gluten",
+    "Fructose",
+    "FODMAP",
+    "Histamine",
+    "Salicylates",
+    "Nightshades",
+    "Caffeine",
+    "Legumes",
+    "Coconut",
+    "Spicy food",
+    "Raw garlic / onion",
+    "Cruciferous vegetables",
+    "Carbonated drinks",
+    "Artificial sweeteners",
+  ];
+
+  final List<String> pescatarianIntolerances = [
+    "Lactose",
+    "Gluten",
+    "Fructose",
+    "FODMAP",
+    "Histamine",
+    "Salicylates",
+    "Nightshades",
+    "Caffeine",
+    "Legumes",
+    "Coconut",
+    "Spicy food",
+    "Raw garlic / onion",
+    "Cruciferous vegetables",
+    "Carbonated drinks",
+    "Artificial sweeteners",
+  ];
+
+  final List<String> paleoIntolerances = [
+    "Fructose",
+    "Histamine",
+    "Salicylates",
+    "Nightshades",
+    "Caffeine",
+    "Coconut",
+    "Spicy food",
+    "Raw garlic / onion",
+    "Cruciferous vegetables",
+    "Carbonated drinks",
+    "Artificial sweeteners",
+  ];
+
+  final List<String> ketoIntolerances = [
+    "Lactose",
+    "Histamine",
+    "Salicylates",
+    "Nightshades",
+    "Caffeine",
+    "Coconut",
+    "Spicy food",
+    "Raw garlic / onion",
+    "Cruciferous vegetables",
+    "Carbonated drinks",
+    "Artificial sweeteners",
+  ];
+
+  late List<String> intolerances;
+
+  @override
+  void initState() {
+    super.initState();
+    final diet = context.read<DataProvider>().pageSeven.dietIndex;
+    switch(diet){
+      case 0:
+        intolerances = omnivoreIntolerances;
+        break;
+      case 1:
+        intolerances = vegetarianIntolerances;
+        break;
+      case 2:
+        intolerances = veganIntolerances;
+        break;
+      case 3:
+        intolerances = pescatarianIntolerances;
+        break;
+      case 4:
+        intolerances = paleoIntolerances;
+        break;
+      case 5:
+        intolerances = ketoIntolerances;
+        break;
+    }
+    final saved = context.read<DataProvider>().pageEight.selectedIntolerances;
+    selectedIntolerances.addAll(saved);
+  }
 
   final Set<String> selectedIntolerances = {};
 
@@ -886,7 +1040,7 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
     );
   }
 
-  List<String> getRemainingMeds() {
+  List<String> getRemainingIntolerances() {
     List<String> remains = [];
     for (int i = 8; i < intolerances.length; i++) {
       String ints = intolerances[i];
@@ -898,8 +1052,8 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
   }
 
   Future<void> handleOpenSheet() async {
-    List<String> remainingMeds = getRemainingMeds();
-    final sheet = await openBottomSheet(context, remainingMeds);
+    List<String> remainingIntolerances = getRemainingIntolerances();
+    final sheet = await openBottomSheet(context, remainingIntolerances);
     if (sheet != null) {
       setState(() {
         for (int i = 0; i < sheet.length; i++) {
@@ -979,6 +1133,9 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Pork",
     "Organ meats",
     "Game meats",
+    "Slimy texture",
+    "Chewy texture",
+    "Seedy / grainy texture",
     "Seafood",
     "All fish",
     "All shellfish",
@@ -1026,9 +1183,6 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Beet juice",
     "Kombucha",
     "Plant milks",
-    "Slimy",
-    "Chewy",
-    "Seedy / grainy",
   ];
   final List<String> vegetarianDislikes = [
     "Eggs",
@@ -1036,6 +1190,9 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Yogurt",
     "Cheese",
     "Cottage cheese",
+    "Slimy texture",
+    "Chewy texture",
+    "Seedy / grainy texture",
     "Paneer",
     "Tofu / tempeh",
     "Lentils / beans",
@@ -1073,9 +1230,6 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Beet juice",
     "Kombucha",
     "Plant milks",
-    "Slimy",
-    "Chewy",
-    "Seedy / grainy",
   ];
   final List<String> veganDislikes = [
     "Tofu / tempeh",
@@ -1083,6 +1237,9 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Nutritional yeast",
     "Seitan",
     "Spirulina / chlorella",
+    "Slimy texture",
+    "Chewy texture",
+    "Seedy / grainy texture",
     "Bitter greens",
     "Broccoli / cauliflower",
     "Mushrooms",
@@ -1115,9 +1272,6 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Beet juice",
     "Kombucha",
     "Plant milks",
-    "Slimy",
-    "Chewy",
-    "Seedy / grainy",
   ];
   final List<String> pescatarianDislikes = [
     "All fish",
@@ -1125,6 +1279,9 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Oily fish",
     "Squid / octopus",
     "Eggs",
+    "Slimy texture",
+    "Chewy texture",
+    "Seedy / grainy texture",
     "Milk",
     "Yogurt",
     "Cheese",
@@ -1166,9 +1323,6 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Beet juice",
     "Kombucha",
     "Plant milks",
-    "Slimy",
-    "Chewy",
-    "Seedy / grainy",
   ];
   final List<String> paleoDislikes = [
     "Lamb",
@@ -1176,6 +1330,9 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Organ meats",
     "Game meats",
     "All fish",
+    "Slimy texture",
+    "Chewy texture",
+    "Seedy / grainy texture",
     "All shellfish",
     "Oily fish",
     "Squid / octopus",
@@ -1208,9 +1365,6 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Green tea / matcha",
     "Beet juice",
     "Kombucha",
-    "Slimy",
-    "Chewy",
-    "Seedy / grainy",
   ];
   final List<String> ketoDislikes = [
     "Lamb",
@@ -1218,6 +1372,9 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Organ meats",
     "Game meats",
     "All fish",
+    "Slimy texture",
+    "Chewy texture",
+    "Seedy / grainy texture",
     "All shellfish",
     "Oily fish",
     "Squid / octopus",
@@ -1255,28 +1412,212 @@ class _DislikedChipsState extends State<DislikedChips> {
     "Green tea / matcha",
     "Kombucha",
     "Bone broth",
-    "Slimy",
-    "Chewy",
-    "Seedy / grainy",
   ];
 
   late List<String> dislikes;
 
-  // {
-  //   super.initState();
-  //   final gender = context.read<DataProvider>().pageOne.gender;
-  //   meds = gender == 1 ? maleMeds : femaleMeds;
-  // }
-  //
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   final diet = context.read<DataProvider>().pageSeven.diet;
-  //
-  // }
+  @override
+  void initState() {
+    super.initState();
+    final diet = context.read<DataProvider>().pageSeven.dietIndex;
+    switch(diet){
+      case 0:
+        dislikes = omnivoreDislikes;
+        break;
+      case 1:
+        dislikes = vegetarianDislikes;
+        break;
+      case 2:
+        dislikes = veganDislikes;
+        break;
+      case 3:
+        dislikes = pescatarianDislikes;
+        break;
+      case 4:
+        dislikes = paleoDislikes;
+        break;
+      case 5:
+        dislikes = ketoDislikes;
+        break;
+    }
+    final saved = context.read<DataProvider>().pageEight.selectedDislikes;
+    selectedDislikes.addAll(saved);
+  }
+  final Set<String> selectedDislikes = {};
+
+  Future<List<String>?> openBottomSheet(
+      BuildContext context,
+      List<String> list,
+      ) {
+    List<String> tempSelection = [];
+    return showModalBottomSheet<List<String>>(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            List<Widget> chips = [];
+            for (int i = 0; i < list.length; i++) {
+              String ints = list[i];
+              bool isSelected = tempSelection.contains(ints);
+
+              chips.add(
+                InputChip(
+                  label: Text(ints, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
+                  selected: isSelected,
+                  showCheckmark: false,
+                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add,),
+                  onPressed: () {
+                    setModalState(() {
+                      if (isSelected) {
+                        tempSelection.remove(ints);
+                      } else {
+                        tempSelection.add(ints);
+                      }
+                    });
+                  },
+                ),
+              );
+            }
+            return SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Other foods you may dislike'),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(Icons.close),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    const SizedBox(height: 15),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: chips,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FilledButton(
+                      onPressed: () {
+                        Navigator.pop(context, tempSelection);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 10,
+                        ),
+                        child: Text('Save'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  List<String> getRemainingDislikes() {
+    List<String> remains = [];
+    for (int i = 8; i < dislikes.length; i++) {
+      String dislike = dislikes[i];
+      if (!selectedDislikes.contains(dislike)) {
+        remains.add(dislike);
+      }
+    }
+    return remains;
+  }
+
+  Future<void> handleOpenSheet() async {
+    List<String> remainingDislikes = getRemainingDislikes();
+    final sheet = await openBottomSheet(context, remainingDislikes);
+    if (sheet != null) {
+      setState(() {
+        for (int i = 0; i < sheet.length; i++) {
+          selectedDislikes.add(sheet[i]);
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    List<Widget> chips = [];
+
+    for (int i = 0; i <= 7; i++) {
+      String dislike = dislikes[i];
+      chips.add(
+        FilterChip(
+          label: Text(dislike),
+          selected: selectedDislikes.contains(dislike),
+          onSelected: (bool selected) {
+            setState(() {
+              if (selected) {
+                selectedDislikes.add(dislike);
+              } else {
+                selectedDislikes.remove(dislike);
+              }
+            });
+          },
+        ),
+      );
+    }
+    for (int i = 8; i < dislikes.length; i++) {
+      String dislike = dislikes[i];
+      if (selectedDislikes.contains(dislike)) {
+        chips.add(
+          FilterChip(
+            label: Text(dislike),
+            selected: true,
+            onSelected: (bool selected) {
+              setState(() {
+                selectedDislikes.remove(dislike);
+              });
+            },
+          ),
+        );
+      }
+    }
+    chips.add(
+      OutlinedButton(
+        onPressed: () {
+          handleOpenSheet();
+        },
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [Icon(Icons.add), const SizedBox(width: 8), Text('Other')],
+        ),
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Wrap(spacing: 10, runSpacing: 10, children: chips),
+    );
   }
 }
