@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_care/main.dart';
 import 'package:core_care/tags.dart';
 import 'package:flutter/material.dart';
@@ -1787,18 +1788,20 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
 
   bool validateInput(){
     bool isValid = true;
-    if(meal == null){
-      mealError = 'Please select how many meals you want to take a day.';
-      isValid = false;
-    }else{
-      mealError = null;
-    }
-    if(diet == null){
-      dietError = 'Please select your preferred diet type';
-      isValid = false;
-    }else{
-      dietError = null;
-    }
+    setState(() {
+      if(meal == null){
+        mealError = 'Please select how many meals you want to take a day.';
+        isValid = false;
+      }else{
+        mealError = null;
+      }
+      if(diet == null){
+        dietError = 'Please select your preferred diet type';
+        isValid = false;
+      }else{
+        dietError = null;
+      }
+    });
     return isValid;
   }
 
@@ -2036,7 +2039,24 @@ class _SignupPageEightState extends State<SignupPageEight> {
 }
 
 class SignupPageNineData{
+  String? username;
+  String? password;
+  String? phone;
+  String? address;
+  String? googleId;
+  String? appleId;
+  SignupPageNineData({
+    this.username,
+    this.password,
+    this.phone,
+    this.address,
+    this.googleId,
+    this.appleId,
+  });
 
+  bool get isGoogleLinked => googleId != null;
+  bool get isAppleLinked => appleId != null;
+  bool get hasLinked => isGoogleLinked || isAppleLinked;
 }
 
 class SignupPageNine extends StatefulWidget {
@@ -2048,11 +2068,122 @@ class SignupPageNine extends StatefulWidget {
 }
 
 class _SignupPageNineState extends State<SignupPageNine> {
+  late SignupPageNineData data;
   bool isHiddenOne = true;
   bool isHiddenTwo = true;
-  String selectedCode = 'BAN';
+  String selectedCode = '+880';
   bool isGoogleConnected = true;
   bool isAppleConnected = false;
+  final List<Map<String, String>> codes = [
+    {'name': 'BAN', 'code': '+880'},
+    {'name': 'US', 'code': '+1'},
+    {'name': 'UK', 'code': '+44'},
+    {'name': 'IN', 'code': '+91'},
+    {'name': 'CAN', 'code': '+1'},
+    {'name': 'AUS', 'code': '+61'},
+    {'name': 'GER', 'code': '+49'},
+    {'name': 'FRA', 'code': '+33'},
+    {'name': 'UAE', 'code': '+971'},
+    {'name': 'SAU', 'code': '+966'},
+  ];
+
+  String? usernameError;
+  String? passwordError;
+  String? confirmError;
+  String? linkError;
+
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+
+  void saveData(){
+    data.username = usernameController.text.trim();
+    data.password = passwordController.text;
+    final phone = phoneController.text.trim();
+    data.phone = phone.isNotEmpty ? '$selectedCode$phone' : null;
+    data.address = addressController.text.trim();
+  }
+
+  Future<bool> validateInput() async{
+    bool isValid = true;
+    setState(() {
+      final u = usernameController.text.trim();
+      if(u.isEmpty){
+        usernameError = 'Username is required';
+        isValid = false;
+      }else if(!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(u)){
+        usernameError = 'Only letters, numbers and underscore';
+        isValid = false;
+      }else{
+        usernameError = null;
+      }
+
+      if(passwordController.text.isEmpty){
+        passwordError = 'Password is required';
+        isValid = false;
+      }else if(passwordController.text.length < 8){
+        passwordError = 'At least 8 characters';
+        isValid = false;
+      }else{
+        passwordError = null;
+      }
+
+      if(confirmController.text.isEmpty){
+        confirmError = 'Please confirm your password';
+        isValid = false;
+      }else if(confirmController.text != passwordController.text){
+        confirmError = 'Passwords do not match';
+        isValid = false;
+      }else{
+        confirmError = null;
+      }
+    });
+    if(!data.hasLinked){
+      linkError = 'Link at least one account to continue';
+      isValid = false;
+    }else{
+      linkError = null;
+    }
+    if(isValid){
+      final username = usernameController.text.trim();
+      final existing = await FirebaseFirestore.instance.collection('users').where('username', isEqualTo: username).limit(1).get();
+      if(existing.docs.isNotEmpty){
+        setState(() {
+          usernameError = 'Username already taken';
+        });
+        isValid = false;
+      }
+    }
+    return isValid;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    usernameController.text = widget.data.username ?? '';
+    passwordController.text = widget.data.password ?? '';
+    confirmController.text = widget.data.password ?? '';
+    addressController.text = widget.data.address ?? '';
+    if(widget.data.phone != null){
+      final allCodes = codes.map((c) => c['code']!).toList();
+      allCodes.sort((a, b) => b.length.compareTo(a.length));
+      final matchedCode = allCodes.firstWhere((code) => widget.data.phone!.startsWith(code), orElse: () => '+880');
+      selectedCode = matchedCode;
+      phoneController.text = widget.data.phone!.substring(matchedCode.length);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
+    confirmController.dispose();
+    phoneController.dispose();
+    addressController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -2077,6 +2208,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 prefixIcon: Icon(Icons.account_circle_outlined),
                 labelText: 'Username',
                 helperText: '*Use letters, numbers and underscore',
+                errorText: usernameError,
               ),
             ),
             const SizedBox(height: 20,),
@@ -2086,6 +2218,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 prefixIcon: Icon(Icons.lock_outline_rounded),
                 labelText: 'Password',
                 helperText: '*At least 8 characters',
+                errorText: passwordError,
                 suffixIcon: IconButton(
                   onPressed: (){
                     setState(() {
@@ -2101,6 +2234,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.lock_clock_outlined),
                 labelText: 'Confirm Password',
+                errorText: confirmError,
                 suffixIcon: IconButton(
                   onPressed: (){
                     setState(() {
@@ -2128,6 +2262,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                   prefixIcon: Icon(Icons.phone),
                   labelText: 'Phone no',
                   hintText: 'XXXXXXXXXX',
+                  helperText: '*Optional',
                 ),
               ))]),
             const SizedBox(height: 20,),
@@ -2140,6 +2275,16 @@ class _SignupPageNineState extends State<SignupPageNine> {
             ),
             const SizedBox(height: 20,),
             Text('Link with your Google or Apple id'),
+            if(linkError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(linkError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
             const SizedBox(height: 10,),
             FilledButton(
                 style: FilledButton.styleFrom(
@@ -2181,19 +2326,6 @@ class _SignupPageNineState extends State<SignupPageNine> {
     );
   }
   Widget countryCode(BuildContext context){
-    final List<Map<String, String>> codes = [
-      {'name': 'BAN', 'code': '+880'},
-      {'name': 'US', 'code': '+1'},
-      {'name': 'UK', 'code': '+44'},
-      {'name': 'IN', 'code': '+91'},
-      {'name': 'CAN', 'code': '+1'},
-      {'name': 'AUS', 'code': '+61'},
-      {'name': 'GER', 'code': '+49'},
-      {'name': 'FRA', 'code': '+33'},
-      {'name': 'UAE', 'code': '+971'},
-      {'name': 'SAU', 'code': '+966'},
-    ];
-
     return Center(
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -2207,7 +2339,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 value: selectedCode,
                 items: codes.map<DropdownMenuItem<String>>((country){
                   return DropdownMenuItem<String>(
-                  value: country['name'],
+                  value: country['code'],
                     child: Text('${country['name']} (${country['code']})'),
                   );
             }).toList(),
