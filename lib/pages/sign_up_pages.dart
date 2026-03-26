@@ -9,6 +9,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:core_care/data_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class SignupPageOneData{
   String? name;
@@ -229,6 +230,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
   }
 
   void handleNext(){
+    FocusManager.instance.primaryFocus?.unfocus();
     final isValid = validateInput();
     if(!isValid){
       List<GlobalKey> errorKeys = [];
@@ -1347,17 +1349,18 @@ class _SignupPageFourState extends State<SignupPageFour> {
                   border: Border.all(color: CustomColors.yellowOutline(context)),
                 ),
                 child: RichText(text: TextSpan(children: [
-                  TextSpan(text: 'Based on your given data,\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                  TextSpan(text: 'Based on your given data,\n\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                   TextSpan(text: 'Your BMI is ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                  TextSpan(text: '${data1.bmi} - ${data1.category}. ', style: TextStyle(color: bmiColor)),
+                  TextSpan(text: '${data1.bmi} - ${data1.category}.\n\n', style: TextStyle(color: bmiColor)),
                   TextSpan(text: 'Your body needs ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                   TextSpan(text: '${data1.bmr}', style: TextStyle(color: CustomColors.orangePrimary(context))),
                   TextSpan(text: ' calories at rest and total of ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                   TextSpan(text: '$previewTDEE', style: TextStyle(color: CustomColors.orangePrimary(context))),
-                  TextSpan(text: ' calories are burnt in a day.\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                  TextSpan(text: ' calories are burnt in a day.\n\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                   TextSpan(text: 'You belong to the age group ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                   TextSpan(text: '${data1.ageGroup}', style: TextStyle(color: CustomColors.bluePrimary(context))),
-                ],),),
+                ],),
+                textAlign: TextAlign.center,),
               ),
               const SizedBox(height: 5,),
               Text('See our recommendation next, or choose your own focus.', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500), textAlign: TextAlign.center,),
@@ -1458,7 +1461,7 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   List<String> get currentGoals{
     final data = context.read<DataProvider>().pageOne;
     final group = data.ageGroup;
-    return goalPreviews[group] ? [selectedFund] ?? [];
+    return goalPreviews[group]?[selectedFund] ?? [];
   }
 
   void saveData(){
@@ -1500,7 +1503,7 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   void initState() {
     super.initState();
     final rec = context.read<DataProvider>().finalRecommendation;
-    selectedFund = rec.code;
+    selectedFund = widget.data.fundIndex ?? rec.code;
     selectedGoal = widget.data.goalIndex ?? -1;
   }
 
@@ -1558,8 +1561,13 @@ class _SignupPageFiveState extends State<SignupPageFive> {
               ],
           ),
           const SizedBox(height: 20,),
-          Column(children: [Text('You are categorized as the ${rec.profile}.')]),
-          Text(key: goalKey, 'Choose your goal to start'),
+          Column(children: [
+            RichText(text: TextSpan(children: [
+              TextSpan(text: 'You are categorized as the ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+              TextSpan(text: '${rec.profile}.', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600)),
+            ],),),
+          ]),
+          Text(key: goalKey, 'Choose your goal to start', style: th.labelMedium,),
           if(goalError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1570,7 +1578,7 @@ class _SignupPageFiveState extends State<SignupPageFive> {
                 ),
               ),
             ),
-          const SizedBox(height: 5,),
+          const SizedBox(height: 10,),
           Wrap(
             spacing: 10,
             runSpacing: 10,
@@ -1598,6 +1606,19 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   Widget selectFundamental(BuildContext context, int select, Image icon, String label){
     final th = Theme.of(context).textTheme;
     final ch = Theme.of(context).colorScheme;
+    final rec = context.read<DataProvider>().finalRecommendation;
+    final isSelected = selectedFund == select;
+    final isRecommended = rec.code == select;
+    Color bgColor = ch.surface;
+    Color borderColor = Colors.transparent;
+    if(isSelected){
+      bgColor = CustomColors.primaryMuted(context);
+      borderColor = ch.primary;
+    }else if(isRecommended){
+      bgColor = CustomColors.yellowMuted(context);
+      borderColor = Colors.transparent;
+    }
+
 
     return Expanded(
       child: GestureDetector(
@@ -1606,9 +1627,9 @@ class _SignupPageFiveState extends State<SignupPageFive> {
         },
         child: Container(
           decoration: BoxDecoration(
-            color: selectedFund != select ? ch.surface : CustomColors.primaryMuted(context),
+            color: bgColor,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: selectedFund == select ? ch.primary : Colors.transparent),
+            border: Border.all(color: borderColor,),
           ),
           child: Center(
             child: Padding(
@@ -1619,6 +1640,10 @@ class _SignupPageFiveState extends State<SignupPageFive> {
                   icon,
                   const SizedBox(height: 5,),
                   Text(label, style: th.labelMedium,),
+                  if(isRecommended && !isSelected)
+                    Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text('Recommended', style: TextStyle(color: CustomColors.yellowOutline(context), fontSize: 10),)),
                   const SizedBox(height: 15,),
                   selectedFund == select ?
                   Icon(Icons.circle, color: ch.primary,) : Icon(Icons.circle_outlined),
@@ -2529,6 +2554,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
   bool isHiddenOne = true;
   bool isHiddenTwo = true;
   String selectedCode = '+880';
+
   final List<Map<String, String>> codes = [
     {'name': 'BAN', 'code': '+880'},
     {'name': 'US', 'code': '+1'},
@@ -2594,7 +2620,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
       }else{
         confirmError = null;
       }
-      if(!data.hasLinked){
+      if(!kIsWeb && !data.hasLinked){
         linkError = 'Link at least one account to continue';
         isValid = false;
       }else{
@@ -2678,6 +2704,9 @@ class _SignupPageNineState extends State<SignupPageNine> {
   Future<void> _unlinkGoogle() async{
     final confirm = await _showUnlinkDialog('Google');
     if(!confirm) return;
+    if(kIsWeb){
+      await GoogleSignIn.instance.signOut();
+    }
     setState(() {
       data.googleId = null;
       if(!data.hasLinked) linkError = 'Link at least one account to continue';
@@ -2846,16 +2875,22 @@ class _SignupPageNineState extends State<SignupPageNine> {
             ),
             const SizedBox(height: 20,),
             Row(children: [
-              SizedBox(
-                  height: 56,
-                  width: 90,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: countryCode(context),
-                  )),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                      SizedBox(
+                      height: 56,
+                      width: 90,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: countryCode(context),
+                      )),
+                  const SizedBox(height: 18,),
+                    ],
+              ),
               const SizedBox(width: 8,),
               Expanded(child: TextField(
                 controller: phoneController,

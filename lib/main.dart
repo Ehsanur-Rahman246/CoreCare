@@ -19,7 +19,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await GoogleSignIn.instance.initialize();
+  await GoogleSignIn.instance.initialize(clientId: '951551089343-jgfn96g1e3drrm51hf5ohs85bs1b2k9k.apps.googleusercontent.com');
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => TimeProvider()),
     ChangeNotifierProvider(create: (_) => DataProvider()),
