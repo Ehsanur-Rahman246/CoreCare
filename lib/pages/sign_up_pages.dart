@@ -265,11 +265,11 @@ class _SignupPageOneState extends State<SignupPageOne> {
 
   @override
   void dispose() {
-    super.dispose();
     nameController.dispose();
     dateController.dispose();
     heightController.dispose();
     weightController.dispose();
+    super.dispose();
   }
 
   @override
@@ -2524,6 +2524,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
   final passKey = GlobalKey();
   final confirmKey = GlobalKey();
   final linkKey = GlobalKey();
+  bool isLoading = false;
   late SignupPageNineData data;
   bool isHiddenOne = true;
   bool isHiddenTwo = true;
@@ -2621,9 +2622,11 @@ class _SignupPageNineState extends State<SignupPageNine> {
   }
 
   void handleNext() async{
+    setState(() => isLoading = true);
     final isValid = await validateInput();
     if(!mounted) return;
     if(!isValid){
+      setState(() => isLoading = false);
       List<GlobalKey> errorKeys = [];
       if(usernameError != null) errorKeys.add(userKey);
       if(passwordError != null) errorKeys.add(passKey);
@@ -2637,9 +2640,15 @@ class _SignupPageNineState extends State<SignupPageNine> {
       }
       return;
     }
+    showDialog(context: context, builder: (context){
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    });
     saveData();
     if(!mounted) return;
     context.read<DataProvider>().updatePageNine(data);
+    Navigator.pop(context);
     widget.onNext();
   }
 
@@ -2741,12 +2750,12 @@ class _SignupPageNineState extends State<SignupPageNine> {
 
   @override
   void dispose() {
-    super.dispose();
     usernameController.dispose();
     passwordController.dispose();
     confirmController.dispose();
     phoneController.dispose();
     addressController.dispose();
+    super.dispose();
   }
 
   @override
