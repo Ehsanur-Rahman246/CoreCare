@@ -233,6 +233,7 @@ class _SignupPageState extends State<SignupPage> {
   SignupPageSevenData pageSeven = SignupPageSevenData();
   SignupPageEightData pageEight = SignupPageEightData();
   SignupPageNineData pageNine = SignupPageNineData();
+  SignUpPageTenData pageTen = SignUpPageTenData();
 
   final PageController _pageController = PageController();
   final ScrollController _timelineController = ScrollController();
@@ -257,6 +258,17 @@ class _SignupPageState extends State<SignupPage> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
+  }
+
+  void onNext(){
+    if (currentPage < _totalSteps - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      Navigator.pushReplacementNamed(context, '/home');
+    }
   }
 
   @override
@@ -329,42 +341,17 @@ class _SignupPageState extends State<SignupPage> {
                 },
 
                 children: [
-                  SignupPageOne(data: pageOne),
-                  SignupPageTwo(data: pageTwo),
-                  SignupPageThree(data: pageThree,),
-                  SignupPageFour(data: pageFour,),
-                  SignupPageFive(data: pageFive,),
-                  SignupPageSix(data: pageSix,),
-                  SignupPageSeven(data: pageSeven,),
-                  SignupPageEight(data: pageEight,),
-                  SignupPageNine(data: pageNine,),
-                  SignupPageTen(),
+                  SignupPageOne(data: pageOne, onNext: onNext,),
+                  SignupPageTwo(data: pageTwo, onNext: onNext,),
+                  SignupPageThree(data: pageThree, onNext: onNext,),
+                  SignupPageFour(data: pageFour, onNext: onNext,),
+                  SignupPageFive(data: pageFive, onNext: onNext,),
+                  SignupPageSix(data: pageSix, onNext: onNext,),
+                  SignupPageSeven(data: pageSeven, onNext: onNext,),
+                  SignupPageEight(data: pageEight, onNext: onNext,),
+                  SignupPageNine(data: pageNine, onNext: onNext,),
+                  SignupPageTen(data: pageTen, onNext: onNext,),
                 ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              child: FilledButton(
-                style: FilledButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
-                ),
-                child: Text(
-                  currentPage == _totalSteps - 2
-                      ? "Finish Setup"
-                      : currentPage == _totalSteps - 1
-                      ? "Go to dashboard"
-                      : "Next",
-                ),
-                onPressed: () {
-                  if (currentPage < _totalSteps - 1) {
-                    _pageController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  } else {
-                    Navigator.pushReplacementNamed(context, '/home');
-                  }
-                },
               ),
             ),
           ],

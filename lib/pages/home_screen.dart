@@ -612,13 +612,14 @@ class _SettingsPageState extends State<SettingsPage> {
   late ThemeMode themeMode;
   late bool isNotificationsOn;
   String shownValue = 'English';
-  bool isMetric = true;
+  late bool isMetric;
 
   @override
   void initState() {
     super.initState();
     themeMode = widget.currentTheme;
     isNotificationsOn = false;
+    isMetric = true;
   }
 
   @override

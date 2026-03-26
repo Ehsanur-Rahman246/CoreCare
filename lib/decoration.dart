@@ -53,13 +53,13 @@ class Emoji{
   static final Image f2 = Image.asset('assets/emojis/runner.png', width: logoSize, height: logoSize,);
   static final Image f3 = Image.asset('assets/emojis/man_climbing.png', width: logoSize, height: logoSize,);
 
-  static final Image fund1 = Image.asset('assets/emojis/zap.png', width: iconSize, height: iconSize,);
-  static final Image fund2 = Image.asset('assets/emojis/muscle.png', width: iconSize, height: iconSize,);
-  static final Image fund3 = Image.asset('assets/emojis/runner.png', width: iconSize, height: iconSize,);
-  static final Image fund4 = Image.asset('assets/emojis/scales.png', width: iconSize, height: iconSize,);
-  static final Image fund5 = Image.asset('assets/emojis/dna.png', width: iconSize, height: iconSize,);
-  static final Image fund6 = Image.asset('assets/emojis/standing_person.png', width: iconSize, height: iconSize,);
-  static final Image fund7 = Image.asset('assets/emojis/seedling.png', width: iconSize, height: iconSize,);
+  static final Image fund1 = Image.asset('assets/emojis/zap.png', width: emojiSize, height: emojiSize,);
+  static final Image fund2 = Image.asset('assets/emojis/muscle.png', width: emojiSize, height: emojiSize,);
+  static final Image fund3 = Image.asset('assets/emojis/runner.png', width: emojiSize, height: emojiSize,);
+  static final Image fund4 = Image.asset('assets/emojis/scales.png', width: emojiSize, height: emojiSize,);
+  static final Image fund5 = Image.asset('assets/emojis/dna.png', width: emojiSize, height: emojiSize,);
+  static final Image fund6 = Image.asset('assets/emojis/standing_person.png', width: emojiSize, height: emojiSize,);
+  static final Image fund7 = Image.asset('assets/emojis/seedling.png', width: emojiSize, height: emojiSize,);
 
   static final Image s1 = Image.asset('assets/emojis/city_sunrise.png');
   static final Image s2 = Image.asset('assets/emojis/cityscape.png');
@@ -114,4 +114,5 @@ class Emoji{
   static final Image e2 = Image.asset('assets/emojis/wrench.png');
   static final Image e3 = Image.asset('assets/emojis/stadium.png');
 
+  static final Image goal = Image.asset('assets/emojis/dart.png');
 }

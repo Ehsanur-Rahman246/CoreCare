@@ -4,9 +4,11 @@ import 'package:core_care/tags.dart';
 import 'package:flutter/material.dart';
 import 'package:core_care/decoration.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:core_care/data_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class SignupPageOneData{
   String? name;
@@ -91,7 +93,8 @@ class SignupPageOneData{
 
 class SignupPageOne extends StatefulWidget {
   final SignupPageOneData data;
-  const SignupPageOne({super.key, required this.data});
+  final VoidCallback onNext;
+  const SignupPageOne({super.key, required this.data, required this.onNext});
 
   @override
   State<SignupPageOne> createState() => _SignupPageOneState();
@@ -99,6 +102,11 @@ class SignupPageOne extends StatefulWidget {
 
 class _SignupPageOneState extends State<SignupPageOne> {
   late SignupPageOneData data;
+  final nameKey = GlobalKey();
+  final dobKey = GlobalKey();
+  final genderKey = GlobalKey();
+  final heightKey = GlobalKey();
+  final weightKey = GlobalKey();
   String? nameError;
   String? dobError;
   String? genderError;
@@ -140,6 +148,9 @@ class _SignupPageOneState extends State<SignupPageOne> {
   void selectGender(int g){
     setState(() {
       genderSelected = g;
+      if(genderError != null){
+        genderError = null;
+      }
     });
   }
 
@@ -210,6 +221,31 @@ class _SignupPageOneState extends State<SignupPageOne> {
     data.calculateAndSave();
   }
 
+  void _scrollToError(GlobalKey key){
+    final context = key.currentContext;
+    if(context != null){
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    }
+  }
+
+  void handleNext(){
+    final isValid = validateInput();
+    if(!isValid){
+      List<GlobalKey> errorKeys = [];
+      if(nameError != null) errorKeys.add(nameKey);
+      if(dobError != null) errorKeys.add(dobKey);
+      if(genderError != null) errorKeys.add(genderKey);
+      if(heightError != null) errorKeys.add(heightKey);
+      if(weightError != null) errorKeys.add(weightKey);
+
+      if(errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
+      return;
+    }
+    saveData();
+    context.read<DataProvider>().updatePageOne(data);
+    widget.onNext();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -255,15 +291,24 @@ class _SignupPageOneState extends State<SignupPageOne> {
         Text('A few details to set things up for you', style: th.labelMedium,),
         const SizedBox(height: 20,),
         TextField(
+          key: nameKey,
           controller: nameController,
           decoration: InputDecoration(
             labelText: 'Name',
             prefixIcon: Icon(Icons.person_rounded),
             errorText: nameError,
           ),
+          onChanged: (_){
+            if(nameError != null){
+              setState(() {
+                nameError = null;
+              });
+            }
+          },
         ),
         const SizedBox(height: 20,),
         TextField(
+          key: dobKey,
           controller: dateController,
           readOnly: true,
           decoration: InputDecoration(
@@ -272,9 +317,16 @@ class _SignupPageOneState extends State<SignupPageOne> {
             errorText: dobError,
           ),
           onTap: pickDate,
+          onChanged: (_){
+            if(dobError != null){
+              setState(() {
+                dobError = null;
+              });
+            }
+          },
         ),
         const SizedBox(height: 20,),
-        Text('Gender'),
+        Text(key: genderKey,'Gender'),
         const SizedBox(height: 10,),
         Row(
           children: [
@@ -356,7 +408,15 @@ class _SignupPageOneState extends State<SignupPageOne> {
                     RegExp(r'^\d*\.?\d{0,2}'),
                   ),
                 ],
+                key: heightKey,
                 controller: heightController,
+                onChanged: (_){
+                  if(heightError != null){
+                    setState(() {
+                      heightError = null;
+                    });
+                  }
+                },
                 decoration: InputDecoration(
                   labelText: 'Height',
                   prefixIcon: Icon(Icons.height_rounded),
@@ -422,7 +482,15 @@ class _SignupPageOneState extends State<SignupPageOne> {
                     RegExp(r'^\d*\.?\d{0,2}'),
                   ),
                 ],
+                key: weightKey,
                 controller: weightController,
+                onChanged: (_){
+                  if(weightError != null){
+                    setState(() {
+                      weightError = null;
+                    });
+                  }
+                },
                 decoration: InputDecoration(
                   labelText: 'Weight',
                   prefixIcon: Icon(Symbols.weight_rounded),
@@ -477,7 +545,17 @@ class _SignupPageOneState extends State<SignupPageOne> {
             ),
           ],
         ),
-        const SizedBox(height: 20,),
+        const SizedBox(height: 30,),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+          child: FilledButton(
+            style: FilledButton.styleFrom(
+              minimumSize: Size(double.infinity, 50),
+            ),
+            onPressed: handleNext,
+            child: Text("Next",),
+          ),
+        ),
       ],),
       ),
     );
@@ -497,13 +575,17 @@ class SignupPageTwoData{
 
 class SignupPageTwo extends StatefulWidget {
   final SignupPageTwoData data;
-  const SignupPageTwo({super.key, required this.data});
+  final VoidCallback onNext;
+  const SignupPageTwo({super.key, required this.data, required this.onNext});
 
   @override
   State<SignupPageTwo> createState() => _SignupPageTwoState();
 }
 
 class _SignupPageTwoState extends State<SignupPageTwo> {
+  void handleNext(){
+    widget.onNext();
+  }
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -536,7 +618,17 @@ class _SignupPageTwoState extends State<SignupPageTwo> {
           ],),
           const SizedBox(height: 10,),
           InjuryChips(),
-          const SizedBox(height: 20,),
+          const SizedBox(height: 30,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+              onPressed: handleNext,
+              child: Text("Next",),
+            ),
+          ),
         ],),
       ),
     );
@@ -578,13 +670,17 @@ class SignupPageThreeData{
 
 class SignupPageThree extends StatefulWidget {
   final SignupPageThreeData data;
-  const SignupPageThree({super.key, required this.data});
+  final VoidCallback onNext;
+  const SignupPageThree({super.key, required this.data, required this.onNext});
 
   @override
   State<SignupPageThree> createState() => _SignupPageThreeState();
 }
 
 class _SignupPageThreeState extends State<SignupPageThree> {
+  final workKey = GlobalKey();
+  final activeKey = GlobalKey();
+  final sleepKey = GlobalKey();
   int selectedWork = -1;
   int selectedActive = -1;
   int selectedSleep = -1;
@@ -623,6 +719,29 @@ class _SignupPageThreeState extends State<SignupPageThree> {
     widget.data.sleepIndex = selectedSleep;
   }
 
+  void _scrollToError(GlobalKey key){
+    final context = key.currentContext;
+    if(context != null){
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    }
+  }
+
+  void handleNext(){
+    final isValid = validateInput();
+    if(!isValid){
+      List<GlobalKey> errorKeys = [];
+      if(workError != null) errorKeys.add(workKey);
+      if(activeError != null) errorKeys.add(activeKey);
+      if(sleepError != null) errorKeys.add(sleepKey);
+
+      if(errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
+      return;
+    }
+    saveData();
+    context.read<DataProvider>().updatePageThree(widget.data);
+    widget.onNext();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -649,7 +768,7 @@ class _SignupPageThreeState extends State<SignupPageThree> {
           const SizedBox(height: 10,),
           Text('This helps match your plan to your lifestyle', style: th.labelMedium,),
           const SizedBox(height: 20,),
-          Text('Work / Occupation type'),
+          Text(key: workKey,'Work / Occupation type'),
           if(workError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -667,6 +786,9 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             onTap: (){
               setState(() {
                 selectedWork = 0;
+                if(workError != null){
+                  workError = null;
+                }
               });
             },
             child: Container(
@@ -696,6 +818,9 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             onTap: (){
               setState(() {
                 selectedWork = 1;
+                if(workError != null){
+                  workError = null;
+                }
               });
             },
             child: Container(
@@ -725,6 +850,9 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             onTap: (){
               setState(() {
                 selectedWork = 2;
+                if(workError != null){
+                  workError = null;
+                }
               });
             },
             child: Container(
@@ -751,7 +879,7 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             ),
           ),
           const SizedBox(height: 20,),
-          Text('Daily activity level'),
+          Text(key: activeKey,'Daily activity level'),
           if(activeError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -769,6 +897,9 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             onTap: (){
               setState(() {
                 selectedActive = 0;
+                if(activeError != null){
+                  activeError = null;
+                }
               });
             },
             child: Container(
@@ -798,6 +929,9 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             onTap: (){
               setState(() {
                 selectedActive = 1;
+                if(activeError != null){
+                  activeError = null;
+                }
               });
             },
             child: Container(
@@ -827,6 +961,9 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             onTap: (){
               setState(() {
                 selectedActive = 2;
+                if(activeError != null){
+                  activeError = null;
+                }
               });
             },
             child: Container(
@@ -853,7 +990,7 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             ),
           ),
           const SizedBox(height: 20,),
-          Text('Sleep Pattern'),
+          Text(key: sleepKey,'Sleep Pattern'),
           if(sleepError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -873,6 +1010,9 @@ class _SignupPageThreeState extends State<SignupPageThree> {
                 onTap: (){
                   setState(() {
                     selectedSleep = 0;
+                    if(sleepError != null){
+                      sleepError = null;
+                    }
                   });
                 },
                 child: Container(
@@ -891,6 +1031,9 @@ class _SignupPageThreeState extends State<SignupPageThree> {
                 onTap: (){
                   setState(() {
                     selectedSleep = 1;
+                    if(sleepError != null){
+                      sleepError = null;
+                    }
                   });
                 },
                 child: Container(
@@ -909,6 +1052,9 @@ class _SignupPageThreeState extends State<SignupPageThree> {
                 onTap: (){
                   setState(() {
                     selectedSleep = 2;
+                    if(sleepError != null){
+                      sleepError = null;
+                    }
                   });
                 },
                 child: Container(
@@ -927,6 +1073,9 @@ class _SignupPageThreeState extends State<SignupPageThree> {
                 onTap: (){
                   setState(() {
                     selectedSleep = 3;
+                    if(sleepError != null){
+                      sleepError = null;
+                    }
                   });
                 },
                 child: Container(
@@ -942,7 +1091,17 @@ class _SignupPageThreeState extends State<SignupPageThree> {
               ),
             ],
           ),
-          const SizedBox(height: 20,),
+          const SizedBox(height: 30,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+              onPressed: handleNext,
+              child: Text("Next",),
+            ),
+          ),
         ],),
       ),
     );
@@ -968,22 +1127,25 @@ class SignupPageFourData{
 
 class SignupPageFour extends StatefulWidget {
   final SignupPageFourData data;
-  const SignupPageFour({super.key, required this.data});
+  final VoidCallback onNext;
+  const SignupPageFour({super.key, required this.data, required this.onNext});
 
   @override
   State<SignupPageFour> createState() => _SignupPageFourState();
 }
 
 class _SignupPageFourState extends State<SignupPageFour> {
+  final fitKey = GlobalKey();
   int selectedFit = -1;
   String? fitError;
+  late Color? bmiColor;
 
   double? get previewTDEE{
     if(selectedFit == -1) return null;
     final data1 = context.read<DataProvider>().pageOne;
     final data3 = context.read<DataProvider>().pageThree;
     const factors = [0.95, 1.0, 1.05];
-    return data1.bmr! * data3.workFactor * data3.activeFactor * factors[selectedFit];
+    return double.parse((data1.bmr! * data3.workFactor * data3.activeFactor * factors[selectedFit]).toStringAsFixed(1));
   }
 
   bool validateInput() {
@@ -1003,11 +1165,42 @@ class _SignupPageFourState extends State<SignupPageFour> {
     widget.data.fitIndex = selectedFit;
     widget.data.tdee = previewTDEE;
   }
+  void _scrollToError(GlobalKey key){
+    final context = key.currentContext;
+    if(context != null){
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    }
+  }
+
+  void handleNext(){
+    final isValid = validateInput();
+    if(!isValid){
+      if(fitError != null) _scrollToError(fitKey);
+      return;
+    }
+    saveData();
+    context.read<DataProvider>().updatePageFour(widget.data);
+    widget.onNext();
+  }
 
   @override
   void initState() {
     super.initState();
     selectedFit = widget.data.fitIndex ?? -1;
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final p = context.read<DataProvider>().pageOne;
+    if(p.bmi! < 18.5){
+      bmiColor = CustomColors.bluePrimary(context);
+    }else if(p.bmi! < 25){
+      bmiColor = CustomColors.greenPrimary(context);
+    }else if(p.bmi! < 30){
+      bmiColor = CustomColors.yellowPrimary(context);
+    }else{
+      bmiColor = CustomColors.redPrimary(context);
+    }
   }
 
   @override
@@ -1029,7 +1222,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
           const SizedBox(height: 10,),
           Text('Tell us where you’re starting from.', style: th.labelMedium,),
           const SizedBox(height: 20,),
-          Text('Workout Level'),
+          Text(key: fitKey, 'Workout Level'),
           if(fitError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1047,6 +1240,9 @@ class _SignupPageFourState extends State<SignupPageFour> {
             onTap: (){
               setState(() {
                 selectedFit = 0;
+                if(fitError != null){
+                  fitError = null;
+                }
               });
             },
             child: Container(
@@ -1076,6 +1272,9 @@ class _SignupPageFourState extends State<SignupPageFour> {
             onTap: (){
               setState(() {
                 selectedFit = 1;
+                if(fitError != null){
+                  fitError = null;
+                }
               });
             },
             child: Container(
@@ -1105,6 +1304,9 @@ class _SignupPageFourState extends State<SignupPageFour> {
             onTap: (){
               setState(() {
                 selectedFit = 2;
+                if(fitError != null){
+                  fitError = null;
+                }
               });
             },
             child: Container(
@@ -1132,19 +1334,89 @@ class _SignupPageFourState extends State<SignupPageFour> {
           ),
           const SizedBox(height: 20,),
           if(selectedFit != -1)
-            Column(children: [
-              Text('Based on your given data,'),
-              Text('Your BMI is ${data1.bmi} - ${data1.category}.'),
-              Text('Your body needs ${data1.bmr} calories at rest and $previewTDEE calories are burnt in a day.'),
-              Text('Your belong to group ${data1.ageGroup}.'),
-              Text('See our recommendation next, or choose your own focus.'),
+            Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: CustomColors.yellowOutline(context)),
+                ),
+                child: RichText(text: TextSpan(children: [
+                  TextSpan(text: 'Based on your given data,\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                  TextSpan(text: 'Your BMI is ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                  TextSpan(text: '${data1.bmi} - ${data1.category}. ', style: TextStyle(color: bmiColor)),
+                  TextSpan(text: 'Your body needs ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                  TextSpan(text: '${data1.bmr}', style: TextStyle(color: CustomColors.orangePrimary(context))),
+                  TextSpan(text: ' calories at rest and total of ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                  TextSpan(text: '$previewTDEE', style: TextStyle(color: CustomColors.orangePrimary(context))),
+                  TextSpan(text: ' calories are burnt in a day.\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                  TextSpan(text: 'You belong to the age group ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                  TextSpan(text: '${data1.ageGroup}', style: TextStyle(color: CustomColors.bluePrimary(context))),
+                ],),),
+              ),
+              const SizedBox(height: 5,),
+              Text('See our recommendation next, or choose your own focus.', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500), textAlign: TextAlign.center,),
             ]),
           const SizedBox(height: 30,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+              onPressed: handleNext,
+              child: Text("Next",),
+            ),
+          ),
         ],),
       ),
     );
   }
 }
+
+const Map<String, Map<int, List<String>>> goalPreviews = {
+  'Teen': {
+    0: ['Get fit', 'Build stamina', 'Sport performance'],
+    1: ['Build strength', 'Sport performance'],
+    2: ['Improve flexibility', 'Sport mobility'],
+    3: ['Core strength', 'Agility'],
+    4: ['Healthy weight'],
+    5: ['Active lifestyle', 'Better posture'],
+    6: ['Safe training', 'Growth-stage nutrition'],
+  },
+  'Young Adult': {
+    0: ['Get fit', 'Build stamina', 'Sport performance'],
+    1: ['Build muscle', 'Bulk up', 'Sport performance'],
+    2: ['Improve flexibility', 'Sport mobility'],
+    3: ['Core strength', 'Agility'],
+    4: ['Lose weight', 'Tone up', 'Cut & define'],
+    5: ['Active lifestyle', 'Better posture'],
+    6: ['Peak performance', 'Metabolic optimization'],
+  },
+  'Adult': {
+    0: ['Build stamina', 'Sport performance'],
+    1: ['Build muscle', 'Bulk up'],
+    2: ['Improve flexibility', 'Posture & mobility'],
+    3: ['Core strength', 'Injury prevention'],
+    4: ['Lose weight', 'Tone up', 'Cut & define'],
+    5: ['Functional fitness', 'Daily posture'],
+    6: ['Hormonal health', 'Metabolic health'],
+  },
+  'Senior': {
+    0: ['Stay active', 'Build stamina'],
+    1: ['Stay strong', 'Lean muscle'],
+    2: ['Improve flexibility', 'Posture & mobility'],
+    3: ['Balance & stability', 'Injury prevention'],
+    4: ['Healthy weight'],
+    5: ['Functional fitness', 'Daily independence'],
+    6: ['Bone density', 'Longevity & vitality'],
+  },
+};
 
 class SignupPageFiveData{
   int? fundIndex;
@@ -1162,13 +1434,15 @@ class SignupPageFiveData{
 
 class SignupPageFive extends StatefulWidget {
   final SignupPageFiveData data;
-  const SignupPageFive({super.key, required this.data});
+  final VoidCallback onNext;
+  const SignupPageFive({super.key, required this.data, required this.onNext});
 
   @override
   State<SignupPageFive> createState() => _SignupPageFiveState();
 }
 
 class _SignupPageFiveState extends State<SignupPageFive> {
+  final goalKey = GlobalKey();
   late int selectedFund;
   int selectedGoal = -1;
   String? goalError;
@@ -1176,7 +1450,15 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   void selectFund (int f){
     setState(() {
       selectedFund = f;
+      selectedGoal = -1;
+      goalError = null;
     });
+  }
+
+  List<String> get currentGoals{
+    final data = context.read<DataProvider>().pageOne;
+    final group = data.ageGroup;
+    return goalPreviews[group] ? [selectedFund] ?? [];
   }
 
   void saveData(){
@@ -1196,17 +1478,37 @@ class _SignupPageFiveState extends State<SignupPageFive> {
     return isValid;
   }
 
+  void _scrollToError(GlobalKey key){
+    final context = key.currentContext;
+    if(context != null){
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    }
+  }
+
+  void handleNext(){
+    final isValid = validateInput();
+    if(!isValid){
+      if(goalError != null) _scrollToError(goalKey);
+      return;
+    }
+    saveData();
+    context.read<DataProvider>().updatePageFive(widget.data);
+    widget.onNext();
+  }
+
   @override
   void initState() {
     super.initState();
     final rec = context.read<DataProvider>().finalRecommendation;
     selectedFund = rec.code;
+    selectedGoal = widget.data.goalIndex ?? -1;
   }
 
   @override
   Widget build(BuildContext context) {
     final th = Theme.of(context).textTheme;
     final rec = context.read<DataProvider>().finalRecommendation;
+    final goals = currentGoals;
 
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -1257,7 +1559,7 @@ class _SignupPageFiveState extends State<SignupPageFive> {
           ),
           const SizedBox(height: 20,),
           Column(children: [Text('You are categorized as the ${rec.profile}.')]),
-          Text('Choose your goal to start'),
+          Text(key: goalKey, 'Choose your goal to start'),
           if(goalError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1269,8 +1571,25 @@ class _SignupPageFiveState extends State<SignupPageFive> {
               ),
             ),
           const SizedBox(height: 5,),
-
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: List.generate((goals.length), (i){
+              final isSelected = selectedGoal == i;
+              return goalSelectionChip(goals[i], isSelected, i);
+            }),
+          ),
           const SizedBox(height: 30,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+              onPressed: handleNext,
+              child: Text("Next",),
+            ),
+          ),
         ],),
       ),
     );
@@ -1311,12 +1630,26 @@ class _SignupPageFiveState extends State<SignupPageFive> {
       ),
     );
   }
-  // Widget selectGoal(){
-  //   return ChoiceChip(
-  //       label: label,
-  //       selected: selected
-  //   );
-  // }
+  Widget goalSelectionChip(String label, bool selected, int index){
+    return ChoiceChip(
+        label: Text(label),
+        selected: selected,
+      showCheckmark: false,
+      avatar: Emoji.goal,
+      onSelected: (select){
+          setState(() {
+            selectedGoal = select ? index : -1;
+            if(select) goalError = null;
+          });
+      },
+      selectedColor: CustomColors.primaryMuted(context),
+      side: BorderSide(color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline),
+      labelStyle: TextStyle(
+        color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
+        fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
+      ),
+    );
+  }
 }
 
 class SignupPageSixData{
@@ -1370,13 +1703,20 @@ class SignupPageSixData{
 
 class SignupPageSix extends StatefulWidget {
   final SignupPageSixData data;
-  const SignupPageSix({super.key, required this.data});
+  final VoidCallback onNext;
+  const SignupPageSix({super.key, required this.data, required this.onNext});
 
   @override
   State<SignupPageSix> createState() => _SignupPageSixState();
 }
 
 class _SignupPageSixState extends State<SignupPageSix> {
+  final styleKey = GlobalKey();
+  final equipKey = GlobalKey();
+  final placeKey = GlobalKey();
+  final dayKey = GlobalKey();
+  final durationKey = GlobalKey();
+  final timeKey = GlobalKey();
   Set<int> styleSelected = {};
   int equipSelected = -1;
   int placeSelected = -1;
@@ -1410,37 +1750,63 @@ class _SignupPageSixState extends State<SignupPageSix> {
         styleError = null;
       }
       if(equipSelected == -1){
-        styleError = 'Please choose your available equipment options.';
+        equipError = 'Please choose your available equipment options.';
         isValid = false;
       }else {
-        styleError = null;
+        equipError = null;
       }
       if(placeSelected == -1){
-        styleError = 'Please select where you plan to work out.';
+        placeError = 'Please select where you plan to work out.';
         isValid = false;
       }else {
-        styleError = null;
+        placeError = null;
       }
       if(daySelected == -1){
-        styleError = 'Please specify how many days you will work out per week.';
+        dayError = 'Please specify how many days you will work out per week.';
         isValid = false;
       }else {
-        styleError = null;
+        dayError = null;
       }
       if(durationSelected == -1){
-        styleError = 'Please enter how long each workout session will be.';
+        durationError = 'Please enter how long each workout session will be.';
         isValid = false;
       }else {
-        styleError = null;
+        durationError = null;
       }
       if(timeSelected.isEmpty){
-        styleError = 'Please select your preferred workout times.';
+        timeError = 'Please select your preferred workout times.';
         isValid = false;
       }else {
-        styleError = null;
+        timeError = null;
       }
     });
     return isValid;
+  }
+
+  void _scrollToError(GlobalKey key){
+    final context = key.currentContext;
+    if(context != null){
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    }
+  }
+
+  void handleNext(){
+    final isValid = validateInput();
+    if(!isValid){
+      List<GlobalKey> errorKeys = [];
+      if(styleError != null) errorKeys.add(styleKey);
+      if(equipError != null) errorKeys.add(equipKey);
+      if(placeError != null) errorKeys.add(placeKey);
+      if(dayError != null) errorKeys.add(dayKey);
+      if(durationError != null) errorKeys.add(durationKey);
+      if(timeError != null) errorKeys.add(timeKey);
+
+      if(errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
+      return;
+    }
+    saveData();
+    context.read<DataProvider>().updatePageSix(widget.data);
+    widget.onNext();
   }
 
   @override
@@ -1470,7 +1836,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
           const SizedBox(height: 10,),
           Text('Pick what fits your schedule and preferences', style: Theme.of(context).textTheme.labelMedium,),
           const SizedBox(height: 20,),
-          Text('Training Style Preference'),
+          Text('Training Style Preference', key: styleKey,),
           if(styleError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1499,7 +1865,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
             ],
           ),
           const SizedBox(height: 20,),
-          Text('Equipment Access'),
+          Text('Equipment Access', key: equipKey,),
           if(equipError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1521,7 +1887,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
             ],
           ),
           const SizedBox(height: 20,),
-          Text('Location Preference'),
+          Text('Location Preference', key: placeKey,),
           if(placeError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1544,7 +1910,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
             ],
           ),
           const SizedBox(height: 20,),
-          Text('Workout days per week'),
+          Text('Workout days per week', key: dayKey,),
           if(dayError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1568,7 +1934,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
             ],
           ),
           const SizedBox(height: 20,),
-          Text('Session Time'),
+          Text('Session Duration', key: durationKey,),
           if(durationError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1591,7 +1957,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
             ],
           ),
           const SizedBox(height: 20,),
-          Text('Session Duration'),
+          Text('Session time', key: timeKey,),
           if(timeError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1630,6 +1996,16 @@ class _SignupPageSixState extends State<SignupPageSix> {
             ],
           ),
           const SizedBox(height: 30,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+              onPressed: handleNext,
+              child: Text("Next",),
+            ),
+          ),
         ],),
       ),
     );
@@ -1645,6 +2021,9 @@ class _SignupPageSixState extends State<SignupPageSix> {
           setState(() {
             if(selected){
               styleSelected.add(value);
+              if(styleError != null){
+                styleError = null;
+              }
             }else{
               styleSelected.remove(value);
             }
@@ -1661,6 +2040,9 @@ class _SignupPageSixState extends State<SignupPageSix> {
       onSelected: (selected){
         setState(() {
           equipSelected = selected ? value : -1;
+          if(equipError != null){
+            equipError = null;
+          }
         });
       },
     );
@@ -1674,6 +2056,9 @@ class _SignupPageSixState extends State<SignupPageSix> {
       onSelected: (selected){
         setState(() {
           placeSelected = selected ? value : -1;
+          if(placeError != null){
+            placeError = null;
+          }
         });
       },
     );
@@ -1685,6 +2070,9 @@ class _SignupPageSixState extends State<SignupPageSix> {
       onSelected: (selected){
         setState(() {
           daySelected = selected ? value : -1;
+          if(dayError != null){
+            dayError = null;
+          }
         });
       },
     );
@@ -1696,6 +2084,9 @@ class _SignupPageSixState extends State<SignupPageSix> {
       onSelected: (selected){
         setState(() {
           durationSelected = selected ? value : -1;
+          if(durationError != null){
+            durationError = null;
+          }
         });
       },
     );
@@ -1710,6 +2101,9 @@ class _SignupPageSixState extends State<SignupPageSix> {
         setState(() {
           if(selected){
            timeSelected.add(value);
+           if(timeError != null){
+             timeError = null;
+           }
           }else{
             timeSelected.remove(value);
           }
@@ -1765,13 +2159,16 @@ class SignupPageSevenData{
 
 class SignupPageSeven extends StatefulWidget {
   final SignupPageSevenData data;
-  const SignupPageSeven({super.key, required this.data});
+  final VoidCallback onNext;
+  const SignupPageSeven({super.key, required this.data, required this.onNext});
 
   @override
   State<SignupPageSeven> createState() => _SignupPageSevenState();
 }
 
 class _SignupPageSevenState extends State<SignupPageSeven> {
+  final mealKey = GlobalKey();
+  final dietKey = GlobalKey();
   int? meal;
   int? diet;
   Set<int> region = {};
@@ -1805,11 +2202,35 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
     return isValid;
   }
 
+  void _scrollToError(GlobalKey key){
+    final context = key.currentContext;
+    if(context != null){
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    }
+  }
+
+  void handleNext(){
+    final isValid = validateInput();
+    if(!isValid){
+      List<GlobalKey> errorKeys = [];
+      if(mealError != null) errorKeys.add(mealKey);
+      if(dietError != null) errorKeys.add(dietKey);
+
+      if(errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
+      return;
+    }
+    saveData();
+    context.read<DataProvider>().updatePageSeven(widget.data);
+    widget.onNext();
+  }
+
   @override
   void initState() {
     super.initState();
     meal = widget.data.mealIndex;
     diet = widget.data.dietIndex;
+    isHalal = widget.data.isHalal;
+    region = widget.data.regionIndex.toSet();
   }
 
   @override
@@ -1829,7 +2250,7 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
           const SizedBox(height: 10,),
           Text('Help us shape a plan that works for you', style: Theme.of(context).textTheme.labelMedium,),
           const SizedBox(height: 20,),
-          Text('Meals per day'),
+          Text('Meals per day', key: mealKey,),
           if(mealError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1852,7 +2273,7 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
             ],
           ),
           const SizedBox(height: 20,),
-          Text('Your Diet Preference'),
+          Text('Your Diet Preference', key: dietKey,),
           if(dietError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -1918,6 +2339,16 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
           const SizedBox(height: 5,),
           AllergenChips(),
           const SizedBox(height: 30,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+              onPressed: handleNext,
+              child: Text("Next",),
+            ),
+          ),
         ],),
       ),
     );
@@ -1929,6 +2360,9 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
       onSelected: (selected){
         setState(() {
           meal = selected ? value : null;
+          if(mealError != null){
+            mealError = null;
+          }
         });
       },
     );
@@ -1942,6 +2376,9 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
       onSelected: (selected){
         setState(() {
           diet = selected ? value : null;
+          if(dietError != null){
+            dietError = null;
+          }
         });
       },
     );
@@ -1994,13 +2431,17 @@ class SignupPageEightData{
 
 class SignupPageEight extends StatefulWidget {
   final SignupPageEightData data;
-  const SignupPageEight({super.key, required this.data});
+  final VoidCallback onNext;
+  const SignupPageEight({super.key, required this.data, required this.onNext});
 
   @override
   State<SignupPageEight> createState() => _SignupPageEightState();
 }
 
 class _SignupPageEightState extends State<SignupPageEight> {
+  void handleNext(){
+    widget.onNext();
+  }
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -2031,7 +2472,17 @@ class _SignupPageEightState extends State<SignupPageEight> {
           ],),
           const SizedBox(height: 5,),
           DislikedChips(),
-          const SizedBox(height: 20,),
+          const SizedBox(height: 30,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+              onPressed: handleNext,
+              child: Text("Next",),
+            ),
+          ),
         ],),
       ),
     );
@@ -2061,19 +2512,22 @@ class SignupPageNineData{
 
 class SignupPageNine extends StatefulWidget {
   final SignupPageNineData data;
-  const SignupPageNine({super.key, required this.data});
+  final VoidCallback onNext;
+  const SignupPageNine({super.key, required this.data, required this.onNext});
 
   @override
   State<SignupPageNine> createState() => _SignupPageNineState();
 }
 
 class _SignupPageNineState extends State<SignupPageNine> {
+  final userKey = GlobalKey();
+  final passKey = GlobalKey();
+  final confirmKey = GlobalKey();
+  final linkKey = GlobalKey();
   late SignupPageNineData data;
   bool isHiddenOne = true;
   bool isHiddenTwo = true;
   String selectedCode = '+880';
-  bool isGoogleConnected = true;
-  bool isAppleConnected = false;
   final List<Map<String, String>> codes = [
     {'name': 'BAN', 'code': '+880'},
     {'name': 'US', 'code': '+1'},
@@ -2139,13 +2593,13 @@ class _SignupPageNineState extends State<SignupPageNine> {
       }else{
         confirmError = null;
       }
+      if(!data.hasLinked){
+        linkError = 'Link at least one account to continue';
+        isValid = false;
+      }else{
+        linkError = null;
+      }
     });
-    if(!data.hasLinked){
-      linkError = 'Link at least one account to continue';
-      isValid = false;
-    }else{
-      linkError = null;
-    }
     if(isValid){
       final username = usernameController.text.trim();
       final existing = await FirebaseFirestore.instance.collection('users').where('username', isEqualTo: username).limit(1).get();
@@ -2159,19 +2613,129 @@ class _SignupPageNineState extends State<SignupPageNine> {
     return isValid;
   }
 
+  void _scrollToError(GlobalKey key){
+    final context = key.currentContext;
+    if(context != null){
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    }
+  }
+
+  void handleNext() async{
+    final isValid = await validateInput();
+    if(!mounted) return;
+    if(!isValid){
+      List<GlobalKey> errorKeys = [];
+      if(usernameError != null) errorKeys.add(userKey);
+      if(passwordError != null) errorKeys.add(passKey);
+      if(confirmError != null) errorKeys.add(confirmKey);
+      if(linkError != null) errorKeys.add(linkKey);
+
+      if(errorKeys.isNotEmpty){
+        WidgetsBinding.instance.addPostFrameCallback((_){
+          _scrollToError(errorKeys.first);
+        });
+      }
+      return;
+    }
+    saveData();
+    if(!mounted) return;
+    context.read<DataProvider>().updatePageNine(data);
+    widget.onNext();
+  }
+
+  Future<void> _linkGoogle() async{
+    try{
+      final googleUser = await GoogleSignIn.instance.authenticate();
+      final existing = await FirebaseFirestore.instance.collection('users').where('googleId',isEqualTo: googleUser.id).limit(1).get();
+      if(existing.docs.isNotEmpty){
+        await GoogleSignIn.instance.signOut();
+        if(mounted){
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This Google account is already linked to another user')));
+        }
+        return;
+      }
+
+      setState(() {
+        data.googleId = googleUser.id;
+        linkError = null;
+      });
+    }catch(e){
+      if(mounted){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+      }
+    }
+  }
+
+  Future<void> _unlinkGoogle() async{
+    final confirm = await _showUnlinkDialog('Google');
+    if(!confirm) return;
+    setState(() {
+      data.googleId = null;
+      if(!data.hasLinked) linkError = 'Link at least one account to continue';
+    });
+  }
+
+  Future<void> _linkApple() async{
+    try{
+      final appleCredential = await SignInWithApple.getAppleIDCredential(scopes: [AppleIDAuthorizationScopes.email]);
+      final existing = await FirebaseFirestore.instance.collection('users').where('appleId', isEqualTo: appleCredential.userIdentifier).limit(1).get();
+
+      if(existing.docs.isNotEmpty){
+        if(mounted){
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This Apple account is already linked to another user')));
+        }
+        return;
+      }
+
+      setState(() {
+        data.appleId = appleCredential.userIdentifier;
+        linkError = null;
+      });
+    }catch(e){
+      if(mounted){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Apple sign-in failed: $e')));
+      }
+    }
+  }
+
+  Future<void> _unlinkApple() async{
+    final confirm = await _showUnlinkDialog('Apple');
+    if(!confirm) return;
+    setState(() {
+      data.appleId = null;
+      if(!data.hasLinked) linkError = 'Link at least one account to continue';
+    });
+  }
+
+  Future<bool> _showUnlinkDialog(String provider) async{
+    return await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Unlink $provider'),
+          content: Text('This will remove your $provider connection.'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Unlink')),
+          ],
+        )
+    ) ?? false;
+  }
+
   @override
   void initState() {
     super.initState();
-    usernameController.text = widget.data.username ?? '';
-    passwordController.text = widget.data.password ?? '';
-    confirmController.text = widget.data.password ?? '';
-    addressController.text = widget.data.address ?? '';
-    if(widget.data.phone != null){
+    data = widget.data;
+
+    usernameController.text = data.username ?? '';
+    passwordController.text = data.password ?? '';
+    confirmController.text = data.password ?? '';
+    addressController.text = data.address ?? '';
+    if(data.phone != null){
       final allCodes = codes.map((c) => c['code']!).toList();
       allCodes.sort((a, b) => b.length.compareTo(a.length));
-      final matchedCode = allCodes.firstWhere((code) => widget.data.phone!.startsWith(code), orElse: () => '+880');
+      final matchedCode = allCodes.firstWhere((code) => data.phone!.startsWith(code), orElse: () => '+880');
       selectedCode = matchedCode;
-      phoneController.text = widget.data.phone!.substring(matchedCode.length);
+      phoneController.text = data.phone!.substring(matchedCode.length);
     }
   }
 
@@ -2204,15 +2768,26 @@ class _SignupPageNineState extends State<SignupPageNine> {
             Text('Save your progress and access your plan anytime', style: Theme.of(context).textTheme.labelMedium,),
             const SizedBox(height: 20,),
             TextField(
+              key: userKey,
+              controller: usernameController,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.account_circle_outlined),
                 labelText: 'Username',
                 helperText: '*Use letters, numbers and underscore',
                 errorText: usernameError,
               ),
+              onChanged: (_){
+                setState(() {
+                  if(usernameError != null){
+                    usernameError = null;
+                  }
+                });
+              },
             ),
             const SizedBox(height: 20,),
             TextField(
+              key: passKey,
+              controller: passwordController,
               obscureText: isHiddenOne,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.lock_outline_rounded),
@@ -2227,9 +2802,18 @@ class _SignupPageNineState extends State<SignupPageNine> {
                   }, icon: isHiddenOne ? Icon(Icons.visibility_rounded) : Icon(Icons.visibility_off_rounded),
                 ),
               ),
+              onChanged: (_){
+                setState(() {
+                  if(passwordError != null){
+                    passwordError = null;
+                  }
+                });
+              },
             ),
             const SizedBox(height: 20,),
             TextField(
+              key: confirmKey,
+              controller: confirmController,
               obscureText: isHiddenTwo,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.lock_clock_outlined),
@@ -2243,6 +2827,13 @@ class _SignupPageNineState extends State<SignupPageNine> {
                   }, icon: isHiddenTwo ? Icon(Icons.visibility_rounded) : Icon(Icons.visibility_off_rounded),
                 ),
               ),
+              onChanged: (_){
+                setState(() {
+                  if(confirmError != null){
+                    confirmError = null;
+                  }
+                });
+              },
             ),
             const SizedBox(height: 20,),
             Row(children: [
@@ -2258,6 +2849,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                   )),
               const SizedBox(width: 8,),
               Expanded(child: TextField(
+                controller: phoneController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.phone),
                   labelText: 'Phone no',
@@ -2267,6 +2859,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
               ))]),
             const SizedBox(height: 20,),
             TextField(
+              controller: addressController,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.location_on_outlined),
                 labelText: 'Address',
@@ -2274,7 +2867,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
               ),
             ),
             const SizedBox(height: 20,),
-            Text('Link with your Google or Apple id'),
+            Text('Link with your Google or Apple id', key: linkKey,),
             if(linkError != null)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
@@ -2291,13 +2884,13 @@ class _SignupPageNineState extends State<SignupPageNine> {
                   backgroundColor: Theme.of(context).colorScheme.surface,
                   foregroundColor: Theme.of(context).colorScheme.onSurface
                 ),
-                onPressed: (){}, child: Padding(
+                onPressed: data.isGoogleLinked ? _unlinkGoogle : _linkGoogle,child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Row(
                   children: [
                    Emoji.google,
-                    Expanded(child: Center(child: Text('Connect with Google', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
-                    isGoogleConnected ?
+                    Expanded(child: Center(child: Text( data.isGoogleLinked ? 'Google Connected . Unlink' : 'Connect with Google', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
+                    data.isGoogleLinked ?
                     Icon(Icons.check_circle_outline, size: 24, color: CustomColors.greenPrimary(context),) : const SizedBox(height: 24, width: 24,),
                   ],
                 ),
@@ -2308,18 +2901,28 @@ class _SignupPageNineState extends State<SignupPageNine> {
                   backgroundColor: Theme.of(context).colorScheme.surface,
                   foregroundColor: Theme.of(context).colorScheme.onSurface
                 ),
-                onPressed: (){}, child: Padding(
+                onPressed: data.isAppleLinked ? _unlinkApple : _linkApple, child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Row(
                   children: [
                     Emoji.apple,
-                    Expanded(child: Center(child: Text('Connect with Apple', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
-                    isAppleConnected ?
+                    Expanded(child: Center(child: Text(data.isAppleLinked ? 'Apple Connected . Unlink' : 'Connect with Apple', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
+                    data.isAppleLinked ?
                     Icon(Icons.check_circle_outline, size: 24, color: CustomColors.greenPrimary(context),) : const SizedBox(height: 24, width: 24,),
                   ],
                 ),
             )),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 30,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                onPressed: handleNext,
+                child: Text("Next",),
+              ),
+            ),
           ],
         ),
       ),
@@ -2361,14 +2964,33 @@ class _SignupPageNineState extends State<SignupPageNine> {
   }
 }
 
+class SignUpPageTenData{
+
+}
+
 class SignupPageTen extends StatefulWidget {
-  const SignupPageTen({super.key});
+  final SignUpPageTenData data;
+  final VoidCallback onNext;
+  const SignupPageTen({super.key, required this.data, required this.onNext});
 
   @override
   State<SignupPageTen> createState() => _SignupPageTenState();
 }
 
 class _SignupPageTenState extends State<SignupPageTen> {
+  late bool unitIsMetric;
+  late bool notificationsIsOn;
+
+  void handleNext(){
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -2383,7 +3005,17 @@ class _SignupPageTenState extends State<SignupPageTen> {
           ),
           const SizedBox(height: 10,),
           Text('Review your details and see your personalized setup', style: Theme.of(context).textTheme.labelMedium,),
-          const SizedBox(height: 20,),
+          const SizedBox(height: 30,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+              onPressed: handleNext,
+              child: Text("Next",),
+            ),
+          ),
         ],),
       ),
     );

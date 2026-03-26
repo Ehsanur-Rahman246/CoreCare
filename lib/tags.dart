@@ -247,6 +247,7 @@ class _MedChipsState extends State<MedChips> {
           selectedMeds.add(sheet[i]);
         }
       });
+      updateMeds();
     }
   }
 
@@ -268,6 +269,7 @@ class _MedChipsState extends State<MedChips> {
                 selectedMeds.remove(med);
               }
             });
+            updateMeds();
           },
         ),
       );
@@ -283,6 +285,7 @@ class _MedChipsState extends State<MedChips> {
               setState(() {
                 selectedMeds.remove(med);
               });
+              updateMeds();
             },
           ),
         );
@@ -490,6 +493,7 @@ class _InjuryChipsState extends State<InjuryChips> {
           selectedIns.add(sheet[i]);
         }
       });
+      updateInjuries();
     }
   }
 
@@ -511,6 +515,7 @@ class _InjuryChipsState extends State<InjuryChips> {
                 selectedIns.remove(ins);
               }
             });
+            updateInjuries();
           },
         ),
       );
@@ -526,6 +531,7 @@ class _InjuryChipsState extends State<InjuryChips> {
               setState(() {
                 selectedIns.remove(ins);
               });
+              updateInjuries();
             },
           ),
         );
@@ -609,6 +615,12 @@ class _AllergenChipsState extends State<AllergenChips> {
 
   final Set<String> selectedAllergens = {};
 
+  void updateAllergens(){
+    final data = context.read<DataProvider>().pageSeven;
+    data.selectedAllergens = selectedAllergens.toList();
+    context.read<DataProvider>().updatePageSeven(data);
+  }
+
   Future<List<String>?> openBottomSheet(
     BuildContext context,
     List<String> list,
@@ -646,7 +658,7 @@ class _AllergenChipsState extends State<AllergenChips> {
               );
             }
             return SizedBox(
-              height: MediaQuery.of(context).size.height * 0.5,
+              height: MediaQuery.of(context).size.height * 0.65,
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -738,7 +750,15 @@ class _AllergenChipsState extends State<AllergenChips> {
       setState(() {
         selectedAllergens.addAll(sheet);
       });
+      updateAllergens();
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final saved = context.read<DataProvider>().pageSeven.selectedAllergens;
+    selectedAllergens.addAll(saved);
   }
 
   @override
@@ -762,6 +782,7 @@ class _AllergenChipsState extends State<AllergenChips> {
                 selectedAllergens.remove(allergy);
               }
             });
+            updateAllergens();
           },
         ),
       );
@@ -780,6 +801,7 @@ class _AllergenChipsState extends State<AllergenChips> {
               setState(() {
                 selectedAllergens.remove(allergy);
               });
+              updateAllergens();
             },
           ),
         );
@@ -911,6 +933,12 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
   ];
 
   late List<String> intolerances;
+
+  void updateIntolerances(){
+    final data = context.read<DataProvider>().pageEight;
+    data.selectedIntolerances = selectedIntolerances.toList();
+    context.read<DataProvider>().updatePageEight(data);
+  }
 
   @override
   void initState() {
@@ -1060,6 +1088,7 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
           selectedIntolerances.add(sheet[i]);
         }
       });
+      updateIntolerances();
     }
   }
 
@@ -1081,6 +1110,7 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
                 selectedIntolerances.remove(ints);
               }
             });
+            updateIntolerances();
           },
         ),
       );
@@ -1096,6 +1126,7 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
               setState(() {
                 selectedIntolerances.remove(ints);
               });
+              updateIntolerances();
             },
           ),
         );
@@ -1416,6 +1447,12 @@ class _DislikedChipsState extends State<DislikedChips> {
 
   late List<String> dislikes;
 
+  void updateDislikes(){
+    final data = context.read<DataProvider>().pageEight;
+    data.selectedDislikes = selectedDislikes.toList();
+    context.read<DataProvider>().updatePageEight(data);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1563,6 +1600,7 @@ class _DislikedChipsState extends State<DislikedChips> {
           selectedDislikes.add(sheet[i]);
         }
       });
+      updateDislikes();
     }
   }
 
@@ -1584,6 +1622,7 @@ class _DislikedChipsState extends State<DislikedChips> {
                 selectedDislikes.remove(dislike);
               }
             });
+            updateDislikes();
           },
         ),
       );
@@ -1599,6 +1638,7 @@ class _DislikedChipsState extends State<DislikedChips> {
               setState(() {
                 selectedDislikes.remove(dislike);
               });
+              updateDislikes();
             },
           ),
         );
