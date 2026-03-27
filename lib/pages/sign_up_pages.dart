@@ -5,17 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:core_care/decoration.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in_web/google_sign_in_web.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:core_care/data_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:google_sign_in_web/web_only.dart' as web;
 
 class SignupPageOneData{
   String? name;
   DateTime? dob;
   int? gender;
   double? height;
+  int? heightInches;
   double? weight;
   bool isHeightFt;
   bool isWeightKg;
@@ -30,6 +33,7 @@ class SignupPageOneData{
     this.dob,
     this.gender,
     this.height,
+    this.heightInches,
     this.weight,
     this.isHeightFt = true,
     this.isWeightKg = true,
@@ -40,8 +44,8 @@ class SignupPageOneData{
     this.category,
   });
 
-  double toHeightCm(double value, bool isFt){
-    return isFt ? value * 30.48 : value;
+  double toHeightCm(double value, bool isFt, {int inches = 0}){
+    return isFt ? (value * 30.48) + (inches * 2.54) : value;
   }
 
   double toWeightKg(double value, bool isKg){
@@ -80,7 +84,7 @@ class SignupPageOneData{
 
   void calculateAndSave(){
     if(height != null && weight != null && dob != null && gender != null){
-      final heightCm = toHeightCm(height!, isHeightFt);
+      final heightCm = toHeightCm(height!, isHeightFt, inches: heightInches ?? 0);
       final weightKg = toWeightKg(weight!, isWeightKg);
       final calculatedAge = calculateAge(dob!);
       age = calculateAge(dob!);
@@ -117,6 +121,8 @@ class _SignupPageOneState extends State<SignupPageOne> {
   bool isHeightUnitOne = true;
   bool isWeightUnitOne = true;
   DateTime? selectedDate;
+  int selectedFeet = 5;
+  int selectedInches = 0;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
@@ -185,23 +191,30 @@ class _SignupPageOneState extends State<SignupPageOne> {
         genderError = null;
       }
 
-      final h = double.tryParse(heightController.text);
-      if(heightController.text.isEmpty){
-        heightError = 'Height is required';
-        isValid = false;
-      }else if(h == null || h <= 0){
-        heightError = 'Enter valid height';
-        isValid = false;
-      }else{
+      if(isHeightUnitOne){
         heightError = null;
+      }else{
+        final h = double.tryParse(heightController.text);
+        if(heightController.text.isEmpty){
+          heightError = 'Height is required';
+          isValid = false;
+        }else if(h == null || h < 100 || h > 250){
+          heightError = 'Please enter valid height';
+          isValid = false;
+        }else{
+          heightError = null;
+        }
       }
 
       final w = double.tryParse(weightController.text);
       if(weightController.text.isEmpty){
         weightError = 'Weight is required';
         isValid = false;
-      }else if(w == null || w <= 0){
-        weightError = 'Enter valid weight';
+      }else if(isWeightUnitOne && (w == null || w < 30 || w > 300)){
+        weightError = 'Please enter valid weight';
+        isValid = false;
+      }else if(!isWeightUnitOne && (w == null || w < 66 || w > 660)){
+        weightError = 'Please enter valid weight';
         isValid = false;
       }else{
         weightError = null;
@@ -215,7 +228,8 @@ class _SignupPageOneState extends State<SignupPageOne> {
     data.name = nameController.text.trim();
     data.dob = selectedDate;
     data.gender = genderSelected;
-    data.height = double.tryParse(heightController.text);
+    data.height = isHeightUnitOne ? selectedFeet.toDouble() : double.tryParse(heightController.text);
+    data.heightInches = isHeightUnitOne ? selectedInches : 0;
     data.weight = double.tryParse(weightController.text);
     data.isHeightFt = isHeightUnitOne;
     data.isWeightKg = isWeightUnitOne;
@@ -262,6 +276,10 @@ class _SignupPageOneState extends State<SignupPageOne> {
     isWeightUnitOne = data.isWeightKg;
     if(selectedDate != null){
       dateController.text = formattedDate(selectedDate!);
+    }
+    if(data.isHeightFt && data.height != null){
+      selectedFeet = data.height!.toInt().clamp(3, 8);
+      selectedInches = (data.heightInches ?? 0).clamp(0, 11);
     }
   }
 
@@ -401,31 +419,72 @@ class _SignupPageOneState extends State<SignupPageOne> {
           ),
         const SizedBox(height: 20,),
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: TextField(
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(
-                    RegExp(r'^\d*\.?\d{0,2}'),
+            if(isHeightUnitOne) ...[
+              Expanded(
+                child: SizedBox(
+                  height: 56,
+                  child: DropdownButtonFormField<int>(
+                      key: heightKey,
+                      initialValue: selectedFeet,
+                      decoration: InputDecoration(
+                        labelText: 'Feet',
+                        prefixIcon: Icon(Icons.height_rounded),
+                        errorText: heightError,
+                      ),
+                      items: List.generate(6, (i) => i + 3).map((f) => DropdownMenuItem(value: f, child: Text('$f ft', style: th.bodyLarge,))).toList(),
+                      onChanged: (v){
+                        setState(() {
+                          selectedFeet = v!;
+                          heightError = null;
+                        });
+                      }
                   ),
-                ],
-                key: heightKey,
-                controller: heightController,
-                onChanged: (_){
-                  if(heightError != null){
-                    setState(() {
-                      heightError = null;
-                    });
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Height',
-                  prefixIcon: Icon(Icons.height_rounded),
-                  errorText: heightError,
                 ),
               ),
-            ),
+              const SizedBox(width: 10,),
+              Expanded(
+                child: SizedBox(
+                  height: 56,
+                  child: DropdownButtonFormField<int>(
+                      initialValue: selectedInches,
+                      decoration: InputDecoration(
+                        labelText: 'Inches',
+                      ),
+                      items: List.generate(12, (i) => i).map((i) => DropdownMenuItem(value: i, child: Text('$i in', style: th.bodyLarge,))).toList(),
+                      onChanged: (v){
+                        setState(() => selectedInches = v!);
+                      }
+                  ),
+                ),
+              ),
+            ]else ...[
+              Expanded(
+                child: TextField(
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'^\d*\.?\d{0,2}'),
+                    ),
+                  ],
+                  key: heightKey,
+                  controller: heightController,
+                  onChanged: (_){
+                    if(heightError != null){
+                      setState(() {
+                        heightError = null;
+                      });
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Height',
+                    prefixIcon: Icon(Icons.height_rounded),
+                    errorText: heightError,
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(width: 10,),
             GestureDetector(
               onTap: (){
@@ -1336,35 +1395,37 @@ class _SignupPageFourState extends State<SignupPageFour> {
           ),
           const SizedBox(height: 20,),
           if(selectedFit != -1)
-            Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                decoration: BoxDecoration(
-                  color: CustomColors.primaryMuted(context),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: CustomColors.yellowOutline(context)),
+            Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: CustomColors.primaryMuted(context),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: CustomColors.yellowOutline(context)),
+                  ),
+                  child: RichText(text: TextSpan(children: [
+                    TextSpan(text: 'Based on your given data,\n\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                    TextSpan(text: 'Your BMI is ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                    TextSpan(text: '${data1.bmi} - ${data1.category}.\n\n', style: TextStyle(color: bmiColor)),
+                    TextSpan(text: 'Your body needs ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                    TextSpan(text: '${data1.bmr}', style: TextStyle(color: CustomColors.orangePrimary(context))),
+                    TextSpan(text: ' calories at rest and total of ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                    TextSpan(text: '$previewTDEE', style: TextStyle(color: CustomColors.orangePrimary(context))),
+                    TextSpan(text: ' calories are burnt in a day.\n\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                    TextSpan(text: 'You belong to the age group ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                    TextSpan(text: '${data1.ageGroup}', style: TextStyle(color: CustomColors.bluePrimary(context))),
+                  ],),
+                  textAlign: TextAlign.center,),
                 ),
-                child: RichText(text: TextSpan(children: [
-                  TextSpan(text: 'Based on your given data,\n\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                  TextSpan(text: 'Your BMI is ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                  TextSpan(text: '${data1.bmi} - ${data1.category}.\n\n', style: TextStyle(color: bmiColor)),
-                  TextSpan(text: 'Your body needs ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                  TextSpan(text: '${data1.bmr}', style: TextStyle(color: CustomColors.orangePrimary(context))),
-                  TextSpan(text: ' calories at rest and total of ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                  TextSpan(text: '$previewTDEE', style: TextStyle(color: CustomColors.orangePrimary(context))),
-                  TextSpan(text: ' calories are burnt in a day.\n\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                  TextSpan(text: 'You belong to the age group ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                  TextSpan(text: '${data1.ageGroup}', style: TextStyle(color: CustomColors.bluePrimary(context))),
-                ],),
-                textAlign: TextAlign.center,),
-              ),
-              const SizedBox(height: 5,),
-              Text('See our recommendation next, or choose your own focus.', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500), textAlign: TextAlign.center,),
-            ]),
+                const SizedBox(height: 5,),
+                Text('See our recommendation next, or choose your own focus.', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500), textAlign: TextAlign.center,),
+              ]),
+            ),
           const SizedBox(height: 30,),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
@@ -1640,13 +1701,11 @@ class _SignupPageFiveState extends State<SignupPageFive> {
                   icon,
                   const SizedBox(height: 5,),
                   Text(label, style: th.labelMedium,),
-                  if(isRecommended && !isSelected)
-                    Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text('Recommended', style: TextStyle(color: CustomColors.yellowOutline(context), fontSize: 10),)),
                   const SizedBox(height: 15,),
                   selectedFund == select ?
                   Icon(Icons.circle, color: ch.primary,) : Icon(Icons.circle_outlined),
+                  if(isRecommended && !isSelected)
+                    Text('Recommended', style: TextStyle(color: CustomColors.yellowOutline(context), fontSize: 10),),
                 ],
               ),
             ),
@@ -2620,7 +2679,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
       }else{
         confirmError = null;
       }
-      if(!kIsWeb && !data.hasLinked){
+      if(!data.hasLinked){
         linkError = 'Link at least one account to continue';
         isValid = false;
       }else{
@@ -2704,9 +2763,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
   Future<void> _unlinkGoogle() async{
     final confirm = await _showUnlinkDialog('Google');
     if(!confirm) return;
-    if(kIsWeb){
-      await GoogleSignIn.instance.signOut();
-    }
+    await GoogleSignIn.instance.signOut();
     setState(() {
       data.googleId = null;
       if(!data.hasLinked) linkError = 'Link at least one account to continue';
@@ -2774,6 +2831,29 @@ class _SignupPageNineState extends State<SignupPageNine> {
       final matchedCode = allCodes.firstWhere((code) => data.phone!.startsWith(code), orElse: () => '+880');
       selectedCode = matchedCode;
       phoneController.text = data.phone!.substring(matchedCode.length);
+    }
+
+    if(kIsWeb){
+      GoogleSignIn.instance.authenticationEvents.listen((event)async{
+        final GoogleSignInAccount? user = switch (event){
+          GoogleSignInAuthenticationEventSignIn() => event.user,
+        _ => null,
+        };
+        if(user == null) return;
+        final existing = await FirebaseFirestore.instance.collection('users').where('googleId', isEqualTo: user.id).limit(1).get();
+        if(existing.docs.isNotEmpty){
+          if(mounted){
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This Google account is already linked to another user')));
+          }
+          return;
+        }
+        if(mounted){
+          setState(() {
+            data.googleId = user.id;
+            linkError = null;
+          });
+        }
+      });
     }
   }
 
@@ -2923,6 +3003,62 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 ),
               ),
             const SizedBox(height: 10,),
+            if(kIsWeb && !data.isGoogleLinked)
+    SizedBox(
+      height: 50,
+      width: double.infinity,
+      child: Stack(
+        children: [
+          FilledButton(
+          style: FilledButton.styleFrom(
+            minimumSize: Size(double.infinity, 50),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          foregroundColor: Theme.of(context).colorScheme.onSurface
+          ),
+          onPressed: (){},child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          child: Row(
+          children: [
+          Emoji.google,
+          Expanded(child: Center(child: Text('Connect with Google', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
+          const SizedBox(height: 24, width: 24,),
+          ],
+          ),
+          )),
+          Opacity(
+            opacity: 0.005,
+            child: SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: web.renderButton(
+                configuration: GSIButtonConfiguration(
+                  size: GSIButtonSize.large,
+                  shape: GSIButtonShape.pill,
+                  minimumWidth: 5000,
+                )
+              ),
+            ),
+          )
+        ],
+      ),
+    )
+              else if(kIsWeb && data.isGoogleLinked)
+              FilledButton(
+                  style: FilledButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      foregroundColor: Theme.of(context).colorScheme.onSurface
+                  ),
+                  onPressed: _unlinkGoogle,child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: Row(
+                  children: [
+                    Emoji.google,
+                    Expanded(child: Center(child: Text('Google Connected . Unlink', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
+                    Icon(Icons.check_circle_outline, size: 24, color: CustomColors.greenPrimary(context),)
+                  ],
+                ),
+              ))
+            else
             FilledButton(
                 style: FilledButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.surface,
