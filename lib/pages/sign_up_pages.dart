@@ -13,7 +13,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in_web/web_only.dart' as web;
 
-class SignupPageOneData{
+class SignupPageOneData {
   String? name;
   DateTime? dob;
   int? gender;
@@ -44,52 +44,59 @@ class SignupPageOneData{
     this.category,
   });
 
-  double toHeightCm(double value, bool isFt, {int inches = 0}){
+  double toHeightCm(double value, bool isFt, {int inches = 0}) {
     return isFt ? (value * 30.48) + (inches * 2.54) : value;
   }
 
-  double toWeightKg(double value, bool isKg){
+  double toWeightKg(double value, bool isKg) {
     return isKg ? value : value * 0.453592;
   }
 
-  double calculateBMI(double h, double w){
+  double calculateBMI(double h, double w) {
     final height = h / 100;
     return w / (height * height);
   }
-  double calculateBMR(double h, double w, int age, int gender){
+
+  double calculateBMR(double h, double w, int age, int gender) {
     final base = (10 * w) + (6.25 * h) - (5 * age);
     return gender == 1 ? base + 5 : base - 161;
   }
-  int calculateAge(DateTime dob){
+
+  int calculateAge(DateTime dob) {
     final today = DateTime.now();
     int age = today.year - dob.year;
-    if(today.month < dob.month || (today.month == dob.month && today.day < dob.day)){
+    if (today.month < dob.month ||
+        (today.month == dob.month && today.day < dob.day)) {
       age--;
     }
     return age;
   }
 
-  String getAgeGroup(int age){
-    if(age < 18) return 'Teen';
-    if(age < 30) return 'Young Adult';
-    if(age < 60) return 'Adult';
+  String getAgeGroup(int age) {
+    if (age < 18) return 'Teen';
+    if (age < 30) return 'Young Adult';
+    if (age < 60) return 'Adult';
     return 'Senior';
   }
-  String getCategory(double bmi){
-    if(bmi < 18.5) return 'Underweight';
-    if(bmi < 25) return 'Normal';
-    if(bmi < 30) return 'Overweight';
+
+  String getCategory(double bmi) {
+    if (bmi < 18.5) return 'Underweight';
+    if (bmi < 25) return 'Normal';
+    if (bmi < 30) return 'Overweight';
     return 'Obese';
   }
 
-  void calculateAndSave(){
-    if(height != null && weight != null && dob != null && gender != null){
-      final heightCm = toHeightCm(height!, isHeightFt, inches: heightInches ?? 0);
+  void calculateAndSave() {
+    if (height != null && weight != null && dob != null && gender != null) {
+      final heightCm = toHeightCm(
+          height!, isHeightFt, inches: heightInches ?? 0);
       final weightKg = toWeightKg(weight!, isWeightKg);
       final calculatedAge = calculateAge(dob!);
       age = calculateAge(dob!);
       bmi = double.parse(calculateBMI(heightCm, weightKg).toStringAsFixed(1));
-      bmr = double.parse(calculateBMR(heightCm, weightKg, calculatedAge, gender!).toStringAsFixed(1));
+      bmr = double.parse(
+          calculateBMR(heightCm, weightKg, calculatedAge, gender!)
+              .toStringAsFixed(1));
       ageGroup = getAgeGroup(calculatedAge);
       category = getCategory(bmi!);
     }
@@ -99,6 +106,7 @@ class SignupPageOneData{
 class SignupPageOne extends StatefulWidget {
   final SignupPageOneData data;
   final VoidCallback onNext;
+
   const SignupPageOne({super.key, required this.data, required this.onNext});
 
   @override
@@ -129,14 +137,14 @@ class _SignupPageOneState extends State<SignupPageOne> {
   final TextEditingController weightController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
 
-  Future<void> pickDate() async{
+  Future<void> pickDate() async {
     DateTime? picked = await showDatePicker(context: context,
         initialDate: DateTime(2000),
         firstDate: DateTime(1900),
         lastDate: DateTime.now()
     );
 
-    if(picked != null){
+    if (picked != null) {
       setState(() {
         selectedDate = picked;
         dateController.text = formattedDate(picked);
@@ -144,7 +152,7 @@ class _SignupPageOneState extends State<SignupPageOne> {
     }
   }
 
-  String formattedDate(DateTime date){
+  String formattedDate(DateTime date) {
     String day = date.day.toString().padLeft(2, '0');
     String month = date.month.toString().padLeft(2, '0');
     String year = date.year.toString();
@@ -152,71 +160,71 @@ class _SignupPageOneState extends State<SignupPageOne> {
     return '$year-$month-$day';
   }
 
-  void selectGender(int g){
+  void selectGender(int g) {
     setState(() {
       genderSelected = g;
-      if(genderError != null){
+      if (genderError != null) {
         genderError = null;
       }
     });
   }
 
-  bool validateInput(){
+  bool validateInput() {
     bool isValid = true;
     setState(() {
-      if(nameController.text.isEmpty){
+      if (nameController.text.isEmpty) {
         nameError = 'Name is required';
         isValid = false;
-      }else{
+      } else {
         nameError = null;
       }
 
-      if(selectedDate == null){
+      if (selectedDate == null) {
         dobError = 'Date of birth is required';
         isValid = false;
-      }else{
+      } else {
         dobError = null;
 
         final age = data.calculateAge(selectedDate!);
-        if(age < 13){
+        if (age < 13) {
           dobError = 'You must be at least 13 years old';
           isValid = false;
         }
       }
 
-      if(genderSelected == null){
+      if (genderSelected == null) {
         genderError = 'Select gender';
         isValid = false;
-      }else{
+      } else {
         genderError = null;
       }
 
-      if(isHeightUnitOne){
+      if (isHeightUnitOne) {
         heightError = null;
-      }else{
+      } else {
         final h = double.tryParse(heightController.text);
-        if(heightController.text.isEmpty){
+        if (heightController.text.isEmpty) {
           heightError = 'Height is required';
           isValid = false;
-        }else if(h == null || h < 100 || h > 250){
+        } else if (h == null || h < 100 || h > 250) {
           heightError = 'Please enter valid height';
           isValid = false;
-        }else{
+        } else {
           heightError = null;
         }
       }
 
       final w = double.tryParse(weightController.text);
-      if(weightController.text.isEmpty){
+      if (weightController.text.isEmpty) {
         weightError = 'Weight is required';
         isValid = false;
-      }else if(isWeightUnitOne && (w == null || w < 30 || w > 300)){
+      } else if (isWeightUnitOne && (w == null || w < 30 || w > 300)) {
         weightError = 'Please enter valid weight';
         isValid = false;
-      }else if(!isWeightUnitOne && (w == null || w < 66 || w > 660)){
+      } else if (!isWeightUnitOne && (w == null || w < 66 || w > 660)) {
         weightError = 'Please enter valid weight';
         isValid = false;
-      }else{
+      } else {
         weightError = null;
       }
     });
@@ -224,11 +232,12 @@ class _SignupPageOneState extends State<SignupPageOne> {
     return isValid;
   }
 
-  void saveData(){
+  void saveData() {
     data.name = nameController.text.trim();
     data.dob = selectedDate;
     data.gender = genderSelected;
-    data.height = isHeightUnitOne ? selectedFeet.toDouble() : double.tryParse(heightController.text);
+    data.height = isHeightUnitOne ? selectedFeet.toDouble() : double.tryParse(
+        heightController.text);
     data.heightInches = isHeightUnitOne ? selectedInches : 0;
     data.weight = double.tryParse(weightController.text);
     data.isHeightFt = isHeightUnitOne;
@@ -236,25 +245,27 @@ class _SignupPageOneState extends State<SignupPageOne> {
     data.calculateAndSave();
   }
 
-  void _scrollToError(GlobalKey key){
+  void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
-    if(context != null){
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    if (context != null) {
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.2);
     }
   }
 
-  void handleNext(){
+  void handleNext() {
     FocusManager.instance.primaryFocus?.unfocus();
     final isValid = validateInput();
-    if(!isValid){
+    if (!isValid) {
       List<GlobalKey> errorKeys = [];
-      if(nameError != null) errorKeys.add(nameKey);
-      if(dobError != null) errorKeys.add(dobKey);
-      if(genderError != null) errorKeys.add(genderKey);
-      if(heightError != null) errorKeys.add(heightKey);
-      if(weightError != null) errorKeys.add(weightKey);
+      if (nameError != null) errorKeys.add(nameKey);
+      if (dobError != null) errorKeys.add(dobKey);
+      if (genderError != null) errorKeys.add(genderKey);
+      if (heightError != null) errorKeys.add(heightKey);
+      if (weightError != null) errorKeys.add(weightKey);
 
-      if(errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
+      if (errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
       return;
     }
     saveData();
@@ -274,10 +285,10 @@ class _SignupPageOneState extends State<SignupPageOne> {
     genderSelected = data.gender;
     isHeightUnitOne = data.isHeightFt;
     isWeightUnitOne = data.isWeightKg;
-    if(selectedDate != null){
+    if (selectedDate != null) {
       dateController.text = formattedDate(selectedDate!);
     }
-    if(data.isHeightFt && data.height != null){
+    if (data.isHeightFt && data.height != null) {
       selectedFeet = data.height!.toInt().clamp(3, 8);
       selectedInches = (data.heightInches ?? 0).clamp(0, 11);
     }
@@ -294,102 +305,116 @@ class _SignupPageOneState extends State<SignupPageOne> {
 
   @override
   Widget build(BuildContext context) {
-    final ch = Theme.of(context).colorScheme;
-    final th = Theme.of(context).textTheme;
+    final ch = Theme
+        .of(context)
+        .colorScheme;
+    final th = Theme
+        .of(context)
+        .textTheme;
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,children: [
-        Row(
-          children: [
-            Emoji.page1,
-            const SizedBox(width: 10,),
-            Text('Let\'s Get to Know You', style: th.displaySmall,),
-          ],
-        ),
-        const SizedBox(height: 10,),
-        Text('A few details to set things up for you', style: th.labelMedium,),
-        const SizedBox(height: 20,),
-        TextField(
-          key: nameKey,
-          controller: nameController,
-          decoration: InputDecoration(
-            labelText: 'Name',
-            prefixIcon: Icon(Icons.person_rounded),
-            errorText: nameError,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(
+            children: [
+              Emoji.page1,
+              const SizedBox(width: 10,),
+              Text('Let\'s Get to Know You', style: th.displaySmall,),
+            ],
           ),
-          onChanged: (_){
-            if(nameError != null){
-              setState(() {
-                nameError = null;
-              });
-            }
-          },
-        ),
-        const SizedBox(height: 20,),
-        TextField(
-          key: dobKey,
-          controller: dateController,
-          readOnly: true,
-          decoration: InputDecoration(
-            labelText: 'Date of Birth',
-            prefixIcon: Icon(Icons.calendar_month_outlined),
-            errorText: dobError,
+          const SizedBox(height: 10,),
+          Text(
+            'A few details to set things up for you', style: th.labelMedium,),
+          const SizedBox(height: 20,),
+          TextField(
+            key: nameKey,
+            controller: nameController,
+            decoration: InputDecoration(
+              labelText: 'Name',
+              prefixIcon: Icon(Icons.person_rounded),
+              errorText: nameError,
+            ),
+            onChanged: (_) {
+              if (nameError != null) {
+                setState(() {
+                  nameError = null;
+                });
+              }
+            },
           ),
-          onTap: pickDate,
-          onChanged: (_){
-            if(dobError != null){
-              setState(() {
-                dobError = null;
-              });
-            }
-          },
-        ),
-        const SizedBox(height: 20,),
-        Text(key: genderKey,'Gender'),
-        const SizedBox(height: 10,),
-        Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () =>  selectGender(1),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: genderSelected != 1 ? ch.surface : CustomColors.primaryMuted(context),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: genderSelected == 1 ? ch.primary : Colors.transparent),
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                      child: Column(
-                        children: [
-                          Icon(Icons.male_rounded),
-                          const SizedBox(height: 5,),
-                          Text('Male'),
-                          const SizedBox(height: 15,),
-                          genderSelected == 1 ?
-                          Icon(Icons.circle, color: ch.primary,) : Icon(Icons.circle_outlined),
-                        ],
+          const SizedBox(height: 20,),
+          TextField(
+            key: dobKey,
+            controller: dateController,
+            readOnly: true,
+            decoration: InputDecoration(
+              labelText: 'Date of Birth',
+              prefixIcon: Icon(Icons.calendar_month_outlined),
+              errorText: dobError,
+            ),
+            onTap: pickDate,
+            onChanged: (_) {
+              if (dobError != null) {
+                setState(() {
+                  dobError = null;
+                });
+              }
+            },
+          ),
+          const SizedBox(height: 20,),
+          Text(key: genderKey, 'Gender'),
+          const SizedBox(height: 10,),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => selectGender(1),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: genderSelected != 1 ? ch.surface : CustomColors
+                          .primaryMuted(context),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: genderSelected == 1 ? ch.primary : Colors
+                              .transparent),
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10,
+                            vertical: 20),
+                        child: Column(
+                          children: [
+                            Icon(Icons.male_rounded),
+                            const SizedBox(height: 5,),
+                            Text('Male'),
+                            const SizedBox(height: 15,),
+                            genderSelected == 1 ?
+                            Icon(Icons.circle, color: ch.primary,) : Icon(
+                                Icons.circle_outlined),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 20,),
-            Expanded(
+              const SizedBox(width: 20,),
+              Expanded(
                 child: GestureDetector(
                   onTap: () => selectGender(2),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: genderSelected != 2 ? ch.surface : CustomColors.primaryMuted(context),
+                      color: genderSelected != 2 ? ch.surface : CustomColors
+                          .primaryMuted(context),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: genderSelected == 2 ? ch.primary : Colors.transparent),
+                      border: Border.all(
+                          color: genderSelected == 2 ? ch.primary : Colors
+                              .transparent),
                     ),
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 10,
+                            vertical: 20),
                         child: Column(
                           children: [
                             Icon(Icons.female_rounded),
@@ -397,69 +422,168 @@ class _SignupPageOneState extends State<SignupPageOne> {
                             Text('Female'),
                             const SizedBox(height: 15,),
                             genderSelected == 2 ?
-                            Icon(Icons.circle, color: ch.primary,) : Icon(Icons.circle_outlined),
+                            Icon(Icons.circle, color: ch.primary,) : Icon(
+                                Icons.circle_outlined),
                           ],
                         ),
                       ),
                     ),
                   ),
                 ),
-            ),
-          ],
-        ),
-        if(genderError != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: Text(genderError!,
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                fontSize: 12,
+              ),
+            ],
+          ),
+          if(genderError != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Text(genderError!,
+                style: TextStyle(
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
+                  fontSize: 12,
+                ),
               ),
             ),
-          ),
-        const SizedBox(height: 20,),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if(isHeightUnitOne) ...[
-              Expanded(
-                child: SizedBox(
-                  height: 56,
-                  child: DropdownButtonFormField<int>(
+          const SizedBox(height: 20,),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if(isHeightUnitOne) ...[
+                Expanded(
+                  child: SizedBox(
+                    height: 56,
+                    child: DropdownButtonFormField<int>(
+                        key: heightKey,
+                        initialValue: selectedFeet,
+                        decoration: InputDecoration(
+                          labelText: 'Feet',
+                          prefixIcon: Icon(Icons.height_rounded),
+                          errorText: heightError,
+                        ),
+                        items: List
+                            .generate(6, (i) => i + 3)
+                            .map((f) =>
+                            DropdownMenuItem(value: f,
+                                child: Text('$f ft', style: th.bodyLarge,)))
+                            .toList(),
+                        onChanged: (v) {
+                          setState(() {
+                            selectedFeet = v!;
+                            heightError = null;
+                          });
+                        }
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10,),
+                Expanded(
+                  child: SizedBox(
+                    height: 56,
+                    child: DropdownButtonFormField<int>(
+                        initialValue: selectedInches,
+                        decoration: InputDecoration(
+                          labelText: 'Inches',
+                        ),
+                        items: List
+                            .generate(12, (i) => i)
+                            .map((i) =>
+                            DropdownMenuItem(value: i,
+                                child: Text('$i in', style: th.bodyLarge,)))
+                            .toList(),
+                        onChanged: (v) {
+                          setState(() => selectedInches = v!);
+                        }
+                    ),
+                  ),
+                ),
+              ] else
+                ...[
+                  Expanded(
+                    child: TextField(
+                      keyboardType: TextInputType.numberWithOptions(
+                          decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d*\.?\d{0,2}'),
+                        ),
+                      ],
                       key: heightKey,
-                      initialValue: selectedFeet,
+                      controller: heightController,
+                      onChanged: (_) {
+                        if (heightError != null) {
+                          setState(() {
+                            heightError = null;
+                          });
+                        }
+                      },
                       decoration: InputDecoration(
-                        labelText: 'Feet',
+                        labelText: 'Height',
                         prefixIcon: Icon(Icons.height_rounded),
                         errorText: heightError,
                       ),
-                      items: List.generate(6, (i) => i + 3).map((f) => DropdownMenuItem(value: f, child: Text('$f ft', style: th.bodyLarge,))).toList(),
-                      onChanged: (v){
-                        setState(() {
-                          selectedFeet = v!;
-                          heightError = null;
-                        });
-                      }
+                    ),
                   ),
-                ),
-              ),
+                ],
               const SizedBox(width: 10,),
-              Expanded(
-                child: SizedBox(
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isHeightUnitOne = true;
+                  });
+                },
+                child: Container(
                   height: 56,
-                  child: DropdownButtonFormField<int>(
-                      initialValue: selectedInches,
-                      decoration: InputDecoration(
-                        labelText: 'Inches',
-                      ),
-                      items: List.generate(12, (i) => i).map((i) => DropdownMenuItem(value: i, child: Text('$i in', style: th.bodyLarge,))).toList(),
-                      onChanged: (v){
-                        setState(() => selectedInches = v!);
-                      }
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: isHeightUnitOne ? ch.primary : ch.surface,
+                    borderRadius: BorderRadius.horizontal(
+                        left: Radius.circular(10)),
+                    border: Border(
+                      top: BorderSide(color: ch.primary),
+                      bottom: BorderSide(color: ch.primary),
+                      left: BorderSide(color: ch.primary),
+                      right: BorderSide.none,
+                    ),
                   ),
+                  child: Center(child: Text('ft', style: TextStyle(
+                      color: !isHeightUnitOne ? ch.onSurface : ch.onPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),)),
                 ),
               ),
-            ]else ...[
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isHeightUnitOne = false;
+                  });
+                },
+                child: Container(
+                  height: 56,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: !isHeightUnitOne ? ch.primary : ch.surface,
+                    borderRadius: BorderRadius.horizontal(
+                        right: Radius.circular(10)),
+                    border: Border(
+                      top: BorderSide(color: ch.primary),
+                      bottom: BorderSide(color: ch.primary),
+                      right: BorderSide(color: ch.primary),
+                      left: BorderSide.none,
+                    ),
+                  ),
+                  child: Center(child: Text('cm', style: TextStyle(
+                      color: isHeightUnitOne ? ch.onSurface : ch.onPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),)),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20,),
+          Row(
+            children: [
               Expanded(
                 child: TextField(
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -468,175 +592,110 @@ class _SignupPageOneState extends State<SignupPageOne> {
                       RegExp(r'^\d*\.?\d{0,2}'),
                     ),
                   ],
-                  key: heightKey,
-                  controller: heightController,
-                  onChanged: (_){
-                    if(heightError != null){
+                  key: weightKey,
+                  controller: weightController,
+                  onChanged: (_) {
+                    if (weightError != null) {
                       setState(() {
-                        heightError = null;
+                        weightError = null;
                       });
                     }
                   },
                   decoration: InputDecoration(
-                    labelText: 'Height',
-                    prefixIcon: Icon(Icons.height_rounded),
-                    errorText: heightError,
+                    labelText: 'Weight',
+                    prefixIcon: Icon(Symbols.weight_rounded),
+                    errorText: weightError,
                   ),
+                ),
+              ),
+              const SizedBox(width: 10,),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isWeightUnitOne = true;
+                  });
+                },
+                child: Container(
+                  height: 56,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: isWeightUnitOne ? ch.primary : ch.surface,
+                    borderRadius: BorderRadius.horizontal(
+                        left: Radius.circular(10)),
+                    border: Border(
+                      top: BorderSide(color: ch.primary),
+                      bottom: BorderSide(color: ch.primary),
+                      left: BorderSide(color: ch.primary),
+                      right: BorderSide.none,
+                    ),
+                  ),
+                  child: Center(child: Text('kg', style: TextStyle(
+                      color: !isWeightUnitOne ? ch.onSurface : ch.onPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),)),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isWeightUnitOne = false;
+                  });
+                },
+                child: Container(
+                  height: 56,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: !isWeightUnitOne ? ch.primary : ch.surface,
+                    borderRadius: BorderRadius.horizontal(
+                        right: Radius.circular(10)),
+                    border: Border(
+                      top: BorderSide(color: ch.primary),
+                      bottom: BorderSide(color: ch.primary),
+                      right: BorderSide(color: ch.primary),
+                      left: BorderSide.none,
+                    ),
+                  ),
+                  child: Center(child: Text('lb', style: TextStyle(
+                      color: isWeightUnitOne ? ch.onSurface : ch.onPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),)),
                 ),
               ),
             ],
-            const SizedBox(width: 10,),
-            GestureDetector(
-              onTap: (){
-                setState(() {
-                  isHeightUnitOne = true;
-                });
-              },
-              child: Container(
-                height: 56,
-                width: 60,
-                decoration: BoxDecoration(
-                  color: isHeightUnitOne ? ch.primary : ch.surface,
-                  borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
-                  border: Border(
-                    top: BorderSide(color: ch.primary),
-                    bottom: BorderSide(color: ch.primary),
-                    left: BorderSide(color: ch.primary),
-                    right: BorderSide.none,
-                  ),
-                ),
-                child: Center(child: Text('ft', style: TextStyle(color: !isHeightUnitOne ? ch.onSurface : ch.onPrimary, fontSize: 16, fontWeight: FontWeight.w600),)),
-              ),
-            ),
-            GestureDetector(
-              onTap: (){
-                setState(() {
-                  isHeightUnitOne = false;
-                });
-              },
-              child: Container(
-                height: 56,
-                width: 60,
-                decoration: BoxDecoration(
-                  color: !isHeightUnitOne ? ch.primary : ch.surface,
-                  borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
-                  border: Border(
-                    top: BorderSide(color: ch.primary),
-                    bottom: BorderSide(color: ch.primary),
-                    right: BorderSide(color: ch.primary),
-                    left: BorderSide.none,
-                  ),
-                ),
-                child: Center(child: Text('cm', style: TextStyle(color: isHeightUnitOne ? ch.onSurface : ch.onPrimary,  fontSize: 16, fontWeight: FontWeight.w600),)),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20,),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(
-                    RegExp(r'^\d*\.?\d{0,2}'),
-                  ),
-                ],
-                key: weightKey,
-                controller: weightController,
-                onChanged: (_){
-                  if(weightError != null){
-                    setState(() {
-                      weightError = null;
-                    });
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Weight',
-                  prefixIcon: Icon(Symbols.weight_rounded),
-                  errorText: weightError,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10,),
-            GestureDetector(
-              onTap: (){
-                setState(() {
-                  isWeightUnitOne = true;
-                });
-              },
-              child: Container(
-                height: 56,
-                width: 60,
-                decoration: BoxDecoration(
-                  color: isWeightUnitOne ? ch.primary : ch.surface,
-                  borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
-                  border: Border(
-                    top: BorderSide(color: ch.primary),
-                    bottom: BorderSide(color: ch.primary),
-                    left: BorderSide(color: ch.primary),
-                    right: BorderSide.none,
-                  ),
-                ),
-                child: Center(child: Text('kg', style: TextStyle(color: !isWeightUnitOne ? ch.onSurface : ch.onPrimary, fontSize: 16, fontWeight: FontWeight.w600),)),
-              ),
-            ),
-            GestureDetector(
-              onTap: (){
-                setState(() {
-                  isWeightUnitOne = false;
-                });
-              },
-              child: Container(
-                height: 56,
-                width: 60,
-                decoration: BoxDecoration(
-                  color: !isWeightUnitOne ? ch.primary : ch.surface,
-                  borderRadius: BorderRadius.horizontal(right: Radius.circular(10)),
-                  border: Border(
-                    top: BorderSide(color: ch.primary),
-                    bottom: BorderSide(color: ch.primary),
-                    right: BorderSide(color: ch.primary),
-                    left: BorderSide.none,
-                  ),
-                ),
-                child: Center(child: Text('lb', style: TextStyle(color: isWeightUnitOne ? ch.onSurface : ch.onPrimary,  fontSize: 16, fontWeight: FontWeight.w600),)),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 30,),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-          child: FilledButton(
-            style: FilledButton.styleFrom(
-              minimumSize: Size(double.infinity, 50),
-            ),
-            onPressed: handleNext,
-            child: Text("Next",),
           ),
-        ),
-      ],),
+          const SizedBox(height: 30,),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+              onPressed: handleNext,
+              child: Text("Next",),
+            ),
+          ),
+        ],),
       ),
     );
   }
 }
 
-class SignupPageTwoData{
+class SignupPageTwoData {
   List<String> selectedMeds = [];
   List<String> selectedInjuries = [];
 
   SignupPageTwoData({
     List<String>? selectedMeds,
     List<String>? selectedInjuries,
-  }) : selectedMeds = selectedMeds ?? [],
-       selectedInjuries = selectedInjuries ?? [];
+  })
+      : selectedMeds = selectedMeds ?? [],
+        selectedInjuries = selectedInjuries ?? [];
 }
 
 class SignupPageTwo extends StatefulWidget {
   final SignupPageTwoData data;
   final VoidCallback onNext;
+
   const SignupPageTwo({super.key, required this.data, required this.onNext});
 
   @override
@@ -644,25 +703,36 @@ class SignupPageTwo extends StatefulWidget {
 }
 
 class _SignupPageTwoState extends State<SignupPageTwo> {
-  void handleNext(){
+  void handleNext() {
     widget.onNext();
   }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
               Emoji.page2,
               const SizedBox(width: 10,),
-              Text('Health Considerations', style: Theme.of(context).textTheme.displaySmall,),
+              Text('Health Considerations', style: Theme
+                  .of(context)
+                  .textTheme
+                  .displaySmall,),
             ],
           ),
           const SizedBox(height: 10,),
-          Text('Share anything we should be aware of', style: Theme.of(context).textTheme.labelMedium,),
+          Text('Share anything we should be aware of', style: Theme
+              .of(context)
+              .textTheme
+              .labelMedium,),
           const SizedBox(height: 20,),
-          Text('Select those which applies, tap next if none applies', style: Theme.of(context).textTheme.labelLarge,),
+          Text(
+            'Select those which applies, tap next if none applies', style: Theme
+              .of(context)
+              .textTheme
+              .labelLarge,),
           const SizedBox(height: 10,),
           Row(children: [
             Icon(Icons.medical_services_rounded),
@@ -696,7 +766,7 @@ class _SignupPageTwoState extends State<SignupPageTwo> {
   }
 }
 
-class SignupPageThreeData{
+class SignupPageThreeData {
   int? workIndex;
   int? activeIndex;
   int? sleepIndex;
@@ -707,23 +777,32 @@ class SignupPageThreeData{
     this.sleepIndex,
   });
 
-  String get workType{
+  String get workType {
     const types = ['Sedentary', 'Moderately Active', 'Physically Active'];
     return types[workIndex!];
   }
-  String get activityLevel{
+
+  String get activityLevel {
     const levels = ['Low', 'Moderate', 'High'];
     return levels[activeIndex!];
   }
-  String get sleepPattern{
-    const patterns = ['Less than 5 hours', '5 to 7 hours', '7 to 9 hours', 'More than 9 hours'];
+
+  String get sleepPattern {
+    const patterns = [
+      'Less than 5 hours',
+      '5 to 7 hours',
+      '7 to 9 hours',
+      'More than 9 hours'
+    ];
     return patterns[sleepIndex!];
   }
-  double get workFactor{
+
+  double get workFactor {
     const factors = [1.2, 1.35, 1.55];
     return factors[workIndex!];
   }
-  double get activeFactor{
+
+  double get activeFactor {
     const factors = [1.0, 1.1, 1.2];
     return factors[activeIndex!];
   }
@@ -732,6 +811,7 @@ class SignupPageThreeData{
 class SignupPageThree extends StatefulWidget {
   final SignupPageThreeData data;
   final VoidCallback onNext;
+
   const SignupPageThree({super.key, required this.data, required this.onNext});
 
   @override
@@ -749,53 +829,55 @@ class _SignupPageThreeState extends State<SignupPageThree> {
   String? activeError;
   String? sleepError;
 
-  bool validateInput(){
+  bool validateInput() {
     bool isValid = true;
     setState(() {
-      if(selectedWork == -1) {
+      if (selectedWork == -1) {
         workError = 'Select your work type';
         isValid = false;
-      }else{
+      } else {
         workError = null;
       }
-      if(selectedActive == -1) {
+      if (selectedActive == -1) {
         activeError = 'Select your activity level';
         isValid = false;
-      }else{
+      } else {
         activeError = null;
       }
-      if(selectedSleep == -1) {
+      if (selectedSleep == -1) {
         sleepError = 'Select your average sleep time';
         isValid = false;
-      }else{
+      } else {
         sleepError = null;
       }
     });
     return isValid;
   }
 
-  void saveData(){
+  void saveData() {
     widget.data.workIndex = selectedWork;
     widget.data.activeIndex = selectedActive;
     widget.data.sleepIndex = selectedSleep;
   }
 
-  void _scrollToError(GlobalKey key){
+  void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
-    if(context != null){
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    if (context != null) {
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.2);
     }
   }
 
-  void handleNext(){
+  void handleNext() {
     final isValid = validateInput();
-    if(!isValid){
+    if (!isValid) {
       List<GlobalKey> errorKeys = [];
-      if(workError != null) errorKeys.add(workKey);
-      if(activeError != null) errorKeys.add(activeKey);
-      if(sleepError != null) errorKeys.add(sleepKey);
+      if (workError != null) errorKeys.add(workKey);
+      if (activeError != null) errorKeys.add(activeKey);
+      if (sleepError != null) errorKeys.add(sleepKey);
 
-      if(errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
+      if (errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
       return;
     }
     saveData();
@@ -810,15 +892,19 @@ class _SignupPageThreeState extends State<SignupPageThree> {
     selectedActive = widget.data.activeIndex ?? -1;
     selectedSleep = widget.data.sleepIndex ?? -1;
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    final th = Theme.of(context).textTheme;
-    final ch = Theme.of(context).colorScheme;
+    final th = Theme
+        .of(context)
+        .textTheme;
+    final ch = Theme
+        .of(context)
+        .colorScheme;
 
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
               Emoji.page3,
@@ -827,15 +913,19 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             ],
           ),
           const SizedBox(height: 10,),
-          Text('This helps match your plan to your lifestyle', style: th.labelMedium,),
+          Text('This helps match your plan to your lifestyle',
+            style: th.labelMedium,),
           const SizedBox(height: 20,),
-          Text(key: workKey,'Work / Occupation type'),
+          Text(key: workKey, 'Work / Occupation type'),
           if(workError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(workError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -844,10 +934,10 @@ class _SignupPageThreeState extends State<SignupPageThree> {
           Text('What is your everyday work?', style: th.labelSmall,),
           const SizedBox(height: 5,),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               setState(() {
                 selectedWork = 0;
-                if(workError != null){
+                if (workError != null) {
                   workError = null;
                 }
               });
@@ -856,17 +946,20 @@ class _SignupPageThreeState extends State<SignupPageThree> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                color: selectedWork != 0 ? ch.surface : CustomColors.primaryMuted(context),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: selectedWork == 0 ? ch.primary : Colors.transparent)
+                  color: selectedWork != 0 ? ch.surface : CustomColors
+                      .primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                      color: selectedWork == 0 ? ch.primary : Colors
+                          .transparent)
               ),
               child: ListTile(
                 leading: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: ch.tertiary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),child: Emoji.o1,
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: ch.tertiary,
+                    borderRadius: BorderRadius.circular(12),
+                  ), child: Emoji.o1,
                 ),
                 title: Text('Sedentary'),
                 subtitle: Text('desk job . student . driver'),
@@ -876,10 +969,10 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             ),
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               setState(() {
                 selectedWork = 1;
-                if(workError != null){
+                if (workError != null) {
                   workError = null;
                 }
               });
@@ -888,9 +981,12 @@ class _SignupPageThreeState extends State<SignupPageThree> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                  color: selectedWork != 1 ? ch.surface : CustomColors.primaryMuted(context),
+                  color: selectedWork != 1 ? ch.surface : CustomColors
+                      .primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: selectedWork == 1 ? ch.primary : Colors.transparent)
+                  border: Border.all(
+                      color: selectedWork == 1 ? ch.primary : Colors
+                          .transparent)
               ),
               child: ListTile(
                 leading: Container(
@@ -898,7 +994,7 @@ class _SignupPageThreeState extends State<SignupPageThree> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.o2,
+                  ), child: Emoji.o2,
                 ),
                 title: Text('Moderately Active'),
                 subtitle: Text('teacher . retail worker . nurse'),
@@ -908,10 +1004,10 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             ),
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               setState(() {
                 selectedWork = 2;
-                if(workError != null){
+                if (workError != null) {
                   workError = null;
                 }
               });
@@ -920,9 +1016,12 @@ class _SignupPageThreeState extends State<SignupPageThree> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                  color: selectedWork != 2 ? ch.surface : CustomColors.primaryMuted(context),
+                  color: selectedWork != 2 ? ch.surface : CustomColors
+                      .primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: selectedWork == 2 ? ch.primary : Colors.transparent)
+                  border: Border.all(
+                      color: selectedWork == 2 ? ch.primary : Colors
+                          .transparent)
               ),
               child: ListTile(
                 leading: Container(
@@ -930,7 +1029,7 @@ class _SignupPageThreeState extends State<SignupPageThree> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.o3,
+                  ), child: Emoji.o3,
                 ),
                 title: Text('Physically Active'),
                 subtitle: Text('construction worker . farmer . athlete'),
@@ -940,13 +1039,16 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             ),
           ),
           const SizedBox(height: 20,),
-          Text(key: activeKey,'Daily activity level'),
+          Text(key: activeKey, 'Daily activity level'),
           if(activeError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(activeError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -955,10 +1057,10 @@ class _SignupPageThreeState extends State<SignupPageThree> {
           Text('How often do you exercise?', style: th.labelSmall,),
           const SizedBox(height: 5,),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               setState(() {
                 selectedActive = 0;
-                if(activeError != null){
+                if (activeError != null) {
                   activeError = null;
                 }
               });
@@ -967,9 +1069,12 @@ class _SignupPageThreeState extends State<SignupPageThree> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                  color: selectedActive != 0 ? ch.surface : CustomColors.primaryMuted(context),
+                  color: selectedActive != 0 ? ch.surface : CustomColors
+                      .primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: selectedActive == 0 ? ch.primary : Colors.transparent)
+                  border: Border.all(
+                      color: selectedActive == 0 ? ch.primary : Colors
+                          .transparent)
               ),
               child: ListTile(
                 leading: Container(
@@ -977,7 +1082,7 @@ class _SignupPageThreeState extends State<SignupPageThree> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.a1,
+                  ), child: Emoji.a1,
                 ),
                 title: Text('Low'),
                 subtitle: Text('rarely'),
@@ -987,10 +1092,10 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             ),
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               setState(() {
                 selectedActive = 1;
-                if(activeError != null){
+                if (activeError != null) {
                   activeError = null;
                 }
               });
@@ -999,9 +1104,12 @@ class _SignupPageThreeState extends State<SignupPageThree> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                  color: selectedActive != 1 ? ch.surface : CustomColors.primaryMuted(context),
+                  color: selectedActive != 1 ? ch.surface : CustomColors
+                      .primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: selectedActive == 1 ? ch.primary : Colors.transparent)
+                  border: Border.all(
+                      color: selectedActive == 1 ? ch.primary : Colors
+                          .transparent)
               ),
               child: ListTile(
                 leading: Container(
@@ -1009,7 +1117,7 @@ class _SignupPageThreeState extends State<SignupPageThree> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.a2,
+                  ), child: Emoji.a2,
                 ),
                 title: Text('Moderate'),
                 subtitle: Text('2-4 days/week'),
@@ -1019,10 +1127,10 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             ),
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               setState(() {
                 selectedActive = 2;
-                if(activeError != null){
+                if (activeError != null) {
                   activeError = null;
                 }
               });
@@ -1031,9 +1139,12 @@ class _SignupPageThreeState extends State<SignupPageThree> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                  color: selectedActive != 2 ? ch.surface : CustomColors.primaryMuted(context),
+                  color: selectedActive != 2 ? ch.surface : CustomColors
+                      .primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: selectedActive == 2 ? ch.primary : Colors.transparent)
+                  border: Border.all(
+                      color: selectedActive == 2 ? ch.primary : Colors
+                          .transparent)
               ),
               child: ListTile(
                 leading: Container(
@@ -1041,7 +1152,7 @@ class _SignupPageThreeState extends State<SignupPageThree> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.a3,
+                  ), child: Emoji.a3,
                 ),
                 title: Text('High'),
                 subtitle: Text('5-7 days/week'),
@@ -1051,13 +1162,16 @@ class _SignupPageThreeState extends State<SignupPageThree> {
             ),
           ),
           const SizedBox(height: 20,),
-          Text(key: sleepKey,'Sleep Pattern'),
+          Text(key: sleepKey, 'Sleep Pattern'),
           if(sleepError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(sleepError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -1068,84 +1182,108 @@ class _SignupPageThreeState extends State<SignupPageThree> {
           Row(
             children: [
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   setState(() {
                     selectedSleep = 0;
-                    if(sleepError != null){
+                    if (sleepError != null) {
                       sleepError = null;
                     }
                   });
                 },
                 child: Container(
                   height: 70,
-                  width: (MediaQuery.of(context).size.width - 80) / 4,
+                  width: (MediaQuery
+                      .of(context)
+                      .size
+                      .width - 80) / 4,
                   decoration: BoxDecoration(
-                      color: selectedSleep != 0 ? ch.surface : CustomColors.primaryMuted(context),
+                      color: selectedSleep != 0 ? ch.surface : CustomColors
+                          .primaryMuted(context),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: selectedSleep == 0 ? ch.primary : Colors.transparent)
+                      border: Border.all(
+                          color: selectedSleep == 0 ? ch.primary : Colors
+                              .transparent)
                   ),
                   child: Center(child: Text('< 5h')),
                 ),
               ),
               const SizedBox(width: 10,),
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   setState(() {
                     selectedSleep = 1;
-                    if(sleepError != null){
+                    if (sleepError != null) {
                       sleepError = null;
                     }
                   });
                 },
                 child: Container(
                   height: 70,
-                  width: (MediaQuery.of(context).size.width - 80) / 4,
+                  width: (MediaQuery
+                      .of(context)
+                      .size
+                      .width - 80) / 4,
                   decoration: BoxDecoration(
-                      color: selectedSleep != 1 ? ch.surface : CustomColors.primaryMuted(context),
+                      color: selectedSleep != 1 ? ch.surface : CustomColors
+                          .primaryMuted(context),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: selectedSleep == 1 ? ch.primary : Colors.transparent)
+                      border: Border.all(
+                          color: selectedSleep == 1 ? ch.primary : Colors
+                              .transparent)
                   ),
                   child: Center(child: Text('5 - 7h')),
                 ),
               ),
               const SizedBox(width: 10,),
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   setState(() {
                     selectedSleep = 2;
-                    if(sleepError != null){
+                    if (sleepError != null) {
                       sleepError = null;
                     }
                   });
                 },
                 child: Container(
                   height: 70,
-                  width: (MediaQuery.of(context).size.width - 80) / 4,
+                  width: (MediaQuery
+                      .of(context)
+                      .size
+                      .width - 80) / 4,
                   decoration: BoxDecoration(
-                      color: selectedSleep != 2 ? ch.surface : CustomColors.primaryMuted(context),
+                      color: selectedSleep != 2 ? ch.surface : CustomColors
+                          .primaryMuted(context),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: selectedSleep == 2 ? ch.primary : Colors.transparent)
+                      border: Border.all(
+                          color: selectedSleep == 2 ? ch.primary : Colors
+                              .transparent)
                   ),
                   child: Center(child: Text('7 - 9h')),
                 ),
               ),
               const SizedBox(width: 10,),
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   setState(() {
                     selectedSleep = 3;
-                    if(sleepError != null){
+                    if (sleepError != null) {
                       sleepError = null;
                     }
                   });
                 },
                 child: Container(
                   height: 70,
-                  width: (MediaQuery.of(context).size.width - 80) / 4,
+                  width: (MediaQuery
+                      .of(context)
+                      .size
+                      .width - 80) / 4,
                   decoration: BoxDecoration(
-                      color: selectedSleep != 3 ? ch.surface : CustomColors.primaryMuted(context),
+                      color: selectedSleep != 3 ? ch.surface : CustomColors
+                          .primaryMuted(context),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: selectedSleep == 3 ? ch.primary : Colors.transparent)
+                      border: Border.all(
+                          color: selectedSleep == 3 ? ch.primary : Colors
+                              .transparent)
                   ),
                   child: Center(child: Text('9h +')),
                 ),
@@ -1169,18 +1307,20 @@ class _SignupPageThreeState extends State<SignupPageThree> {
   }
 }
 
-class SignupPageFourData{
+class SignupPageFourData {
   int? fitIndex;
   double? tdee;
+
   SignupPageFourData({
     this.fitIndex,
   });
 
-  String get fitType{
+  String get fitType {
     const types = ['Beginner', 'Intermediate', 'Advanced'];
     return types[fitIndex!];
   }
-  double get fitFactor{
+
+  double get fitFactor {
     const factors = [0.95, 1.0, 1.05];
     return factors[fitIndex!];
   }
@@ -1189,6 +1329,7 @@ class SignupPageFourData{
 class SignupPageFour extends StatefulWidget {
   final SignupPageFourData data;
   final VoidCallback onNext;
+
   const SignupPageFour({super.key, required this.data, required this.onNext});
 
   @override
@@ -1201,42 +1342,50 @@ class _SignupPageFourState extends State<SignupPageFour> {
   String? fitError;
   late Color? bmiColor;
 
-  double? get previewTDEE{
-    if(selectedFit == -1) return null;
-    final data1 = context.read<DataProvider>().pageOne;
-    final data3 = context.read<DataProvider>().pageThree;
+  double? get previewTDEE {
+    if (selectedFit == -1) return null;
+    final data1 = context
+        .read<DataProvider>()
+        .pageOne;
+    final data3 = context
+        .read<DataProvider>()
+        .pageThree;
     const factors = [0.95, 1.0, 1.05];
-    return double.parse((data1.bmr! * data3.workFactor * data3.activeFactor * factors[selectedFit]).toStringAsFixed(1));
+    return double.parse((data1.bmr! * data3.workFactor * data3.activeFactor *
+        factors[selectedFit]).toStringAsFixed(1));
   }
 
   bool validateInput() {
-   bool isValid = true;
-   setState(() {
-     if(selectedFit == -1){
-       fitError = 'Select your fitness level';
-       isValid = false;
-     }else{
-       fitError= null;
-     }
-   });
-   return isValid;
+    bool isValid = true;
+    setState(() {
+      if (selectedFit == -1) {
+        fitError = 'Select your fitness level';
+        isValid = false;
+      } else {
+        fitError = null;
+      }
+    });
+    return isValid;
   }
 
-  void saveData(){
+  void saveData() {
     widget.data.fitIndex = selectedFit;
     widget.data.tdee = previewTDEE;
   }
-  void _scrollToError(GlobalKey key){
+
+  void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
-    if(context != null){
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    if (context != null) {
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.2);
     }
   }
 
-  void handleNext(){
+  void handleNext() {
     final isValid = validateInput();
-    if(!isValid){
-      if(fitError != null) _scrollToError(fitKey);
+    if (!isValid) {
+      if (fitError != null) _scrollToError(fitKey);
       return;
     }
     saveData();
@@ -1249,30 +1398,39 @@ class _SignupPageFourState extends State<SignupPageFour> {
     super.initState();
     selectedFit = widget.data.fitIndex ?? -1;
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final p = context.read<DataProvider>().pageOne;
-    if(p.bmi! < 18.5){
+    final p = context
+        .read<DataProvider>()
+        .pageOne;
+    if (p.bmi! < 18.5) {
       bmiColor = CustomColors.bluePrimary(context);
-    }else if(p.bmi! < 25){
+    } else if (p.bmi! < 25) {
       bmiColor = CustomColors.greenPrimary(context);
-    }else if(p.bmi! < 30){
+    } else if (p.bmi! < 30) {
       bmiColor = CustomColors.yellowPrimary(context);
-    }else{
+    } else {
       bmiColor = CustomColors.redPrimary(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final data1 = context.read<DataProvider>().pageOne;
-    final th = Theme.of(context).textTheme;
-    final ch = Theme.of(context).colorScheme;
+    final data1 = context
+        .read<DataProvider>()
+        .pageOne;
+    final th = Theme
+        .of(context)
+        .textTheme;
+    final ch = Theme
+        .of(context)
+        .colorScheme;
 
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
               Emoji.page4,
@@ -1289,7 +1447,10 @@ class _SignupPageFourState extends State<SignupPageFour> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(fitError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -1298,10 +1459,10 @@ class _SignupPageFourState extends State<SignupPageFour> {
           Text('What is your current fitness ability?', style: th.labelSmall,),
           const SizedBox(height: 5,),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               setState(() {
                 selectedFit = 0;
-                if(fitError != null){
+                if (fitError != null) {
                   fitError = null;
                 }
               });
@@ -1310,9 +1471,11 @@ class _SignupPageFourState extends State<SignupPageFour> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                  color: selectedFit != 0 ? ch.surface : CustomColors.primaryMuted(context),
+                  color: selectedFit != 0 ? ch.surface : CustomColors
+                      .primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: selectedFit == 0 ? ch.primary : Colors.transparent)
+                  border: Border.all(
+                      color: selectedFit == 0 ? ch.primary : Colors.transparent)
               ),
               child: ListTile(
                 leading: Container(
@@ -1320,7 +1483,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.f1,
+                  ), child: Emoji.f1,
                 ),
                 title: Text('Beginner'),
                 subtitle: Text('new to exercise'),
@@ -1330,10 +1493,10 @@ class _SignupPageFourState extends State<SignupPageFour> {
             ),
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               setState(() {
                 selectedFit = 1;
-                if(fitError != null){
+                if (fitError != null) {
                   fitError = null;
                 }
               });
@@ -1342,9 +1505,11 @@ class _SignupPageFourState extends State<SignupPageFour> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                  color: selectedFit != 1 ? ch.surface : CustomColors.primaryMuted(context),
+                  color: selectedFit != 1 ? ch.surface : CustomColors
+                      .primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: selectedFit == 1 ? ch.primary : Colors.transparent)
+                  border: Border.all(
+                      color: selectedFit == 1 ? ch.primary : Colors.transparent)
               ),
               child: ListTile(
                 leading: Container(
@@ -1352,7 +1517,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.f2,
+                  ), child: Emoji.f2,
                 ),
                 title: Text('Intermediate'),
                 subtitle: Text('Regular workouts'),
@@ -1362,10 +1527,10 @@ class _SignupPageFourState extends State<SignupPageFour> {
             ),
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               setState(() {
                 selectedFit = 2;
-                if(fitError != null){
+                if (fitError != null) {
                   fitError = null;
                 }
               });
@@ -1374,9 +1539,11 @@ class _SignupPageFourState extends State<SignupPageFour> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                  color: selectedFit != 2 ? ch.surface : CustomColors.primaryMuted(context),
+                  color: selectedFit != 2 ? ch.surface : CustomColors
+                      .primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: selectedFit == 2 ? ch.primary : Colors.transparent)
+                  border: Border.all(
+                      color: selectedFit == 2 ? ch.primary : Colors.transparent)
               ),
               child: ListTile(
                 leading: Container(
@@ -1384,7 +1551,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
                   decoration: BoxDecoration(
                     color: ch.tertiary,
                     borderRadius: BorderRadius.circular(12),
-                  ),child: Emoji.f3,
+                  ), child: Emoji.f3,
                 ),
                 title: Text('Advanced'),
                 subtitle: Text('Intense training'),
@@ -1401,30 +1568,69 @@ class _SignupPageFourState extends State<SignupPageFour> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: CustomColors.primaryMuted(context),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: CustomColors.yellowOutline(context)),
-                  ),
-                  child: RichText(text: TextSpan(children: [
-                    TextSpan(text: 'Based on your given data,\n\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                    TextSpan(text: 'Your BMI is ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                    TextSpan(text: '${data1.bmi} - ${data1.category}.\n\n', style: TextStyle(color: bmiColor)),
-                    TextSpan(text: 'Your body needs ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                    TextSpan(text: '${data1.bmr}', style: TextStyle(color: CustomColors.orangePrimary(context))),
-                    TextSpan(text: ' calories at rest and total of ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                    TextSpan(text: '$previewTDEE', style: TextStyle(color: CustomColors.orangePrimary(context))),
-                    TextSpan(text: ' calories are burnt in a day.\n\n', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                    TextSpan(text: 'You belong to the age group ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                    TextSpan(text: '${data1.ageGroup}', style: TextStyle(color: CustomColors.bluePrimary(context))),
-                  ],),
-                  textAlign: TextAlign.center,),
-                ),
-                const SizedBox(height: 5,),
-                Text('See our recommendation next, or choose your own focus.', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500), textAlign: TextAlign.center,),
-              ]),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: CustomColors.primaryMuted(context),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                            color: CustomColors.yellowOutline(context)),
+                      ),
+                      child: RichText(text: TextSpan(children: [
+                        TextSpan(text: 'Based on your given data,\n\n',
+                            style: TextStyle(color: Theme
+                                .of(context)
+                                .colorScheme
+                                .onSurface)),
+                        TextSpan(text: 'Your BMI is ',
+                            style: TextStyle(color: Theme
+                                .of(context)
+                                .colorScheme
+                                .onSurface)),
+                        TextSpan(text: '${data1.bmi} - ${data1.category}.\n\n',
+                            style: TextStyle(color: bmiColor)),
+                        TextSpan(text: 'Your body needs ',
+                            style: TextStyle(color: Theme
+                                .of(context)
+                                .colorScheme
+                                .onSurface)),
+                        TextSpan(text: '${data1.bmr}',
+                            style: TextStyle(
+                                color: CustomColors.orangePrimary(context))),
+                        TextSpan(text: ' calories at rest and total of ',
+                            style: TextStyle(color: Theme
+                                .of(context)
+                                .colorScheme
+                                .onSurface)),
+                        TextSpan(text: '$previewTDEE',
+                            style: TextStyle(
+                                color: CustomColors.orangePrimary(context))),
+                        TextSpan(text: ' calories are burnt in a day.\n\n',
+                            style: TextStyle(color: Theme
+                                .of(context)
+                                .colorScheme
+                                .onSurface)),
+                        TextSpan(text: 'You belong to the age group ',
+                            style: TextStyle(color: Theme
+                                .of(context)
+                                .colorScheme
+                                .onSurface)),
+                        TextSpan(text: '${data1.ageGroup}',
+                            style: TextStyle(
+                                color: CustomColors.bluePrimary(context))),
+                      ],),
+                        textAlign: TextAlign.center,),
+                    ),
+                    const SizedBox(height: 5,),
+                    Text(
+                      'See our recommendation next, or choose your own focus.',
+                      style: TextStyle(color: Theme
+                          .of(context)
+                          .colorScheme
+                          .primary, fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.center,),
+                  ]),
             ),
           const SizedBox(height: 30,),
           Padding(
@@ -1482,16 +1688,27 @@ const Map<String, Map<int, List<String>>> goalPreviews = {
   },
 };
 
-class SignupPageFiveData{
+class SignupPageFiveData {
   int? fundIndex;
   int? goalIndex;
+  String? goalType;
+
   SignupPageFiveData({
     this.fundIndex,
     this.goalIndex,
+    this.goalType,
   });
 
-  String get fundType{
-    const types = ['Energy & Fuel', 'Strength & build', 'Mobility & ease', 'Stability & control', 'Composition & vitals', 'Function & posture', 'Growth & adaptation'];
+  String get fundType {
+    const types = [
+      'Energy & Fuel',
+      'Strength & build',
+      'Mobility & ease',
+      'Stability & control',
+      'Composition & vitals',
+      'Function & posture',
+      'Growth & adaptation'
+    ];
     return types[fundIndex!];
   }
 }
@@ -1499,6 +1716,7 @@ class SignupPageFiveData{
 class SignupPageFive extends StatefulWidget {
   final SignupPageFiveData data;
   final VoidCallback onNext;
+
   const SignupPageFive({super.key, required this.data, required this.onNext});
 
   @override
@@ -1511,7 +1729,7 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   int selectedGoal = -1;
   String? goalError;
 
-  void selectFund (int f){
+  void selectFund(int f) {
     setState(() {
       selectedFund = f;
       selectedGoal = -1;
@@ -1519,40 +1737,46 @@ class _SignupPageFiveState extends State<SignupPageFive> {
     });
   }
 
-  List<String> get currentGoals{
-    final data = context.read<DataProvider>().pageOne;
+  List<String> get currentGoals {
+    final data = context
+        .read<DataProvider>()
+        .pageOne;
     final group = data.ageGroup;
     return goalPreviews[group]?[selectedFund] ?? [];
   }
 
-  void saveData(){
+  void saveData() {
     widget.data.fundIndex = selectedFund;
     widget.data.goalIndex = selectedGoal;
+    widget.data.goalType = currentGoals[selectedGoal];
   }
-  bool validateInput(){
+
+  bool validateInput() {
     bool isValid = true;
     setState(() {
-      if(selectedGoal == -1){
+      if (selectedGoal == -1) {
         goalError = 'Select your goal to continue';
         isValid = false;
-      }else{
+      } else {
         goalError = null;
       }
     });
     return isValid;
   }
 
-  void _scrollToError(GlobalKey key){
+  void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
-    if(context != null){
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    if (context != null) {
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.2);
     }
   }
 
-  void handleNext(){
+  void handleNext() {
     final isValid = validateInput();
-    if(!isValid){
-      if(goalError != null) _scrollToError(goalKey);
+    if (!isValid) {
+      if (goalError != null) _scrollToError(goalKey);
       return;
     }
     saveData();
@@ -1563,25 +1787,33 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   @override
   void initState() {
     super.initState();
-    final rec = context.read<DataProvider>().finalRecommendation;
+    final rec = context
+        .read<DataProvider>()
+        .finalRecommendation;
     selectedFund = widget.data.fundIndex ?? rec.code;
     selectedGoal = widget.data.goalIndex ?? -1;
   }
 
   @override
   Widget build(BuildContext context) {
-    final th = Theme.of(context).textTheme;
-    final rec = context.read<DataProvider>().finalRecommendation;
+    final th = Theme
+        .of(context)
+        .textTheme;
+    final rec = context
+        .read<DataProvider>()
+        .finalRecommendation;
     final goals = currentGoals;
 
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
               Emoji.page5,
               const SizedBox(width: 10,),
-              Column(children: [Text('What are your goals?', style: th.displaySmall,)]),
+              Column(children: [
+                Text('What are your goals?', style: th.displaySmall,)
+              ]),
             ],
           ),
           const SizedBox(height: 10,),
@@ -1589,7 +1821,11 @@ class _SignupPageFiveState extends State<SignupPageFive> {
           const SizedBox(height: 20,),
           Text('Focus Area'),
           const SizedBox(height: 5,),
-          Column(children: [Text('We have selected a starting point for you. Continue or choose yourself.', style: th.labelSmall,)]),
+          Column(children: [
+            Text(
+              'We have selected a starting point for you. Continue or choose yourself.',
+              style: th.labelSmall,)
+          ]),
           const SizedBox(height: 10,),
           Row(
             children: [
@@ -1609,32 +1845,45 @@ class _SignupPageFiveState extends State<SignupPageFive> {
           const SizedBox(height: 5,),
           Row(
             children: [
-              selectFundamental(context, 4, Emoji.fund5, 'Composition & vitals'),
+              selectFundamental(
+                  context, 4, Emoji.fund5, 'Composition & vitals'),
               const SizedBox(width: 10,),
               selectFundamental(context, 5, Emoji.fund6, 'Function & posture'),
             ],
           ),
           const SizedBox(height: 5,),
           Row(
-              children: [selectFundamental(context, 6, Emoji.fund7, 'Growth & adaptation'),
-                const SizedBox(width: 10,),
-                Expanded(child: const SizedBox(),),
-              ],
+            children: [
+              selectFundamental(context, 6, Emoji.fund7, 'Growth & adaptation'),
+              const SizedBox(width: 10,),
+              Expanded(child: const SizedBox(),),
+            ],
           ),
           const SizedBox(height: 20,),
           Column(children: [
             RichText(text: TextSpan(children: [
-              TextSpan(text: 'You are categorized as the ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-              TextSpan(text: '${rec.profile}.', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600)),
+              TextSpan(text: 'You are categorized as the ',
+                  style: TextStyle(color: Theme
+                      .of(context)
+                      .colorScheme
+                      .onSurface)),
+              TextSpan(text: '${rec.profile}.', style: TextStyle(color: Theme
+                  .of(context)
+                  .colorScheme
+                  .primary, fontWeight: FontWeight.w600)),
             ],),),
           ]),
-          Text(key: goalKey, 'Choose your goal to start', style: th.labelMedium,),
+          Text(
+            key: goalKey, 'Choose your goal to start', style: th.labelMedium,),
           if(goalError != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(goalError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -1643,7 +1892,7 @@ class _SignupPageFiveState extends State<SignupPageFive> {
           Wrap(
             spacing: 10,
             runSpacing: 10,
-            children: List.generate((goals.length), (i){
+            children: List.generate((goals.length), (i) {
               final isSelected = selectedGoal == i;
               return goalSelectionChip(goals[i], isSelected, i);
             }),
@@ -1664,18 +1913,25 @@ class _SignupPageFiveState extends State<SignupPageFive> {
     );
   }
 
-  Widget selectFundamental(BuildContext context, int select, Image icon, String label){
-    final th = Theme.of(context).textTheme;
-    final ch = Theme.of(context).colorScheme;
-    final rec = context.read<DataProvider>().finalRecommendation;
+  Widget selectFundamental(BuildContext context, int select, Image icon,
+      String label) {
+    final th = Theme
+        .of(context)
+        .textTheme;
+    final ch = Theme
+        .of(context)
+        .colorScheme;
+    final rec = context
+        .read<DataProvider>()
+        .finalRecommendation;
     final isSelected = selectedFund == select;
     final isRecommended = rec.code == select;
     Color bgColor = ch.surface;
     Color borderColor = Colors.transparent;
-    if(isSelected){
+    if (isSelected) {
       bgColor = CustomColors.primaryMuted(context);
       borderColor = ch.primary;
-    }else if(isRecommended){
+    } else if (isRecommended) {
       bgColor = CustomColors.yellowMuted(context);
       borderColor = Colors.transparent;
     }
@@ -1703,9 +1959,12 @@ class _SignupPageFiveState extends State<SignupPageFive> {
                   Text(label, style: th.labelMedium,),
                   const SizedBox(height: 15,),
                   selectedFund == select ?
-                  Icon(Icons.circle, color: ch.primary,) : Icon(Icons.circle_outlined),
+                  Icon(Icons.circle, color: ch.primary,) : Icon(
+                      Icons.circle_outlined),
                   if(isRecommended && !isSelected)
-                    Text('Recommended', style: TextStyle(color: CustomColors.yellowOutline(context), fontSize: 10),),
+                    Text('Recommended', style: TextStyle(
+                        color: CustomColors.yellowOutline(context),
+                        fontSize: 10),),
                 ],
               ),
             ),
@@ -1714,29 +1973,42 @@ class _SignupPageFiveState extends State<SignupPageFive> {
       ),
     );
   }
-  Widget goalSelectionChip(String label, bool selected, int index){
+
+  Widget goalSelectionChip(String label, bool selected, int index) {
     return ChoiceChip(
-        label: Text(label),
-        selected: selected,
+      label: Text(label),
+      selected: selected,
       showCheckmark: false,
       avatar: Emoji.goal,
-      onSelected: (select){
-          setState(() {
-            selectedGoal = select ? index : -1;
-            if(select) goalError = null;
-          });
+      onSelected: (select) {
+        setState(() {
+          selectedGoal = select ? index : -1;
+          if (select) goalError = null;
+        });
       },
       selectedColor: CustomColors.primaryMuted(context),
-      side: BorderSide(color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline),
+      side: BorderSide(color: selected ? Theme
+          .of(context)
+          .colorScheme
+          .primary : Theme
+          .of(context)
+          .colorScheme
+          .outline),
       labelStyle: TextStyle(
-        color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
+        color: selected ? Theme
+            .of(context)
+            .colorScheme
+            .primary : Theme
+            .of(context)
+            .colorScheme
+            .onSurface,
         fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
       ),
     );
   }
 }
 
-class SignupPageSixData{
+class SignupPageSixData {
   List<int> styleIndex;
   int? equipIndex;
   int? placeIndex;
@@ -1755,31 +2027,48 @@ class SignupPageSixData{
     this.freeIndex = const [],
   });
 
-  List<String> get styleType{
-    const styles = ['Strength Training', 'Cardio', 'HIIT', 'Yoga & Stretching', 'Pilates', 'Calisthenics', 'Sports & Athletics', 'Functional Training', 'Low Impact', 'Any'];
+  List<String> get styleType {
+    const styles = [
+      'Strength Training',
+      'Cardio',
+      'HIIT',
+      'Yoga & Stretching',
+      'Pilates',
+      'Calisthenics',
+      'Sports & Athletics',
+      'Functional Training',
+      'Low Impact',
+      'Any'
+    ];
     return styleIndex.map((i) => styles[i]).toList();
   }
-  String get equipType{
+
+  String get equipType {
     const equips = ['None', 'Minimal', 'Full Gym'];
     return equips[equipIndex!];
   }
-  String get placeType{
+
+  String get placeType {
     const places = ['Home', 'Gym', 'Outdoors', 'Any'];
     return places[placeIndex!];
   }
-  String get dayType{
+
+  String get dayType {
     const days = ['2', '3', '4', '5', '6'];
     return days[dayIndex!];
   }
-  String get durationType{
+
+  String get durationType {
     const durations = ['15-30 min', '30-45 min', '45-60 min', '60+ min'];
     return durations[durationIndex!];
   }
-  List<String> get timeType{
+
+  List<String> get timeType {
     const times = ['Early Morning', 'Late Morning', 'Afternoon', 'Evening'];
     return timeIndex.map((i) => times[i]).toList();
   }
-  List<String> get freeType{
+
+  List<String> get freeType {
     const frees = ['Son', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     return freeIndex.map((i) => frees[i]).toList();
   }
@@ -1788,6 +2077,7 @@ class SignupPageSixData{
 class SignupPageSix extends StatefulWidget {
   final SignupPageSixData data;
   final VoidCallback onNext;
+
   const SignupPageSix({super.key, required this.data, required this.onNext});
 
   @override
@@ -1815,7 +2105,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
   String? durationError;
   String? timeError;
 
-  void saveData(){
+  void saveData() {
     widget.data.styleIndex = styleSelected.toList();
     widget.data.equipIndex = equipSelected;
     widget.data.placeIndex = placeSelected;
@@ -1824,68 +2114,71 @@ class _SignupPageSixState extends State<SignupPageSix> {
     widget.data.timeIndex = timeSelected.toList();
     widget.data.freeIndex = freeSelected.toList();
   }
-  bool validateInput(){
+
+  bool validateInput() {
     bool isValid = true;
     setState(() {
-      if(styleSelected.isEmpty){
+      if (styleSelected.isEmpty) {
         styleError = 'Please select your preferred style.';
         isValid = false;
-      }else {
+      } else {
         styleError = null;
       }
-      if(equipSelected == -1){
+      if (equipSelected == -1) {
         equipError = 'Please choose your available equipment options.';
         isValid = false;
-      }else {
+      } else {
         equipError = null;
       }
-      if(placeSelected == -1){
+      if (placeSelected == -1) {
         placeError = 'Please select where you plan to work out.';
         isValid = false;
-      }else {
+      } else {
         placeError = null;
       }
-      if(daySelected == -1){
+      if (daySelected == -1) {
         dayError = 'Please specify how many days you will work out per week.';
         isValid = false;
-      }else {
+      } else {
         dayError = null;
       }
-      if(durationSelected == -1){
+      if (durationSelected == -1) {
         durationError = 'Please enter how long each workout session will be.';
         isValid = false;
-      }else {
+      } else {
         durationError = null;
       }
-      if(timeSelected.isEmpty){
+      if (timeSelected.isEmpty) {
         timeError = 'Please select your preferred workout times.';
         isValid = false;
-      }else {
+      } else {
         timeError = null;
       }
     });
     return isValid;
   }
 
-  void _scrollToError(GlobalKey key){
+  void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
-    if(context != null){
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    if (context != null) {
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.2);
     }
   }
 
-  void handleNext(){
+  void handleNext() {
     final isValid = validateInput();
-    if(!isValid){
+    if (!isValid) {
       List<GlobalKey> errorKeys = [];
-      if(styleError != null) errorKeys.add(styleKey);
-      if(equipError != null) errorKeys.add(equipKey);
-      if(placeError != null) errorKeys.add(placeKey);
-      if(dayError != null) errorKeys.add(dayKey);
-      if(durationError != null) errorKeys.add(durationKey);
-      if(timeError != null) errorKeys.add(timeKey);
+      if (styleError != null) errorKeys.add(styleKey);
+      if (equipError != null) errorKeys.add(equipKey);
+      if (placeError != null) errorKeys.add(placeKey);
+      if (dayError != null) errorKeys.add(dayKey);
+      if (durationError != null) errorKeys.add(durationKey);
+      if (timeError != null) errorKeys.add(timeKey);
 
-      if(errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
+      if (errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
       return;
     }
     saveData();
@@ -1909,16 +2202,22 @@ class _SignupPageSixState extends State<SignupPageSix> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
               Emoji.page6,
               const SizedBox(width: 10,),
-              Text('How do you like to train?', style: Theme.of(context).textTheme.displaySmall,),
+              Text('How do you like to train?', style: Theme
+                  .of(context)
+                  .textTheme
+                  .displaySmall,),
             ],
           ),
           const SizedBox(height: 10,),
-          Text('Pick what fits your schedule and preferences', style: Theme.of(context).textTheme.labelMedium,),
+          Text('Pick what fits your schedule and preferences', style: Theme
+              .of(context)
+              .textTheme
+              .labelMedium,),
           const SizedBox(height: 20,),
           Text('Training Style Preference', key: styleKey,),
           if(styleError != null)
@@ -1926,7 +2225,10 @@ class _SignupPageSixState extends State<SignupPageSix> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(styleError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -1955,7 +2257,10 @@ class _SignupPageSixState extends State<SignupPageSix> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(equipError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -1977,7 +2282,10 @@ class _SignupPageSixState extends State<SignupPageSix> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(placeError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -2000,7 +2308,10 @@ class _SignupPageSixState extends State<SignupPageSix> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(dayError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -2024,7 +2335,10 @@ class _SignupPageSixState extends State<SignupPageSix> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(durationError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -2047,7 +2361,10 @@ class _SignupPageSixState extends State<SignupPageSix> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(timeError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -2095,115 +2412,121 @@ class _SignupPageSixState extends State<SignupPageSix> {
     );
   }
 
-  Widget trainingStyle(String label, Image avatar, int value){
+  Widget trainingStyle(String label, Image avatar, int value) {
     return FilterChip(
-        label: Text(label),
-        showCheckmark: false,
-        avatar: avatar,
-        selected: styleSelected.contains(value),
-      onSelected: (selected){
-          setState(() {
-            if(selected){
-              styleSelected.add(value);
-              if(styleError != null){
-                styleError = null;
-              }
-            }else{
-              styleSelected.remove(value);
+      label: Text(label),
+      showCheckmark: false,
+      avatar: avatar,
+      selected: styleSelected.contains(value),
+      onSelected: (selected) {
+        setState(() {
+          if (selected) {
+            styleSelected.add(value);
+            if (styleError != null) {
+              styleError = null;
             }
-          });
+          } else {
+            styleSelected.remove(value);
+          }
+        });
       },
     );
   }
-  Widget equipChip(String label, Image avatar, int value){
+
+  Widget equipChip(String label, Image avatar, int value) {
     return ChoiceChip(
       label: Text(label),
       showCheckmark: false,
       avatar: avatar,
       selected: equipSelected == value,
-      onSelected: (selected){
+      onSelected: (selected) {
         setState(() {
           equipSelected = selected ? value : -1;
-          if(equipError != null){
+          if (equipError != null) {
             equipError = null;
           }
         });
       },
     );
   }
-  Widget placeChip(String label, Image avatar, int value){
+
+  Widget placeChip(String label, Image avatar, int value) {
     return ChoiceChip(
       label: Text(label),
       showCheckmark: false,
       avatar: avatar,
       selected: placeSelected == value,
-      onSelected: (selected){
+      onSelected: (selected) {
         setState(() {
           placeSelected = selected ? value : -1;
-          if(placeError != null){
+          if (placeError != null) {
             placeError = null;
           }
         });
       },
     );
   }
-  Widget dayChip(String label, int value){
+
+  Widget dayChip(String label, int value) {
     return ChoiceChip(
       label: Text(label),
       selected: daySelected == value,
-      onSelected: (selected){
+      onSelected: (selected) {
         setState(() {
           daySelected = selected ? value : -1;
-          if(dayError != null){
+          if (dayError != null) {
             dayError = null;
           }
         });
       },
     );
   }
-  Widget timeChip(String label, int value){
+
+  Widget timeChip(String label, int value) {
     return ChoiceChip(
       label: Text(label),
       selected: durationSelected == value,
-      onSelected: (selected){
+      onSelected: (selected) {
         setState(() {
           durationSelected = selected ? value : -1;
-          if(durationError != null){
+          if (durationError != null) {
             durationError = null;
           }
         });
       },
     );
   }
-  Widget sessionChip(String label, Image avatar, int value){
+
+  Widget sessionChip(String label, Image avatar, int value) {
     return FilterChip(
       showCheckmark: false,
       label: Text(label),
       avatar: avatar,
       selected: timeSelected.contains(value),
-      onSelected: (selected){
+      onSelected: (selected) {
         setState(() {
-          if(selected){
-           timeSelected.add(value);
-           if(timeError != null){
-             timeError = null;
-           }
-          }else{
+          if (selected) {
+            timeSelected.add(value);
+            if (timeError != null) {
+              timeError = null;
+            }
+          } else {
             timeSelected.remove(value);
           }
         });
       },
     );
   }
-  Widget freeChip(String label, int value){
+
+  Widget freeChip(String label, int value) {
     return ChoiceChip(
       label: Text(label),
       selected: freeSelected.contains(value),
-      onSelected: (selected){
+      onSelected: (selected) {
         setState(() {
-          if(selected){
+          if (selected) {
             freeSelected.add(value);
-          }else{
+          } else {
             freeSelected.remove(value);
           }
         });
@@ -2212,7 +2535,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
   }
 }
 
-class SignupPageSevenData{
+class SignupPageSevenData {
   int? mealIndex;
   int? dietIndex;
   bool isHalal;
@@ -2227,16 +2550,35 @@ class SignupPageSevenData{
     List<String>? selectedAllergens,
   }) : selectedAllergens = selectedAllergens ?? [];
 
-  String get mealType{
+  String get mealType {
     const meals = ['2 meals/day', '3 meals/day', '4 meals/day', '5+ meals/day'];
     return meals[mealIndex!];
   }
-  String get dietType{
-    const diets = ['Omnivore', 'Vegetarian', 'Vegan', 'Pescatarian', 'Paleo', 'Keto'];
+
+  String get dietType {
+    const diets = [
+      'Omnivore',
+      'Vegetarian',
+      'Vegan',
+      'Pescatarian',
+      'Paleo',
+      'Keto'
+    ];
     return diets[dietIndex!];
   }
-  List<String> get regionType{
-    const regions = ['South Asian', 'East Asian', 'Southeast Asian', 'Middle Eastern', 'Mediterranean', 'East African', 'North African', 'Western', 'No preference'];
+
+  List<String> get regionType {
+    const regions = [
+      'South Asian',
+      'East Asian',
+      'Southeast Asian',
+      'Middle Eastern',
+      'Mediterranean',
+      'East African',
+      'North African',
+      'Western',
+      'No preference'
+    ];
     return regionIndex.map((i) => regions[i]).toList();
   }
 }
@@ -2244,6 +2586,7 @@ class SignupPageSevenData{
 class SignupPageSeven extends StatefulWidget {
   final SignupPageSevenData data;
   final VoidCallback onNext;
+
   const SignupPageSeven({super.key, required this.data, required this.onNext});
 
   @override
@@ -2260,47 +2603,49 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
   String? mealError;
   String? dietError;
 
-  void saveData(){
+  void saveData() {
     widget.data.mealIndex = meal;
     widget.data.dietIndex = diet;
     widget.data.isHalal = isHalal;
     widget.data.regionIndex = region.isEmpty ? [8] : region.toList();
   }
 
-  bool validateInput(){
+  bool validateInput() {
     bool isValid = true;
     setState(() {
-      if(meal == null){
+      if (meal == null) {
         mealError = 'Please select how many meals you want to take a day.';
         isValid = false;
-      }else{
+      } else {
         mealError = null;
       }
-      if(diet == null){
+      if (diet == null) {
         dietError = 'Please select your preferred diet type';
         isValid = false;
-      }else{
+      } else {
         dietError = null;
       }
     });
     return isValid;
   }
 
-  void _scrollToError(GlobalKey key){
+  void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
-    if(context != null){
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    if (context != null) {
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.2);
     }
   }
 
-  void handleNext(){
+  void handleNext() {
     final isValid = validateInput();
-    if(!isValid){
+    if (!isValid) {
       List<GlobalKey> errorKeys = [];
-      if(mealError != null) errorKeys.add(mealKey);
-      if(dietError != null) errorKeys.add(dietKey);
+      if (mealError != null) errorKeys.add(mealKey);
+      if (dietError != null) errorKeys.add(dietKey);
 
-      if(errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
+      if (errorKeys.isNotEmpty) _scrollToError(errorKeys.first);
       return;
     }
     saveData();
@@ -2319,20 +2664,28 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
 
   @override
   Widget build(BuildContext context) {
-    final th = Theme.of(context).textTheme;
+    final th = Theme
+        .of(context)
+        .textTheme;
 
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
               Emoji.page7,
               const SizedBox(width: 10,),
-              Text('Your Eating Habits', style: Theme.of(context).textTheme.displaySmall,),
+              Text('Your Eating Habits', style: Theme
+                  .of(context)
+                  .textTheme
+                  .displaySmall,),
             ],
           ),
           const SizedBox(height: 10,),
-          Text('Help us shape a plan that works for you', style: Theme.of(context).textTheme.labelMedium,),
+          Text('Help us shape a plan that works for you', style: Theme
+              .of(context)
+              .textTheme
+              .labelMedium,),
           const SizedBox(height: 20,),
           Text('Meals per day', key: mealKey,),
           if(mealError != null)
@@ -2340,7 +2693,10 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(mealError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -2363,7 +2719,10 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(dietError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .error,
                   fontSize: 12,
                 ),
               ),
@@ -2386,9 +2745,13 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
               controlAffinity: ListTileControlAffinity.leading,
               title: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: [Text('Halal'), const SizedBox(width: 10,), Icon(Symbols.prayer_times_rounded)]),
+                  children: [
+                    Text('Halal'),
+                    const SizedBox(width: 10,),
+                    Icon(Symbols.prayer_times_rounded)
+                  ]),
               value: isHalal,
-              onChanged: (bool? value){
+              onChanged: (bool? value) {
                 setState(() {
                   isHalal = value!;
                 });
@@ -2437,62 +2800,66 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
       ),
     );
   }
-  Widget mealChip(String label, int value){
+
+  Widget mealChip(String label, int value) {
     return ChoiceChip(
       label: Text(label),
       selected: meal == value,
-      onSelected: (selected){
+      onSelected: (selected) {
         setState(() {
           meal = selected ? value : null;
-          if(mealError != null){
+          if (mealError != null) {
             mealError = null;
           }
         });
       },
     );
   }
-  Widget dietChip(String label, Image avatar, int value){
+
+  Widget dietChip(String label, Image avatar, int value) {
     return ChoiceChip(
       label: Text(label),
       selected: diet == value,
       showCheckmark: false,
       avatar: avatar,
-      onSelected: (selected){
+      onSelected: (selected) {
         setState(() {
           diet = selected ? value : null;
-          if(dietError != null){
+          if (dietError != null) {
             dietError = null;
           }
         });
       },
     );
   }
-  Widget regionChip(String label, IconData icon, int value){
+
+  Widget regionChip(String label, IconData icon, int value) {
     return FilterChip(
       label: Text(label),
       selected: region.contains(value),
       showCheckmark: false,
       avatar: Icon(icon),
-      onSelected: (selected){
+      onSelected: (selected) {
         setState(() {
           const noPreferenceValue = 8;
-          if(value == noPreferenceValue){
-            if(selected){
+          if (value == noPreferenceValue) {
+            if (selected) {
               region.clear();
               region.add(noPreferenceValue);
-            }else{
+            } else {
               region.remove(noPreferenceValue);
             }
-          }else{
-            if(selected){
+          } else {
+            if (selected) {
               region.add(value);
               region.remove(noPreferenceValue);
-            }else{
+            } else {
               region.remove(value);
             }
           }
-          final allSelected = List.generate(8, (i) => i).every((i) => region.contains(i));
-          if(allSelected){
+          final allSelected = List.generate(8, (i) => i).every((i) =>
+              region.contains(i));
+          if (allSelected) {
             region.clear();
             region.add(noPreferenceValue);
           }
@@ -2502,20 +2869,22 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
   }
 }
 
-class SignupPageEightData{
+class SignupPageEightData {
   List<String> selectedIntolerances = [];
   List<String> selectedDislikes = [];
 
   SignupPageEightData({
     List<String>? selectedIntolerances,
     List<String>? selectedDislikes,
-  }) :  selectedIntolerances = selectedIntolerances ?? [],
+  })
+      : selectedIntolerances = selectedIntolerances ?? [],
         selectedDislikes = selectedDislikes ?? [];
 }
 
 class SignupPageEight extends StatefulWidget {
   final SignupPageEightData data;
   final VoidCallback onNext;
+
   const SignupPageEight({super.key, required this.data, required this.onNext});
 
   @override
@@ -2523,23 +2892,30 @@ class SignupPageEight extends StatefulWidget {
 }
 
 class _SignupPageEightState extends State<SignupPageEight> {
-  void handleNext(){
+  void handleNext() {
     widget.onNext();
   }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
               Emoji.page8,
               const SizedBox(width: 10,),
-              Text('Foods you want to Avoid', style: Theme.of(context).textTheme.displaySmall,),
+              Text('Foods you want to Avoid', style: Theme
+                  .of(context)
+                  .textTheme
+                  .displaySmall,),
             ],
           ),
           const SizedBox(height: 10,),
-          Text('We’ll leave these out of your plan', style: Theme.of(context).textTheme.labelMedium,),
+          Text('We’ll leave these out of your plan', style: Theme
+              .of(context)
+              .textTheme
+              .labelMedium,),
           const SizedBox(height: 20,),
           Row(children: [
             Icon(Symbols.gastroenterology_rounded),
@@ -2573,13 +2949,14 @@ class _SignupPageEightState extends State<SignupPageEight> {
   }
 }
 
-class SignupPageNineData{
+class SignupPageNineData {
   String? username;
   String? password;
   String? phone;
   String? address;
   String? googleId;
   String? appleId;
+
   SignupPageNineData({
     this.username,
     this.password,
@@ -2590,13 +2967,16 @@ class SignupPageNineData{
   });
 
   bool get isGoogleLinked => googleId != null;
+
   bool get isAppleLinked => appleId != null;
+
   bool get hasLinked => isGoogleLinked || isAppleLinked;
 }
 
 class SignupPageNine extends StatefulWidget {
   final SignupPageNineData data;
   final VoidCallback onNext;
+
   const SignupPageNine({super.key, required this.data, required this.onNext});
 
   @override
@@ -2638,7 +3018,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
 
-  void saveData(){
+  void saveData() {
     data.username = usernameController.text.trim();
     data.password = passwordController.text;
     final phone = phoneController.text.trim();
@@ -2646,50 +3026,54 @@ class _SignupPageNineState extends State<SignupPageNine> {
     data.address = addressController.text.trim();
   }
 
-  Future<bool> validateInput() async{
+  Future<bool> validateInput() async {
     bool isValid = true;
     setState(() {
       final u = usernameController.text.trim();
-      if(u.isEmpty){
+      if (u.isEmpty) {
         usernameError = 'Username is required';
         isValid = false;
-      }else if(!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(u)){
+      } else if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(u)) {
         usernameError = 'Only letters, numbers and underscore';
         isValid = false;
-      }else{
+      } else {
         usernameError = null;
       }
 
-      if(passwordController.text.isEmpty){
+      if (passwordController.text.isEmpty) {
         passwordError = 'Password is required';
         isValid = false;
-      }else if(passwordController.text.length < 8){
+      } else if (passwordController.text.length < 8) {
         passwordError = 'At least 8 characters';
         isValid = false;
-      }else{
+      } else {
         passwordError = null;
       }
 
-      if(confirmController.text.isEmpty){
+      if (confirmController.text.isEmpty) {
         confirmError = 'Please confirm your password';
         isValid = false;
-      }else if(confirmController.text != passwordController.text){
+      } else if (confirmController.text != passwordController.text) {
         confirmError = 'Passwords do not match';
         isValid = false;
-      }else{
+      } else {
         confirmError = null;
       }
-      if(!data.hasLinked){
+      if (!data.hasLinked) {
         linkError = 'Link at least one account to continue';
         isValid = false;
-      }else{
+      } else {
         linkError = null;
       }
     });
-    if(isValid){
+    if (isValid) {
       final username = usernameController.text.trim();
-      final existing = await FirebaseFirestore.instance.collection('users').where('username', isEqualTo: username).limit(1).get();
-      if(existing.docs.isNotEmpty){
+      final existing = await FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .limit(1)
+          .get();
+      if (existing.docs.isNotEmpty) {
         setState(() {
           usernameError = 'Username already taken';
         });
@@ -2699,52 +3083,60 @@ class _SignupPageNineState extends State<SignupPageNine> {
     return isValid;
   }
 
-  void _scrollToError(GlobalKey key){
+  void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
-    if(context != null){
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300), curve: Curves.easeInOut, alignment: 0.2);
+    if (context != null) {
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.2);
     }
   }
 
-  void handleNext() async{
+  void handleNext() async {
     setState(() => isLoading = true);
     final isValid = await validateInput();
-    if(!mounted) return;
-    if(!isValid){
+    if (!mounted) return;
+    if (!isValid) {
       setState(() => isLoading = false);
       List<GlobalKey> errorKeys = [];
-      if(usernameError != null) errorKeys.add(userKey);
-      if(passwordError != null) errorKeys.add(passKey);
-      if(confirmError != null) errorKeys.add(confirmKey);
-      if(linkError != null) errorKeys.add(linkKey);
+      if (usernameError != null) errorKeys.add(userKey);
+      if (passwordError != null) errorKeys.add(passKey);
+      if (confirmError != null) errorKeys.add(confirmKey);
+      if (linkError != null) errorKeys.add(linkKey);
 
-      if(errorKeys.isNotEmpty){
-        WidgetsBinding.instance.addPostFrameCallback((_){
+      if (errorKeys.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           _scrollToError(errorKeys.first);
         });
       }
       return;
     }
-    showDialog(context: context, builder: (context){
+    showDialog(context: context, builder: (context) {
       return Center(
         child: CircularProgressIndicator(),
       );
     });
     saveData();
-    if(!mounted) return;
+    if (!mounted) return;
     context.read<DataProvider>().updatePageNine(data);
     Navigator.pop(context);
     widget.onNext();
   }
 
-  Future<void> _linkGoogle() async{
-    try{
+  Future<void> _linkGoogle() async {
+    try {
       final googleUser = await GoogleSignIn.instance.authenticate();
-      final existing = await FirebaseFirestore.instance.collection('users').where('googleId',isEqualTo: googleUser.id).limit(1).get();
-      if(existing.docs.isNotEmpty){
+      final existing = await FirebaseFirestore.instance
+          .collection('users')
+          .where('googleId', isEqualTo: googleUser.id)
+          .limit(1)
+          .get();
+      if (existing.docs.isNotEmpty) {
         await GoogleSignIn.instance.signOut();
-        if(mounted){
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This Google account is already linked to another user')));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text(
+                  'This Google account is already linked to another user')));
         }
         return;
       }
@@ -2753,31 +3145,39 @@ class _SignupPageNineState extends State<SignupPageNine> {
         data.googleId = googleUser.id;
         linkError = null;
       });
-    }catch(e){
-      if(mounted){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Google sign-in failed: $e')));
       }
     }
   }
 
-  Future<void> _unlinkGoogle() async{
+  Future<void> _unlinkGoogle() async {
     final confirm = await _showUnlinkDialog('Google');
-    if(!confirm) return;
+    if (!confirm) return;
     await GoogleSignIn.instance.signOut();
     setState(() {
       data.googleId = null;
-      if(!data.hasLinked) linkError = 'Link at least one account to continue';
+      if (!data.hasLinked) linkError = 'Link at least one account to continue';
     });
   }
 
-  Future<void> _linkApple() async{
-    try{
-      final appleCredential = await SignInWithApple.getAppleIDCredential(scopes: [AppleIDAuthorizationScopes.email]);
-      final existing = await FirebaseFirestore.instance.collection('users').where('appleId', isEqualTo: appleCredential.userIdentifier).limit(1).get();
+  Future<void> _linkApple() async {
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+          scopes: [AppleIDAuthorizationScopes.email]);
+      final existing = await FirebaseFirestore.instance
+          .collection('users')
+          .where('appleId', isEqualTo: appleCredential.userIdentifier)
+          .limit(1)
+          .get();
 
-      if(existing.docs.isNotEmpty){
-        if(mounted){
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This Apple account is already linked to another user')));
+      if (existing.docs.isNotEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text(
+                  'This Apple account is already linked to another user')));
         }
         return;
       }
@@ -2786,33 +3186,37 @@ class _SignupPageNineState extends State<SignupPageNine> {
         data.appleId = appleCredential.userIdentifier;
         linkError = null;
       });
-    }catch(e){
-      if(mounted){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Apple sign-in failed: $e')));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Apple sign-in failed: $e')));
       }
     }
   }
 
-  Future<void> _unlinkApple() async{
+  Future<void> _unlinkApple() async {
     final confirm = await _showUnlinkDialog('Apple');
-    if(!confirm) return;
+    if (!confirm) return;
     setState(() {
       data.appleId = null;
-      if(!data.hasLinked) linkError = 'Link at least one account to continue';
+      if (!data.hasLinked) linkError = 'Link at least one account to continue';
     });
   }
 
-  Future<bool> _showUnlinkDialog(String provider) async{
+  Future<bool> _showUnlinkDialog(String provider) async {
     return await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Unlink $provider'),
-          content: Text('This will remove your $provider connection.'),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Unlink')),
-          ],
-        )
+        builder: (context) =>
+            AlertDialog(
+              title: Text('Unlink $provider'),
+              content: Text('This will remove your $provider connection.'),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Cancel')),
+                TextButton(onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Unlink')),
+              ],
+            )
     ) ?? false;
   }
 
@@ -2825,29 +3229,36 @@ class _SignupPageNineState extends State<SignupPageNine> {
     passwordController.text = data.password ?? '';
     confirmController.text = data.password ?? '';
     addressController.text = data.address ?? '';
-    if(data.phone != null){
+    if (data.phone != null) {
       final allCodes = codes.map((c) => c['code']!).toList();
       allCodes.sort((a, b) => b.length.compareTo(a.length));
-      final matchedCode = allCodes.firstWhere((code) => data.phone!.startsWith(code), orElse: () => '+880');
+      final matchedCode = allCodes.firstWhere((code) =>
+          data.phone!.startsWith(code), orElse: () => '+880');
       selectedCode = matchedCode;
       phoneController.text = data.phone!.substring(matchedCode.length);
     }
 
-    if(kIsWeb){
-      GoogleSignIn.instance.authenticationEvents.listen((event)async{
+    if (kIsWeb) {
+      GoogleSignIn.instance.authenticationEvents.listen((event) async {
         final GoogleSignInAccount? user = switch (event){
           GoogleSignInAuthenticationEventSignIn() => event.user,
-        _ => null,
+          _ => null,
         };
-        if(user == null) return;
-        final existing = await FirebaseFirestore.instance.collection('users').where('googleId', isEqualTo: user.id).limit(1).get();
-        if(existing.docs.isNotEmpty){
-          if(mounted){
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This Google account is already linked to another user')));
+        if (user == null) return;
+        final existing = await FirebaseFirestore.instance
+            .collection('users')
+            .where('googleId', isEqualTo: user.id)
+            .limit(1)
+            .get();
+        if (existing.docs.isNotEmpty) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text(
+                    'This Google account is already linked to another user')));
           }
           return;
         }
-        if(mounted){
+        if (mounted) {
           setState(() {
             data.googleId = user.id;
             linkError = null;
@@ -2879,11 +3290,17 @@ class _SignupPageNineState extends State<SignupPageNine> {
               children: [
                 Emoji.page9,
                 const SizedBox(width: 10,),
-                Text('Create Your Account', style: Theme.of(context).textTheme.displaySmall,),
+                Text('Create Your Account', style: Theme
+                    .of(context)
+                    .textTheme
+                    .displaySmall,),
               ],
             ),
             const SizedBox(height: 10,),
-            Text('Save your progress and access your plan anytime', style: Theme.of(context).textTheme.labelMedium,),
+            Text('Save your progress and access your plan anytime', style: Theme
+                .of(context)
+                .textTheme
+                .labelMedium,),
             const SizedBox(height: 20,),
             TextField(
               key: userKey,
@@ -2894,9 +3311,9 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 helperText: '*Use letters, numbers and underscore',
                 errorText: usernameError,
               ),
-              onChanged: (_){
+              onChanged: (_) {
                 setState(() {
-                  if(usernameError != null){
+                  if (usernameError != null) {
                     usernameError = null;
                   }
                 });
@@ -2913,16 +3330,18 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 helperText: '*At least 8 characters',
                 errorText: passwordError,
                 suffixIcon: IconButton(
-                  onPressed: (){
+                  onPressed: () {
                     setState(() {
                       isHiddenOne = !isHiddenOne;
                     });
-                  }, icon: isHiddenOne ? Icon(Icons.visibility_rounded) : Icon(Icons.visibility_off_rounded),
+                  },
+                  icon: isHiddenOne ? Icon(Icons.visibility_rounded) : Icon(
+                      Icons.visibility_off_rounded),
                 ),
               ),
-              onChanged: (_){
+              onChanged: (_) {
                 setState(() {
-                  if(passwordError != null){
+                  if (passwordError != null) {
                     passwordError = null;
                   }
                 });
@@ -2938,16 +3357,18 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 labelText: 'Confirm Password',
                 errorText: confirmError,
                 suffixIcon: IconButton(
-                  onPressed: (){
+                  onPressed: () {
                     setState(() {
                       isHiddenTwo = !isHiddenTwo;
                     });
-                  }, icon: isHiddenTwo ? Icon(Icons.visibility_rounded) : Icon(Icons.visibility_off_rounded),
+                  },
+                  icon: isHiddenTwo ? Icon(Icons.visibility_rounded) : Icon(
+                      Icons.visibility_off_rounded),
                 ),
               ),
-              onChanged: (_){
+              onChanged: (_) {
                 setState(() {
-                  if(confirmError != null){
+                  if (confirmError != null) {
                     confirmError = null;
                   }
                 });
@@ -2958,18 +3379,21 @@ class _SignupPageNineState extends State<SignupPageNine> {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                      SizedBox(
+                  SizedBox(
                       height: 56,
                       width: 90,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .surface,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: countryCode(context),
                       )),
                   const SizedBox(height: 18,),
-                    ],
+                ],
               ),
               const SizedBox(width: 8,),
               Expanded(child: TextField(
@@ -2980,7 +3404,8 @@ class _SignupPageNineState extends State<SignupPageNine> {
                   hintText: 'XXXXXXXXXX',
                   helperText: '*Optional',
                 ),
-              ))]),
+              ))
+            ]),
             const SizedBox(height: 20,),
             TextField(
               controller: addressController,
@@ -2997,101 +3422,153 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 padding: const EdgeInsets.symmetric(vertical: 5),
                 child: Text(linkError!,
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .error,
                     fontSize: 12,
                   ),
                 ),
               ),
             const SizedBox(height: 10,),
             if(kIsWeb && !data.isGoogleLinked)
-    SizedBox(
-      height: 50,
-      width: double.infinity,
-      child: Stack(
-        children: [
-          FilledButton(
-          style: FilledButton.styleFrom(
-            minimumSize: Size(double.infinity, 50),
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          foregroundColor: Theme.of(context).colorScheme.onSurface
-          ),
-          onPressed: (){},child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          child: Row(
-          children: [
-          Emoji.google,
-          Expanded(child: Center(child: Text('Connect with Google', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
-          const SizedBox(height: 24, width: 24,),
-          ],
-          ),
-          )),
-          Opacity(
-            opacity: 0.005,
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: web.renderButton(
-                configuration: GSIButtonConfiguration(
-                  size: GSIButtonSize.large,
-                  shape: GSIButtonShape.pill,
-                  minimumWidth: 5000,
-                )
-              ),
-            ),
-          )
-        ],
-      ),
-    )
-              else if(kIsWeb && data.isGoogleLinked)
-              FilledButton(
-                  style: FilledButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      foregroundColor: Theme.of(context).colorScheme.onSurface
-                  ),
-                  onPressed: _unlinkGoogle,child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                child: Row(
+              SizedBox(
+                height: 50,
+                width: double.infinity,
+                child: Stack(
                   children: [
-                    Emoji.google,
-                    Expanded(child: Center(child: Text('Google Connected . Unlink', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
-                    Icon(Icons.check_circle_outline, size: 24, color: CustomColors.greenPrimary(context),)
+                    FilledButton(
+                        style: FilledButton.styleFrom(
+                            minimumSize: Size(double.infinity, 50),
+                            backgroundColor: Theme
+                                .of(context)
+                                .colorScheme
+                                .surface,
+                            foregroundColor: Theme
+                                .of(context)
+                                .colorScheme
+                                .onSurface
+                        ),
+                        onPressed: () {}, child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      child: Row(
+                        children: [
+                          Emoji.google,
+                          Expanded(child: Center(child: Text(
+                            'Connect with Google', style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 16),))),
+                          const SizedBox(height: 24, width: 24,),
+                        ],
+                      ),
+                    )),
+                    Opacity(
+                      opacity: 0.005,
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: web.renderButton(
+                            configuration: GSIButtonConfiguration(
+                              size: GSIButtonSize.large,
+                              shape: GSIButtonShape.pill,
+                              minimumWidth: 5000,
+                            )
+                        ),
+                      ),
+                    )
                   ],
                 ),
-              ))
+              )
             else
-            FilledButton(
-                style: FilledButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  foregroundColor: Theme.of(context).colorScheme.onSurface
-                ),
-                onPressed: data.isGoogleLinked ? _unlinkGoogle : _linkGoogle,child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Row(
-                  children: [
-                   Emoji.google,
-                    Expanded(child: Center(child: Text( data.isGoogleLinked ? 'Google Connected . Unlink' : 'Connect with Google', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
-                    data.isGoogleLinked ?
-                    Icon(Icons.check_circle_outline, size: 24, color: CustomColors.greenPrimary(context),) : const SizedBox(height: 24, width: 24,),
-                  ],
-                ),
-            )),
+              if(kIsWeb && data.isGoogleLinked)
+                FilledButton(
+                    style: FilledButton.styleFrom(
+                        backgroundColor: Theme
+                            .of(context)
+                            .colorScheme
+                            .surface,
+                        foregroundColor: Theme
+                            .of(context)
+                            .colorScheme
+                            .onSurface
+                    ),
+                    onPressed: _unlinkGoogle, child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10, horizontal: 20),
+                  child: Row(
+                    children: [
+                      Emoji.google,
+                      Expanded(child: Center(child: Text(
+                        'Google Connected . Unlink', style: TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 16),))),
+                      Icon(Icons.check_circle_outline, size: 24,
+                        color: CustomColors.greenPrimary(context),)
+                    ],
+                  ),
+                ))
+              else
+                FilledButton(
+                    style: FilledButton.styleFrom(
+                        backgroundColor: Theme
+                            .of(context)
+                            .colorScheme
+                            .surface,
+                        foregroundColor: Theme
+                            .of(context)
+                            .colorScheme
+                            .onSurface
+                    ),
+                    onPressed: data.isGoogleLinked
+                        ? _unlinkGoogle
+                        : _linkGoogle, child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10, horizontal: 20),
+                  child: Row(
+                    children: [
+                      Emoji.google,
+                      Expanded(child: Center(child: Text(data.isGoogleLinked
+                          ? 'Google Connected . Unlink'
+                          : 'Connect with Google', style: TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 16),))),
+                      data.isGoogleLinked
+                          ?
+                      Icon(Icons.check_circle_outline, size: 24,
+                        color: CustomColors.greenPrimary(context),)
+                          : const SizedBox(height: 24, width: 24,),
+                    ],
+                  ),
+                )),
             const SizedBox(height: 20,),
             FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  foregroundColor: Theme.of(context).colorScheme.onSurface
+                    backgroundColor: Theme
+                        .of(context)
+                        .colorScheme
+                        .surface,
+                    foregroundColor: Theme
+                        .of(context)
+                        .colorScheme
+                        .onSurface
                 ),
-                onPressed: data.isAppleLinked ? _unlinkApple : _linkApple, child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Row(
-                  children: [
-                    Emoji.apple,
-                    Expanded(child: Center(child: Text(data.isAppleLinked ? 'Apple Connected . Unlink' : 'Connect with Apple', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),))),
-                    data.isAppleLinked ?
-                    Icon(Icons.check_circle_outline, size: 24, color: CustomColors.greenPrimary(context),) : const SizedBox(height: 24, width: 24,),
-                  ],
-                ),
-            )),
+                onPressed: data.isAppleLinked ? _unlinkApple : _linkApple,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10, horizontal: 20),
+                  child: Row(
+                    children: [
+                      Emoji.apple,
+                      Expanded(child: Center(child: Text(data.isAppleLinked
+                          ? 'Apple Connected . Unlink'
+                          : 'Connect with Apple', style: TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 16),))),
+                      data.isAppleLinked
+                          ?
+                      Icon(Icons.check_circle_outline, size: 24,
+                        color: CustomColors.greenPrimary(context),)
+                          : const SizedBox(height: 24, width: 24,),
+                    ],
+                  ),
+                )),
             const SizedBox(height: 30,),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
@@ -3108,7 +3585,8 @@ class _SignupPageNineState extends State<SignupPageNine> {
       ),
     );
   }
-  Widget countryCode(BuildContext context){
+
+  Widget countryCode(BuildContext context) {
     return Center(
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -3118,23 +3596,26 @@ class _SignupPageNineState extends State<SignupPageNine> {
               borderRadius: BorderRadius.circular(10),
               isDense: true,
               elevation: 0,
-                style: Theme.of(context).textTheme.bodyMedium,
-                value: selectedCode,
-                items: codes.map<DropdownMenuItem<String>>((country){
-                  return DropdownMenuItem<String>(
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium,
+              value: selectedCode,
+              items: codes.map<DropdownMenuItem<String>>((country) {
+                return DropdownMenuItem<String>(
                   value: country['code'],
-                    child: Text('${country['name']} (${country['code']})'),
-                  );
-            }).toList(),
-                onChanged: (String? newCode) {
-                  setState(() {
-                    selectedCode = newCode!;
-                  });
-                },
-              selectedItemBuilder: (BuildContext context){
-                  return codes.map<Widget>((country){
-                    return Text(country['code']!);
-                  }).toList();
+                  child: Text('${country['name']} (${country['code']})'),
+                );
+              }).toList(),
+              onChanged: (String? newCode) {
+                setState(() {
+                  selectedCode = newCode!;
+                });
+              },
+              selectedItemBuilder: (BuildContext context) {
+                return codes.map<Widget>((country) {
+                  return Text(country['code']!);
+                }).toList();
               },
             ),
           ),
@@ -3144,13 +3625,19 @@ class _SignupPageNineState extends State<SignupPageNine> {
   }
 }
 
-class SignUpPageTenData{
-
+class SignUpPageTenData {
+  bool wantNotifications;
+  bool wantMetricUnit;
+  SignUpPageTenData({
+    this.wantNotifications = false,
+    this.wantMetricUnit = true,
+  });
 }
 
 class SignupPageTen extends StatefulWidget {
   final SignUpPageTenData data;
   final VoidCallback onNext;
+
   const SignupPageTen({super.key, required this.data, required this.onNext});
 
   @override
@@ -3158,33 +3645,82 @@ class SignupPageTen extends StatefulWidget {
 }
 
 class _SignupPageTenState extends State<SignupPageTen> {
-  late bool unitIsMetric;
-  late bool notificationsIsOn;
+  bool unitIsMetric = true;
+  bool notificationsIsOn = false;
 
-  void handleNext(){
+  void handleNext() {
 
   }
 
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
   Widget build(BuildContext context) {
+    final p1 = context.read<DataProvider>().pageOne;
+    final p4 = context.read<DataProvider>().pageFour;
+    final p5 = context.read<DataProvider>().pageFive;
+    final p9 = context.read<DataProvider>().pageNine;
     return SingleChildScrollView(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
               Emoji.page10,
               const SizedBox(width: 10,),
-              Text('Your Plan is Ready', style: Theme.of(context).textTheme.displaySmall,),
+              Text('Your Plan is Ready', style: Theme
+                  .of(context)
+                  .textTheme
+                  .displaySmall,),
             ],
           ),
           const SizedBox(height: 10,),
-          Text('Review your details and see your personalized setup', style: Theme.of(context).textTheme.labelMedium,),
+          Text(
+            'Review your details and see your personalized setup', style: Theme
+              .of(context)
+              .textTheme
+              .labelMedium,),
+          const SizedBox(height: 15,),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Name'), Text('${p1.name}')]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Username'), Text('${p9.username}')]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Google ID'), Text('${p9.googleId}')]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('BMI'), Text('${p1.bmi}-${p1.category}')]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Calorie Intake'), Text('~${p4.tdee}')]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Fundamental'), Text(p5.fundType)]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Current goal'), Text(p5.goalType!)]),
+          ],),
+          const SizedBox(height: 10,),
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                unitIsMetric = !unitIsMetric;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Theme.of(context).colorScheme.surface,
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                  RichText(text: TextSpan(children: [
+                    TextSpan(text: 'Unit of Measurement is ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                    TextSpan(text: unitIsMetric ? 'Metric' : 'Imperial', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                  ])),
+                  Text('Tap to change'),
+                ],),
+              ),
+            ),
+          ),
           const SizedBox(height: 30,),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
