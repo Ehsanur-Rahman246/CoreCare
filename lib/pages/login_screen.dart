@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_care/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,16 +22,43 @@ class _LoginScreenState extends State<LoginScreen> {
       emailError = null;
       passError = null;
     });
-    showDialog(context: context, builder: (context){
+    final input = emailController.text.trim();
+    final password = passwordController.text;
+
+    if(input.isEmpty){
+      setState(() {
+        emailError = 'Username or email is required';
+        return;
+      });
+    }
+    if(password.isEmpty){
+      setState(() {
+        passError = 'Password is required';
+        return;
+      });
+    }
+    showDialog(context: context,barrierDismissible: false, builder: (context){
       return Center(
         child: CircularProgressIndicator(),
       );
     });
 
     try{
+      String email = input;
+      if(!input.contains('@')){
+        final query = await FirebaseFirestore.instance.collection('users').where('username', isEqualTo: input).limit(1).get();
+        if(query.docs.isEmpty){
+          if(mounted) Navigator.pop(context);
+          setState(() {
+            emailError = 'Username not found';
+            return;
+          });
+        }
+        email = query.docs.first['email'];
+      }
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
+        email: email,
+        password: password,
       );
     } on FirebaseAuthException catch(e){
       setState(() {
@@ -95,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: emailController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.account_circle_outlined),
-                        labelText: "Username",
+                        labelText: "Username or Email",
                         errorText: emailError,
                       ),
                       onChanged: (_){

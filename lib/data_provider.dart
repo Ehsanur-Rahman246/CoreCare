@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_care/pages/sign_up_pages.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class TimeProvider extends ChangeNotifier {
   late Timer _timer;
@@ -26,7 +29,7 @@ class TimeProvider extends ChangeNotifier {
     int hour = _now.hour;
     final minute = _now.minute.toString().padLeft(2, '0');
     if(_is24Hour){
-      return '${hour.toString().padLeft(2,'0')}: $minute';
+      return '${hour.toString().padLeft(2,'0')}:$minute';
     }
     else{
       final period = hour >= 12 ? 'PM' : 'AM';
@@ -48,6 +51,129 @@ class TimeProvider extends ChangeNotifier {
   void dispose() {
     super.dispose();
     _timer.cancel();
+  }
+}
+
+class UserData{
+  final String uid;
+  final String name;
+  final String username;
+  final String email;
+  final String password;
+  final String? googleId;
+  final String? appleId;
+  final String? googleEmail;
+  final String? appleEmail;
+  final String? phone;
+  final String? address;
+  final double bmi;
+  final String bmiCategory;
+  final double bmr;
+  final double tdee;
+  final String ageGroup;
+  final int age;
+  final String gender;
+  final String fitType;
+  final String fundType;
+  final String goalType;
+  final String planType;
+  final String workType;
+  final String activityLevel;
+  final String sleepPattern;
+  final List<String> selectedMeds;
+  final List<String> selectedInjuries;
+  final List<String> styleType;
+  final String equipType;
+  final String placeType;
+  final String dayType;
+  final String durationType;
+  final List<String> timeType;
+  final List<String> freeType;
+  final String mealType;
+  final String dietType;
+  final bool isHalal;
+  final List<String> regionType;
+  final List<String> selectedAllergens;
+  final List<String> selectedIntolerances;
+  final List<String> selectedDislikes;
+  final bool wantNotifications;
+  final bool wantMetricUnit;
+  final DateTime createdAt;
+
+  UserData({required this.uid, required this.name, required this.username, required this.email, required this.password, this.googleId, this.appleId, this.googleEmail, this.appleEmail, this.phone, this.address, required this.bmi, required this.bmiCategory, required this.bmr, required this.tdee, required this.ageGroup, required this.age, required this.gender, required this.fitType, required this.fundType, required this.goalType, required this.planType, required this.workType, required this.activityLevel, required this.sleepPattern, required this.selectedMeds, required this.selectedInjuries, required this.styleType, required this.equipType, required this.placeType, required this.dayType, required this.durationType, required this.timeType, required this.freeType, required this.mealType, required this.dietType, required this.isHalal, required this.regionType, required this.selectedAllergens, required this.selectedIntolerances, required this.selectedDislikes, required this.wantNotifications, required this.wantMetricUnit, required this.createdAt});
+
+  factory UserData.fromSignup({
+    required String uid,
+    required SignupPageOneData p1,
+    required SignupPageTwoData p2,
+    required SignupPageThreeData p3,
+    required SignupPageFourData p4,
+    required SignupPageFiveData p5,
+    required SignupPageSixData p6,
+    required SignupPageSevenData p7,
+    required SignupPageEightData p8,
+    required SignupPageNineData p9,
+    required SignupPageTenData p10,
+  }){
+    String hashPassword(String password){
+      final bytes = utf8.encode(password);
+      return sha256.convert(bytes).toString();
+    }
+    return UserData(uid: uid, name: p1.name!, username: p9.username!, email: p9.email!, password: hashPassword(p9.password!), googleId:  p9.googleId, appleId: p9.appleId, googleEmail: p9.googleEmail, appleEmail: p9.appleEmail, phone: p9.phone, address: p9.address,
+        bmi: p1.bmi!, bmiCategory: p1.category!, bmr: p1.bmr!, tdee: p4.tdee!, ageGroup: p1.ageGroup!, age: p1.age!, gender: p1.gender == 1 ? 'Male' : 'Female', fitType: p4.fitType, fundType: p5.fundType, goalType: p5.goalType!, planType: p5.planType, workType: p3.workType, activityLevel: p3.activityLevel, sleepPattern: p3.sleepPattern, selectedMeds: p2.selectedMeds, selectedInjuries: p2.selectedInjuries, styleType: p6.styleType, equipType: p6.equipType, placeType: p6.placeType, dayType: p6.dayType, durationType: p6.durationType, timeType: p6.timeType, freeType: p6.freeType, mealType: p7.mealType, dietType: p7.dietType, isHalal: p7.isHalal, regionType: p7.regionType, selectedAllergens: p7.selectedAllergens, selectedIntolerances: p8.selectedIntolerances, selectedDislikes: p8.selectedDislikes, wantNotifications: p10.wantNotifications, wantMetricUnit: p10.wantMetricUnit, createdAt: DateTime.now());
+  }
+
+  Map<String, dynamic> toMap(){
+    return {
+      'uid' : uid,
+      'name' : name,
+      'username' : username,
+      'email' : email,
+      'password' : password,
+      'googleId' : googleId,
+      'appleId' : appleId,
+      'googleEmail' : googleEmail,
+      'appleEmail' : appleEmail,
+      'phone' : phone,
+      'address' : address,
+      'bmi' : bmi,
+      'bmiCategory' : bmiCategory,
+      'bmr' : bmr,
+      'tdee' : tdee,
+      'group' : ageGroup,
+      'age' : age,
+      'gender' : gender,
+      'fitness' : fitType,
+      'fundamental' : fundType,
+      'goal' : goalType,
+      'plan' : planType,
+      'work' : workType,
+      'activity' : activityLevel,
+      'sleepPattern' : sleepPattern,
+      'medicals' : selectedMeds,
+      'injuries' : selectedInjuries,
+      'exercise' : styleType,
+      'equipment' : equipType,
+      'place' : placeType,
+      'workoutDays' : dayType,
+      'duration' : durationType,
+      'time' : timeType,
+      'freeDays' : freeType,
+      'mealsPerDay' : mealType,
+      'dietPref' : dietType,
+      'isHalal' : isHalal,
+      'regions' : regionType,
+      'allergens' : selectedAllergens,
+      'intolerances' : selectedIntolerances,
+      'dislikes' : selectedDislikes,
+      'notifications' : wantNotifications,
+      'unit' : wantMetricUnit,
+      'createdAt' : createdAt.toIso8601String(),
+    };
+  }
+
+  factory UserData.fromMap(Map<String, dynamic> map){
+    return UserData(uid: map['uid'] ?? '', name: map['name'] ?? '', username: map['username'] ?? '', email: map['email'] ?? '', password: map['password'] ?? '', bmi: (map['bmi'] ?? 0).toDouble(), bmiCategory: map['bmiCategory'] ?? '', bmr: (map['bmr'] ?? 0).toDouble(), tdee: (map['tdee'] ?? 0).toDouble(), ageGroup: map['group'] ?? '', age: map['age'] ?? 0, gender: map['gender'] ?? '', fitType: map['fitness'] ?? '', fundType: map['fundamental'] ?? '', goalType: map['goal'], planType: map['plan'] ?? '', workType: map['work'] ?? 0, activityLevel: map['activity'] ?? '', sleepPattern: map['sleepPattern'] ?? '', selectedMeds: List<String>.from(map['medicals'] ?? []), selectedInjuries: List<String>.from(map['injuries'] ?? []), styleType: List<String>.from(map['exercise'] ?? []), equipType: map['equipment'] ?? '', placeType: map['place'] ?? '', dayType: map['workoutDays'] ?? '', durationType: map['duration'] ?? '', timeType: map['time'] ?? [], freeType: map['freeDays'] ?? [], mealType: map['mealsPerDay'], dietType: map['dietPref'] ?? '', isHalal: map['isHalal'] ?? false, regionType: List<String>.from(map['regions'] ?? []), selectedAllergens: List<String>.from(map['allergens'] ?? []), selectedIntolerances: List<String>.from(map['intolerances'] ?? []), selectedDislikes: List<String>.from(map['dislikes'] ?? []), wantNotifications: map['notifications'] ?? false, wantMetricUnit: map['unit'] ?? true, createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()));
   }
 }
 
@@ -84,6 +210,7 @@ class DataProvider extends ChangeNotifier {
   SignupPageSevenData pageSeven = SignupPageSevenData();
   SignupPageEightData pageEight = SignupPageEightData();
   SignupPageNineData pageNine = SignupPageNineData();
+  SignupPageTenData pageTen = SignupPageTenData();
 
   void updatePageOne(SignupPageOneData data){
     pageOne = data;
@@ -121,6 +248,10 @@ class DataProvider extends ChangeNotifier {
     pageNine = data;
     notifyListeners();
   }
+  void updatePageTen(SignupPageTenData data){
+    pageTen = data;
+    notifyListeners();
+  }
 
   RecommendationData get recommendationData{
     return RecommendationData(
@@ -145,7 +276,7 @@ class DataProvider extends ChangeNotifier {
     return RuleResult(code: 5, profile: 'Starter');
   }
 
-  void delete(){
+  void reset(){
     pageOne = SignupPageOneData();
     pageTwo = SignupPageTwoData();
     pageThree = SignupPageThreeData();
@@ -155,11 +286,42 @@ class DataProvider extends ChangeNotifier {
     pageSeven = SignupPageSevenData();
     pageEight = SignupPageEightData();
     pageNine = SignupPageNineData();
+    pageTen = SignupPageTenData();
     notifyListeners();
   }
+
+  UserData? currentUser;
+  bool isFetchingUser = false;
+
+  Future<void> fetchUser(String uid) async{
+    isFetchingUser = true;
+    notifyListeners();
+    try{
+      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      if(doc.exists){
+        currentUser = UserData.fromMap(doc.data()!);
+      }
+    }catch(e){
+      debugPrint('fetchUser error: $e');
+    }
+    isFetchingUser = false;
+    notifyListeners();
+  }
+
+  void clearUser(){
+    currentUser = null;
+    notifyListeners();
+  }
+  Future<void> deleteUserAccount() async{
+    if(currentUser == null) return;
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).delete();
+    }catch(e){
+      debugPrint('deleteUserAccount error: $e');
+      rethrow;
+    }
+  }
 }
-
-
 
 class Rule{
   final bool Function(RecommendationData data) condition;
@@ -191,8 +353,8 @@ final List<Rule> rules = [
   Rule(condition: (d) => (d.category == 'Overweight' || d.category == 'Obese') && d.active == 0 && d.ageGroup == 'Senior', result: RuleResult(code: 2, profile: 'Stiff Retiree'),),
   Rule(condition: (d) => d.fitness == 0 && d.ageGroup == 'Teen', result: RuleResult(code: 5, profile: 'Inactive Student'),),
   Rule(condition: (d) => (d.fitness == 1 || d.fitness == 2) && d.ageGroup == 'Teen', result: RuleResult(code: 6, profile: 'Developing Athlete'),),
-  Rule(condition: (d) => d.gender == 1 && d.active == 2 && d.ageGroup == 'Young Adult', result: RuleResult(code: 1, profile: 'Gym Goer'),),
   Rule(condition: (d) => d.gender == 1 && d.active == 2 && d.ageGroup == 'Young Adult' && d.fitness == 2, result: RuleResult(code: 6, profile: 'Peak Performer'),),
+  Rule(condition: (d) => d.gender == 1 && d.active == 2 && d.ageGroup == 'Young Adult', result: RuleResult(code: 1, profile: 'Gym Goer'),),
   Rule(condition: (d) => d.gender == 1 && d.work == 1 && d.ageGroup == 'Young Adult', result: RuleResult(code: 5, profile: 'Desk Bound'),),
   Rule(condition: (d) => d.gender == 2 && d.ageGroup == 'Young Adult', result: RuleResult(code: 4, profile: 'Wellness Seeker'),),
   Rule(condition: (d) => d.category == 'Normal' && d.gender == 1 && d.active == 2 && d.ageGroup == 'Adult', result: RuleResult(code: 1, profile: 'Adult Rebuilder'),),

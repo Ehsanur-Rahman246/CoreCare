@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_care/main.dart';
 import 'package:core_care/tags.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:core_care/decoration.dart';
 import 'package:flutter/services.dart';
@@ -1711,6 +1712,15 @@ class SignupPageFiveData {
     ];
     return types[fundIndex!];
   }
+
+  String get planType{
+    const timed = [0, 1, 4, 6];
+    if(timed.contains(fundIndex)){
+      return 'Timed';
+    }else{
+      return 'Ongoing';
+    }
+  }
 }
 
 class SignupPageFive extends StatefulWidget {
@@ -1787,11 +1797,15 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   @override
   void initState() {
     super.initState();
+    selectedGoal = widget.data.goalIndex ?? -1;
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     final rec = context
         .read<DataProvider>()
         .finalRecommendation;
     selectedFund = widget.data.fundIndex ?? rec.code;
-    selectedGoal = widget.data.goalIndex ?? -1;
   }
 
   @override
@@ -2519,7 +2533,7 @@ class _SignupPageSixState extends State<SignupPageSix> {
   }
 
   Widget freeChip(String label, int value) {
-    return ChoiceChip(
+    return FilterChip(
       label: Text(label),
       selected: freeSelected.contains(value),
       onSelected: (selected) {
@@ -2951,26 +2965,30 @@ class _SignupPageEightState extends State<SignupPageEight> {
 
 class SignupPageNineData {
   String? username;
+  String? email;
   String? password;
   String? phone;
   String? address;
   String? googleId;
   String? appleId;
+  String? googleEmail;
+  String? appleEmail;
 
   SignupPageNineData({
     this.username,
+    this.email,
     this.password,
     this.phone,
     this.address,
     this.googleId,
     this.appleId,
+    this.googleEmail,
+    this.appleEmail,
   });
 
   bool get isGoogleLinked => googleId != null;
 
   bool get isAppleLinked => appleId != null;
-
-  bool get hasLinked => isGoogleLinked || isAppleLinked;
 }
 
 class SignupPageNine extends StatefulWidget {
@@ -2985,9 +3003,9 @@ class SignupPageNine extends StatefulWidget {
 
 class _SignupPageNineState extends State<SignupPageNine> {
   final userKey = GlobalKey();
+  final emailKey = GlobalKey();
   final passKey = GlobalKey();
   final confirmKey = GlobalKey();
-  final linkKey = GlobalKey();
   bool isLoading = false;
   late SignupPageNineData data;
   bool isHiddenOne = true;
@@ -2996,10 +3014,9 @@ class _SignupPageNineState extends State<SignupPageNine> {
 
   final List<Map<String, String>> codes = [
     {'name': 'BAN', 'code': '+880'},
-    {'name': 'US', 'code': '+1'},
+    {'name': 'US/CAN', 'code': '+1'},
     {'name': 'UK', 'code': '+44'},
     {'name': 'IN', 'code': '+91'},
-    {'name': 'CAN', 'code': '+1'},
     {'name': 'AUS', 'code': '+61'},
     {'name': 'GER', 'code': '+49'},
     {'name': 'FRA', 'code': '+33'},
@@ -3010,9 +3027,10 @@ class _SignupPageNineState extends State<SignupPageNine> {
   String? usernameError;
   String? passwordError;
   String? confirmError;
-  String? linkError;
+  String? emailError;
 
   final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
@@ -3020,6 +3038,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
 
   void saveData() {
     data.username = usernameController.text.trim();
+    data.email = emailController.text.trim();
     data.password = passwordController.text;
     final phone = phoneController.text.trim();
     data.phone = phone.isNotEmpty ? '$selectedCode$phone' : null;
@@ -3038,6 +3057,17 @@ class _SignupPageNineState extends State<SignupPageNine> {
         isValid = false;
       } else {
         usernameError = null;
+      }
+      
+      final e = emailController.text.trim();
+      if(e.isEmpty){
+        emailError = 'Email is required';
+        isValid = false;
+      }else if(!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(e)){
+        emailError = 'Enter a valid email';
+        isValid = false;
+      }else{
+        emailError = null;
       }
 
       if (passwordController.text.isEmpty) {
@@ -3059,25 +3089,28 @@ class _SignupPageNineState extends State<SignupPageNine> {
       } else {
         confirmError = null;
       }
-      if (!data.hasLinked) {
-        linkError = 'Link at least one account to continue';
-        isValid = false;
-      } else {
-        linkError = null;
-      }
     });
     if (isValid) {
-      final username = usernameController.text.trim();
-      final existing = await FirebaseFirestore.instance
-          .collection('users')
-          .where('username', isEqualTo: username)
+      final results = await Future.wait([
+      FirebaseFirestore.instance
+      .collection('users')
+          .where('username', isEqualTo: usernameController.text.trim())
           .limit(1)
-          .get();
-      if (existing.docs.isNotEmpty) {
+          .get(),
+          FirebaseFirestore.instance.collection('users').where('email', isEqualTo: emailController.text.trim()).limit(1).get(),
+    ]);
+
+      if (results[0].docs.isNotEmpty) {
         setState(() {
           usernameError = 'Username already taken';
         });
         isValid = false;
+      }
+      if(results[1].docs.isNotEmpty){
+        setState(() {
+          emailError = 'Email already in use';
+          isValid = false;
+        });
       }
     }
     return isValid;
@@ -3100,9 +3133,9 @@ class _SignupPageNineState extends State<SignupPageNine> {
       setState(() => isLoading = false);
       List<GlobalKey> errorKeys = [];
       if (usernameError != null) errorKeys.add(userKey);
+      if (emailError != null) errorKeys.add(emailKey);
       if (passwordError != null) errorKeys.add(passKey);
       if (confirmError != null) errorKeys.add(confirmKey);
-      if (linkError != null) errorKeys.add(linkKey);
 
       if (errorKeys.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -3120,6 +3153,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
     if (!mounted) return;
     context.read<DataProvider>().updatePageNine(data);
     Navigator.pop(context);
+    setState(() => isLoading = false);
     widget.onNext();
   }
 
@@ -3143,7 +3177,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
 
       setState(() {
         data.googleId = googleUser.id;
-        linkError = null;
+        data.googleEmail = googleUser.email;
       });
     } catch (e) {
       if (mounted) {
@@ -3159,7 +3193,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
     await GoogleSignIn.instance.signOut();
     setState(() {
       data.googleId = null;
-      if (!data.hasLinked) linkError = 'Link at least one account to continue';
+      data.googleEmail = null;
     });
   }
 
@@ -3184,7 +3218,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
 
       setState(() {
         data.appleId = appleCredential.userIdentifier;
-        linkError = null;
+        data.appleEmail = appleCredential.email;
       });
     } catch (e) {
       if (mounted) {
@@ -3199,7 +3233,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
     if (!confirm) return;
     setState(() {
       data.appleId = null;
-      if (!data.hasLinked) linkError = 'Link at least one account to continue';
+      data.appleEmail = null;
     });
   }
 
@@ -3226,6 +3260,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
     data = widget.data;
 
     usernameController.text = data.username ?? '';
+    emailController.text = data.email ?? '';
     passwordController.text = data.password ?? '';
     confirmController.text = data.password ?? '';
     addressController.text = data.address ?? '';
@@ -3261,7 +3296,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
         if (mounted) {
           setState(() {
             data.googleId = user.id;
-            linkError = null;
+            data.googleEmail = user.email;
           });
         }
       });
@@ -3271,6 +3306,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
   @override
   void dispose() {
     usernameController.dispose();
+    emailController.dispose();
     passwordController.dispose();
     confirmController.dispose();
     phoneController.dispose();
@@ -3315,6 +3351,24 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 setState(() {
                   if (usernameError != null) {
                     usernameError = null;
+                  }
+                });
+              },
+            ),
+            const SizedBox(height: 20,),
+            TextField(
+              key: emailKey,
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.email_outlined),
+                labelText: 'Email',
+                errorText: emailError,
+              ),
+              onChanged: (_) {
+                setState(() {
+                  if (emailError != null) {
+                    emailError = null;
                   }
                 });
               },
@@ -3416,20 +3470,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
               ),
             ),
             const SizedBox(height: 20,),
-            Text('Link with your Google or Apple id', key: linkKey,),
-            if(linkError != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Text(linkError!,
-                  style: TextStyle(
-                    color: Theme
-                        .of(context)
-                        .colorScheme
-                        .error,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
+            Text('Link with your Google or Apple id'),
             const SizedBox(height: 10,),
             if(kIsWeb && !data.isGoogleLinked)
               SizedBox(
@@ -3577,7 +3618,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                   minimumSize: Size(double.infinity, 50),
                 ),
                 onPressed: handleNext,
-                child: Text("Next",),
+                child: Text("Finish Setup",),
               ),
             ),
           ],
@@ -3625,17 +3666,17 @@ class _SignupPageNineState extends State<SignupPageNine> {
   }
 }
 
-class SignUpPageTenData {
+class SignupPageTenData {
   bool wantNotifications;
   bool wantMetricUnit;
-  SignUpPageTenData({
+  SignupPageTenData({
     this.wantNotifications = false,
     this.wantMetricUnit = true,
   });
 }
 
 class SignupPageTen extends StatefulWidget {
-  final SignUpPageTenData data;
+  final SignupPageTenData data;
   final VoidCallback onNext;
 
   const SignupPageTen({super.key, required this.data, required this.onNext});
@@ -3648,17 +3689,49 @@ class _SignupPageTenState extends State<SignupPageTen> {
   bool unitIsMetric = true;
   bool notificationsIsOn = false;
 
-  void handleNext() {
+  void saveData(){
+    widget.data.wantMetricUnit = unitIsMetric;
+    widget.data.wantNotifications = notificationsIsOn;
+  }
 
+  void handleNext() async{
+    saveData();
+    context.read<DataProvider>().updatePageTen(widget.data);
+    showDialog(context: context,barrierDismissible: false, builder: (context){
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    });
+      try{
+        final dp = context.read<DataProvider>();
+        final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: dp.pageNine.email!, password: dp.pageNine.password!);
+        final uid = credential.user!.uid;
+        final userData = UserData.fromSignup(uid: uid, p1: dp.pageOne, p2: dp.pageTwo, p3: dp.pageThree, p4: dp.pageFour, p5: dp.pageFive, p6: dp.pageSix, p7: dp.pageSeven, p8: dp.pageEight, p9: dp.pageNine, p10: dp.pageTen);
+        await FirebaseFirestore.instance.collection('users').doc(uid).set(userData.toMap());
+
+        dp.currentUser = userData;
+        dp.reset();
+
+        if(!mounted) return;
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, '/home');
+      }catch(e){
+        if(!mounted) return;
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
+      }
   }
 
   @override
   void initState() {
     super.initState();
+    unitIsMetric = widget.data.wantMetricUnit;
+    notificationsIsOn = widget.data.wantNotifications;
   }
 
   @override
   Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
     final p1 = context.read<DataProvider>().pageOne;
     final p4 = context.read<DataProvider>().pageFour;
     final p5 = context.read<DataProvider>().pageFive;
@@ -3687,15 +3760,43 @@ class _SignupPageTenState extends State<SignupPageTen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Name'), Text('${p1.name}')]),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Username'), Text('${p9.username}')]),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Google ID'), Text('${p9.googleId}')]),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('BMI'), Text('${p1.bmi}-${p1.category}')]),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Calorie Intake'), Text('~${p4.tdee}')]),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Fundamental'), Text(p5.fundType)]),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Current goal'), Text(p5.goalType!)]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Name', style: th.labelLarge,), Text('${p1.name}')]),
+                const SizedBox(height: 10,),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Username', style: th.labelLarge,), Text('${p9.username}')]),
+                const SizedBox(height: 10,),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Email', style: th.labelLarge,), Text('${p9.email}')]),
+                const SizedBox(height: 10,),
+                if(p9.isGoogleLinked && p9.isAppleLinked)
+                  Column(children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Google ID', style: th.labelLarge,), Text(p9.googleEmail == null ? 'Not Linked' : p9.googleEmail!.length > 15 ? '${p9.googleEmail!.substring(0, 5)} ... ${p9.googleEmail!.substring(p9.googleEmail!.length - 10)}' : p9.googleEmail!)]),
+                    const SizedBox(height: 10,),
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Apple ID', style: th.labelLarge,), Text(p9.appleEmail == null ? 'Not Linked' : p9.appleEmail!.length > 15 ? '${p9.appleEmail!.substring(0, 5)} ... ${p9.appleEmail!.substring(p9.appleEmail!.length - 10)}' : p9.appleEmail!)]),
+                    const SizedBox(height: 10,),
+                  ],)
+                else if(p9.isGoogleLinked)
+                  Column(children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Google ID', style: th.labelLarge,), Text(p9.googleEmail == null ? 'Not Linked' : p9.googleEmail!.length > 15 ? '${p9.googleEmail!.substring(0, 5)} ... ${p9.googleEmail!.substring(p9.googleEmail!.length - 10)}' : p9.googleEmail!)]),
+                    const SizedBox(height: 10,),
+                  ],)
+                else if(p9.isAppleLinked)
+                  Column(children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Apple ID', style: th.labelLarge,), Text(p9.appleEmail == null ? 'Not Linked' : p9.appleEmail!.length > 15 ? '${p9.appleEmail!.substring(0, 5)} ... ${p9.appleEmail!.substring(p9.appleEmail!.length - 10)}' : p9.appleEmail!)]),
+                    const SizedBox(height: 10,),
+                  ],)
+                else
+                  SizedBox(),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('BMI', style: th.labelLarge,), Text('${p1.bmi}-${p1.category}')]),
+                const SizedBox(height: 10,),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Calorie Intake', style: th.labelLarge,), Text('~${p4.tdee!.round()} kcal')]),
+                const SizedBox(height: 10,),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Fundamental', style: th.labelLarge,), Text(p5.fundType)]),
+                const SizedBox(height: 10,),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Current goal', style: th.labelLarge,), Text(p5.goalType!)]),
+                const SizedBox(height: 10,),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Duration of plan', style: th.labelLarge,), Text(p5.planType)]),
+                const SizedBox(height: 10,),
           ],),
-          const SizedBox(height: 10,),
+          const SizedBox(height: 15,),
           GestureDetector(
             onTap: (){
               setState(() {
@@ -3714,12 +3815,32 @@ class _SignupPageTenState extends State<SignupPageTen> {
                   children: [
                   RichText(text: TextSpan(children: [
                     TextSpan(text: 'Unit of Measurement is ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                    TextSpan(text: unitIsMetric ? 'Metric' : 'Imperial', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                    TextSpan(text: unitIsMetric ? 'Metric' : 'Imperial', style: TextStyle(color: CustomColors.orangePrimary(context), fontWeight: FontWeight.w600)),
                   ])),
-                  Text('Tap to change'),
+                    const SizedBox(height: 5,),
+                    Text(unitIsMetric ? 'kg . grams' : 'lbs . oz', style: th.labelSmall,),
+                  const SizedBox(height: 10,),
+                  Text('Tap to change', style: th.labelMedium,),
                 ],),
               ),
             ),
+          ),
+          const SizedBox(height: 10,),
+          CheckboxListTile(
+              controlAffinity: ListTileControlAffinity.leading,
+              title: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Get Reminders'),
+                    const SizedBox(width: 10,),
+                    Icon(Icons.notifications_active),
+                  ]),
+              value: notificationsIsOn,
+              onChanged: (bool? value) {
+                setState(() {
+                  notificationsIsOn = value!;
+                });
+              }
           ),
           const SizedBox(height: 30,),
           Padding(
@@ -3729,7 +3850,7 @@ class _SignupPageTenState extends State<SignupPageTen> {
                 minimumSize: Size(double.infinity, 50),
               ),
               onPressed: handleNext,
-              child: Text("Next",),
+              child: Text("Go To Dashboard",),
             ),
           ),
         ],),

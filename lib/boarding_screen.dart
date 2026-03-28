@@ -233,7 +233,7 @@ class _SignupPageState extends State<SignupPage> {
   SignupPageSevenData pageSeven = SignupPageSevenData();
   SignupPageEightData pageEight = SignupPageEightData();
   SignupPageNineData pageNine = SignupPageNineData();
-  SignUpPageTenData pageTen = SignUpPageTenData();
+  SignupPageTenData pageTen = SignupPageTenData();
 
   final PageController _pageController = PageController();
   final ScrollController _timelineController = ScrollController();
@@ -266,8 +266,6 @@ class _SignupPageState extends State<SignupPage> {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
-    } else {
-      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 

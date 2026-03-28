@@ -1,9 +1,12 @@
+import 'package:core_care/data_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 import 'package:core_care/main.dart';
 import 'package:core_care/profile_decoration.dart';
 import 'package:core_care/decoration.dart';
+import 'package:provider/provider.dart';
 import 'home_screen.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -296,7 +299,21 @@ class _ProfilePageState extends State<ProfilePage> {
                                       context,
                                     ).colorScheme.error,
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () async{
+                                    try{
+                                      await context.read<DataProvider>().deleteUserAccount();
+                                      await FirebaseAuth.instance.currentUser?.delete();
+                                      await FirebaseAuth.instance.signOut();
+                                      if(context.mounted){
+                                        Navigator.of(context).pushNamedAndRemoveUntil('/auth', (route) => false);
+                                      }
+                                    }catch(e){
+                                      if(context.mounted){
+                                        Navigator.of(context).pop();
+                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete account: $e')));
+                                      }
+                                    }
+                                  },
                                   child: Text('Delete'),
                                 ),
                               ],
