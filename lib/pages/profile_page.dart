@@ -19,34 +19,75 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<DataProvider>().currentUser!;
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
             SliverPersistentHeader(
-                pinned: true,
-                floating: false,
-                delegate: ProfileHeader(maxHeight: MediaQuery.of(context).size.height * 0.3, minHeight: MediaQuery.of(context).size.height * 0.1),
+              pinned: true,
+              floating: false,
+              delegate: ProfileHeader(maxHeight: MediaQuery.of(context).size.height * 0.3, minHeight: MediaQuery.of(context).size.height * 0.1),
             ),
             SliverPersistentHeader(delegate: SpacerDelegate(maxSpace: 170, minSpace: 20)),
             SliverPadding(
               padding: const EdgeInsetsGeometry.symmetric(horizontal: 15),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  profileTile(
-                    Emoji.profile,
-                    'Personal Information',
-                    'Identity and body stats',
-                    ProfileWidgets.profileList(context),
-                    "Personal info",
-                    EditSheets.profileEdit,
-                    context,
+                  ExpansionTile(
+                    collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
+                    collapsedShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide.none,
+                    ),
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                    ),
+                    leading: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Emoji.profile,
+                    ),
+                    title: Text('Personal Information'),
+                    subtitle: Text('Name & info', style: Theme.of(context).textTheme.labelSmall),
+                    children: [
+                      Divider(height: 1, color: CustomColors.greyDark(context)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        child: Column(
+                          children: [
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Name', style: Theme.of(context).textTheme.labelLarge,), Text(user.name, style: Theme.of(context).textTheme.bodyMedium,)],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Age', style: Theme.of(context).textTheme.labelLarge,), Text('${user.age}yrs', style: Theme.of(context).textTheme.bodyMedium,)],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Gender', style: Theme.of(context).textTheme.labelLarge,), Text(user.gender, style: Theme.of(context).textTheme.bodyMedium,)],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Group', style: Theme.of(context).textTheme.labelLarge,), Text(user.ageGroup, style: Theme.of(context).textTheme.bodyMedium,)],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   profileTile(
                     Emoji.stat,
                     'Body Stats',
-                    'Identity and body stats',
+                    'Height, Weight & BMI',
                     ProfileWidgets.statList(context),
                     "Body Stats",
                     EditSheets.statEdit,
@@ -117,51 +158,51 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Divider(height: 1, color: CustomColors.greyDark(context)),
                       Container(
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                         child: Column(
                           children: [
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Username', style: Theme.of(context).textTheme.labelLarge,), Text('user_new', style: Theme.of(context).textTheme.bodyMedium,)],),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Username', style: Theme.of(context).textTheme.labelLarge,), Text(user.username, style: Theme.of(context).textTheme.bodyMedium,)],),
                             const SizedBox(height: 8,),
                             Divider(height: 0.5, color: CustomColors.greyDark(context),),
                             const SizedBox(height: 8,),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('UID', style: Theme.of(context).textTheme.labelLarge,), Text('#3334jhj764', style: Theme.of(context).textTheme.bodyMedium,)],),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Email', style: Theme.of(context).textTheme.labelLarge,), Text(user.email, style: Theme.of(context).textTheme.bodyMedium,)],),
                             const SizedBox(height: 8,),
                             Divider(height: 0.5, color: CustomColors.greyDark(context),),
                             const SizedBox(height: 8,),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Mobile no.', style: Theme.of(context).textTheme.labelLarge,), Text('00275767832321', style: Theme.of(context).textTheme.bodyMedium,)],),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Mobile no.', style: Theme.of(context).textTheme.labelLarge,), Text(user.phone ?? 'None', style: Theme.of(context).textTheme.bodyMedium,)],),
                             const SizedBox(height: 8,),
                             Divider(height: 0.5, color: CustomColors.greyDark(context),),
                             const SizedBox(height: 15,),
-                              Wrap(
-                                alignment: WrapAlignment.center,
-                                spacing: 15,
-                                runSpacing: 10,
-                                children: [
-                                  OutlinedButton(onPressed: (){}, child: Padding(
-                                    padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
-                                    child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [Icon(Icons.person), const SizedBox(width: 10,),Text('Edit username')]),
-                                  )),
-                                  const SizedBox(width: 20,),
-                                  OutlinedButton(onPressed: (){}, child: Padding(padding: const EdgeInsetsGeometry.symmetric(vertical: 15),child: Row(
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 15,
+                              runSpacing: 10,
+                              children: [
+                                OutlinedButton(onPressed: (){}, child: Padding(
+                                  padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
+                                  child: Row(
                                       mainAxisSize: MainAxisSize.min,
-                                      children: [Icon(Icons.phone), const SizedBox(width: 10,),Text('Edit mobile no')]))),
-                                  OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(
-                                          color: CustomColors.orangeOutline(context),
-                                        ),
-                                        foregroundColor: CustomColors.orangeOutline(context),
+                                      children: [Icon(Icons.person), const SizedBox(width: 10,),Text('Edit username')]),
+                                )),
+                                const SizedBox(width: 20,),
+                                OutlinedButton(onPressed: (){}, child: Padding(padding: const EdgeInsetsGeometry.symmetric(vertical: 15),child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [Icon(Icons.phone), const SizedBox(width: 10,),Text('Edit mobile no')]))),
+                                OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                        color: CustomColors.orangeOutline(context),
                                       ),
-                                      onPressed: (){}, child: Padding(
-                                    padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [Icon(Icons.edit), const SizedBox(width: 10,), Text('Change Password')],),
-                                  )),
-                                ],
-                              ),
+                                      foregroundColor: CustomColors.orangeOutline(context),
+                                    ),
+                                    onPressed: (){}, child: Padding(
+                                  padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [Icon(Icons.edit), const SizedBox(width: 10,), Text('Change Password')],),
+                                )),
+                              ],
+                            ),
                             const SizedBox(height: 20,),
                             Container(
                               decoration: BoxDecoration(
@@ -347,14 +388,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget profileTile(
-    Image img,
-    String title,
-    String sub,
-    Widget list,
-    String edit,
-    void Function(BuildContext) function,
-    BuildContext context,
-  ) {
+      Image img,
+      String title,
+      String sub,
+      Widget list,
+      String edit,
+      void Function(BuildContext) function,
+      BuildContext context,
+      ) {
     return ExpansionTile(
       collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
       collapsedShape: RoundedRectangleBorder(
@@ -406,10 +447,10 @@ class ProfileHeader extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
+      BuildContext context,
+      double shrinkOffset,
+      bool overlapsContent,
+      ) {
     final isCollapsed = shrinkOffset >= (maxExtent - minExtent);
     final progress = (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
 
@@ -443,7 +484,7 @@ class SpacerDelegate extends SliverPersistentHeaderDelegate{
   SpacerDelegate({
     required this.maxSpace,
     required this.minSpace,
-});
+  });
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     final space = (maxExtent - shrinkOffset).clamp(minExtent, maxExtent);
@@ -757,18 +798,18 @@ class _CollapsedProfileHeaderState extends State<CollapsedProfileHeader> {
             radius: 20,
             backgroundColor: Theme.of(context).colorScheme.surface,
             child: !ExpandedProfileHeader.hasImage ?
-              CircleAvatar(
-                backgroundColor: CustomColors.greyDark(context),
-                radius: 37,
-                child: Icon(Icons.person, color: CustomColors.greyLight(context),),
-              )
-            :
-              CircleAvatar(
-                radius: 37,
-                foregroundImage: MemoryImage(
-                  ExpandedProfileHeader.imageBytes,
-                ),
+            CircleAvatar(
+              backgroundColor: CustomColors.greyDark(context),
+              radius: 37,
+              child: Icon(Icons.person, color: CustomColors.greyLight(context),),
+            )
+                :
+            CircleAvatar(
+              radius: 37,
+              foregroundImage: MemoryImage(
+                ExpandedProfileHeader.imageBytes,
               ),
+            ),
           ),
           const SizedBox(width: 15,),
           Text('USER', style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600)),

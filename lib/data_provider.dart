@@ -11,50 +11,60 @@ class TimeProvider extends ChangeNotifier {
   bool _is24Hour = true;
 
   DateTime get now => _now;
+
   bool get is24Hour => _is24Hour;
 
-  TimeProvider(){
-    _timer = Timer.periodic(const Duration(seconds: 1), (_){
+  TimeProvider() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       _now = DateTime.now();
       notifyListeners();
     });
   }
 
-  void toggleFormat(){
+  void toggleFormat() {
     _is24Hour = !_is24Hour;
     notifyListeners();
   }
 
-  String get formatTime{
+  String get formatTime {
     int hour = _now.hour;
     final minute = _now.minute.toString().padLeft(2, '0');
-    if(_is24Hour){
-      return '${hour.toString().padLeft(2,'0')}:$minute';
-    }
-    else{
+    if (_is24Hour) {
+      return '${hour.toString().padLeft(2, '0')}:$minute';
+    } else {
       final period = hour >= 12 ? 'PM' : 'AM';
       hour = hour % 12;
-      if(hour == 0) hour = 12;
+      if (hour == 0) hour = 12;
       return '${hour.toString().padLeft(2, '0')}:$minute $period';
     }
   }
 
-  String get formatDate{
+  String get formatDate {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
-      'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[_now.month - 1]} ${_now.day}, ${_now.year}';
   }
-  
+
   @override
   void dispose() {
-    super.dispose();
     _timer.cancel();
+    super.dispose();
   }
 }
 
-class UserData{
+class UserData {
   final String uid;
   final String name;
   final String username;
@@ -66,6 +76,8 @@ class UserData{
   final String? appleEmail;
   final String? phone;
   final String? address;
+  final double heightCm;
+  final double weightKg;
   final double bmi;
   final String bmiCategory;
   final double bmr;
@@ -100,7 +112,54 @@ class UserData{
   final bool wantMetricUnit;
   final DateTime createdAt;
 
-  UserData({required this.uid, required this.name, required this.username, required this.email, required this.password, this.googleId, this.appleId, this.googleEmail, this.appleEmail, this.phone, this.address, required this.bmi, required this.bmiCategory, required this.bmr, required this.tdee, required this.ageGroup, required this.age, required this.gender, required this.fitType, required this.fundType, required this.goalType, required this.planType, required this.workType, required this.activityLevel, required this.sleepPattern, required this.selectedMeds, required this.selectedInjuries, required this.styleType, required this.equipType, required this.placeType, required this.dayType, required this.durationType, required this.timeType, required this.freeType, required this.mealType, required this.dietType, required this.isHalal, required this.regionType, required this.selectedAllergens, required this.selectedIntolerances, required this.selectedDislikes, required this.wantNotifications, required this.wantMetricUnit, required this.createdAt});
+  UserData({
+    required this.uid,
+    required this.name,
+    required this.username,
+    required this.email,
+    required this.password,
+    this.googleId,
+    this.appleId,
+    this.googleEmail,
+    this.appleEmail,
+    this.phone,
+    this.address,
+    required this.heightCm,
+    required this.weightKg,
+    required this.bmi,
+    required this.bmiCategory,
+    required this.bmr,
+    required this.tdee,
+    required this.ageGroup,
+    required this.age,
+    required this.gender,
+    required this.fitType,
+    required this.fundType,
+    required this.goalType,
+    required this.planType,
+    required this.workType,
+    required this.activityLevel,
+    required this.sleepPattern,
+    required this.selectedMeds,
+    required this.selectedInjuries,
+    required this.styleType,
+    required this.equipType,
+    required this.placeType,
+    required this.dayType,
+    required this.durationType,
+    required this.timeType,
+    required this.freeType,
+    required this.mealType,
+    required this.dietType,
+    required this.isHalal,
+    required this.regionType,
+    required this.selectedAllergens,
+    required this.selectedIntolerances,
+    required this.selectedDislikes,
+    required this.wantNotifications,
+    required this.wantMetricUnit,
+    required this.createdAt,
+  });
 
   factory UserData.fromSignup({
     required String uid,
@@ -114,70 +173,174 @@ class UserData{
     required SignupPageEightData p8,
     required SignupPageNineData p9,
     required SignupPageTenData p10,
-  }){
-    String hashPassword(String password){
+  }) {
+    final hCm = p1.toHeightCm(
+      p1.height!,
+      p1.isHeightFt,
+      inches: p1.heightInches ?? 0,
+    );
+    final wKg = p1.toWeightKg(p1.weight!, p1.isWeightKg);
+    String hashPassword(String password) {
       final bytes = utf8.encode(password);
       return sha256.convert(bytes).toString();
     }
-    return UserData(uid: uid, name: p1.name!, username: p9.username!, email: p9.email!, password: hashPassword(p9.password!), googleId:  p9.googleId, appleId: p9.appleId, googleEmail: p9.googleEmail, appleEmail: p9.appleEmail, phone: p9.phone, address: p9.address,
-        bmi: p1.bmi!, bmiCategory: p1.category!, bmr: p1.bmr!, tdee: p4.tdee!, ageGroup: p1.ageGroup!, age: p1.age!, gender: p1.gender == 1 ? 'Male' : 'Female', fitType: p4.fitType, fundType: p5.fundType, goalType: p5.goalType!, planType: p5.planType, workType: p3.workType, activityLevel: p3.activityLevel, sleepPattern: p3.sleepPattern, selectedMeds: p2.selectedMeds, selectedInjuries: p2.selectedInjuries, styleType: p6.styleType, equipType: p6.equipType, placeType: p6.placeType, dayType: p6.dayType, durationType: p6.durationType, timeType: p6.timeType, freeType: p6.freeType, mealType: p7.mealType, dietType: p7.dietType, isHalal: p7.isHalal, regionType: p7.regionType, selectedAllergens: p7.selectedAllergens, selectedIntolerances: p8.selectedIntolerances, selectedDislikes: p8.selectedDislikes, wantNotifications: p10.wantNotifications, wantMetricUnit: p10.wantMetricUnit, createdAt: DateTime.now());
+
+    return UserData(
+      uid: uid,
+      name: p1.name!,
+      username: p9.username!,
+      email: p9.email!,
+      password: hashPassword(p9.password!),
+      googleId: p9.googleId,
+      appleId: p9.appleId,
+      googleEmail: p9.googleEmail,
+      appleEmail: p9.appleEmail,
+      phone: p9.phone,
+      address: p9.address,
+      heightCm: double.parse(hCm.toStringAsFixed(1)),
+      weightKg: double.parse(wKg.toStringAsFixed(1)),
+      bmi: p1.bmi!,
+      bmiCategory: p1.category!,
+      bmr: p1.bmr!,
+      tdee: p4.tdee!,
+      ageGroup: p1.ageGroup!,
+      age: p1.age!,
+      gender: p1.gender == 1 ? 'Male' : 'Female',
+      fitType: p4.fitType,
+      fundType: p5.fundType,
+      goalType: p5.goalType!,
+      planType: p5.planType,
+      workType: p3.workType,
+      activityLevel: p3.activityLevel,
+      sleepPattern: p3.sleepPattern,
+      selectedMeds: p2.selectedMeds,
+      selectedInjuries: p2.selectedInjuries,
+      styleType: p6.styleType,
+      equipType: p6.equipType,
+      placeType: p6.placeType,
+      dayType: p6.dayType,
+      durationType: p6.durationType,
+      timeType: p6.timeType,
+      freeType: p6.freeType,
+      mealType: p7.mealType,
+      dietType: p7.dietType,
+      isHalal: p7.isHalal,
+      regionType: p7.regionType,
+      selectedAllergens: p7.selectedAllergens,
+      selectedIntolerances: p8.selectedIntolerances,
+      selectedDislikes: p8.selectedDislikes,
+      wantNotifications: p10.wantNotifications,
+      wantMetricUnit: p10.wantMetricUnit,
+      createdAt: DateTime.now(),
+    );
   }
 
-  Map<String, dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
-      'uid' : uid,
-      'name' : name,
-      'username' : username,
-      'email' : email,
-      'password' : password,
-      'googleId' : googleId,
-      'appleId' : appleId,
-      'googleEmail' : googleEmail,
-      'appleEmail' : appleEmail,
-      'phone' : phone,
-      'address' : address,
-      'bmi' : bmi,
-      'bmiCategory' : bmiCategory,
-      'bmr' : bmr,
-      'tdee' : tdee,
-      'group' : ageGroup,
-      'age' : age,
-      'gender' : gender,
-      'fitness' : fitType,
-      'fundamental' : fundType,
-      'goal' : goalType,
-      'plan' : planType,
-      'work' : workType,
-      'activity' : activityLevel,
-      'sleepPattern' : sleepPattern,
-      'medicals' : selectedMeds,
-      'injuries' : selectedInjuries,
-      'exercise' : styleType,
-      'equipment' : equipType,
-      'place' : placeType,
-      'workoutDays' : dayType,
-      'duration' : durationType,
-      'time' : timeType,
-      'freeDays' : freeType,
-      'mealsPerDay' : mealType,
-      'dietPref' : dietType,
-      'isHalal' : isHalal,
-      'regions' : regionType,
-      'allergens' : selectedAllergens,
-      'intolerances' : selectedIntolerances,
-      'dislikes' : selectedDislikes,
-      'notifications' : wantNotifications,
-      'unit' : wantMetricUnit,
-      'createdAt' : createdAt.toIso8601String(),
+      'uid': uid,
+      'name': name,
+      'username': username,
+      'email': email,
+      'password': password,
+      'googleId': googleId,
+      'appleId': appleId,
+      'googleEmail': googleEmail,
+      'appleEmail': appleEmail,
+      'phone': phone,
+      'address': address,
+      'height': heightCm,
+      'weight': weightKg,
+      'bmi': bmi,
+      'bmiCategory': bmiCategory,
+      'bmr': bmr,
+      'tdee': tdee,
+      'group': ageGroup,
+      'age': age,
+      'gender': gender,
+      'fitness': fitType,
+      'fundamental': fundType,
+      'goal': goalType,
+      'plan': planType,
+      'work': workType,
+      'activity': activityLevel,
+      'sleepPattern': sleepPattern,
+      'medicals': selectedMeds,
+      'injuries': selectedInjuries,
+      'exercise': styleType,
+      'equipment': equipType,
+      'place': placeType,
+      'workoutDays': dayType,
+      'duration': durationType,
+      'time': timeType,
+      'freeDays': freeType,
+      'mealsPerDay': mealType,
+      'dietPref': dietType,
+      'isHalal': isHalal,
+      'regions': regionType,
+      'allergens': selectedAllergens,
+      'intolerances': selectedIntolerances,
+      'dislikes': selectedDislikes,
+      'notifications': wantNotifications,
+      'unit': wantMetricUnit,
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 
-  factory UserData.fromMap(Map<String, dynamic> map){
-    return UserData(uid: map['uid'] ?? '', name: map['name'] ?? '', username: map['username'] ?? '', email: map['email'] ?? '', password: map['password'] ?? '', bmi: (map['bmi'] ?? 0).toDouble(), bmiCategory: map['bmiCategory'] ?? '', bmr: (map['bmr'] ?? 0).toDouble(), tdee: (map['tdee'] ?? 0).toDouble(), ageGroup: map['group'] ?? '', age: map['age'] ?? 0, gender: map['gender'] ?? '', fitType: map['fitness'] ?? '', fundType: map['fundamental'] ?? '', goalType: map['goal'], planType: map['plan'] ?? '', workType: map['work'] ?? 0, activityLevel: map['activity'] ?? '', sleepPattern: map['sleepPattern'] ?? '', selectedMeds: List<String>.from(map['medicals'] ?? []), selectedInjuries: List<String>.from(map['injuries'] ?? []), styleType: List<String>.from(map['exercise'] ?? []), equipType: map['equipment'] ?? '', placeType: map['place'] ?? '', dayType: map['workoutDays'] ?? '', durationType: map['duration'] ?? '', timeType: map['time'] ?? [], freeType: map['freeDays'] ?? [], mealType: map['mealsPerDay'], dietType: map['dietPref'] ?? '', isHalal: map['isHalal'] ?? false, regionType: List<String>.from(map['regions'] ?? []), selectedAllergens: List<String>.from(map['allergens'] ?? []), selectedIntolerances: List<String>.from(map['intolerances'] ?? []), selectedDislikes: List<String>.from(map['dislikes'] ?? []), wantNotifications: map['notifications'] ?? false, wantMetricUnit: map['unit'] ?? true, createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()));
+  factory UserData.fromMap(Map<String, dynamic> map) {
+    return UserData(
+      uid: map['uid'] ?? '',
+      name: map['name'] ?? '',
+      username: map['username'] ?? '',
+      email: map['email'] ?? '',
+      googleId: map['googleId'] ?? '',
+      googleEmail: map['googleEmail'] ?? '',
+      appleId: map['appleId'] ?? '',
+      appleEmail: map['appleEmail'] ?? '',
+      phone: map['phone'] ?? 'None',
+      address: map['address'] ?? '',
+      password: map['password'] ?? '',
+      heightCm: (map['height'] ?? 0).toDouble(),
+      weightKg: (map['weight'] ?? 0).toDouble(),
+      bmi: (map['bmi'] ?? 0).toDouble(),
+      bmiCategory: map['bmiCategory'] ?? '',
+      bmr: (map['bmr'] ?? 0).toDouble(),
+      tdee: (map['tdee'] ?? 0).toDouble(),
+      ageGroup: map['group'] ?? '',
+      age: map['age'] ?? 0,
+      gender: map['gender'] ?? '',
+      fitType: map['fitness'] ?? '',
+      fundType: map['fundamental'] ?? '',
+      goalType: map['goal'],
+      planType: map['plan'] ?? '',
+      workType: map['work'] ?? 0,
+      activityLevel: map['activity'] ?? '',
+      sleepPattern: map['sleepPattern'] ?? '',
+      selectedMeds: List<String>.from(map['medicals'] ?? []),
+      selectedInjuries: List<String>.from(map['injuries'] ?? []),
+      styleType: List<String>.from(map['exercise'] ?? []),
+      equipType: map['equipment'] ?? '',
+      placeType: map['place'] ?? '',
+      dayType: map['workoutDays'] ?? '',
+      durationType: map['duration'] ?? '',
+      timeType: List<String>.from(map['time'] ?? []),
+      freeType: List<String>.from(map['freeDays'] ?? []),
+      mealType: map['mealsPerDay'],
+      dietType: map['dietPref'] ?? '',
+      isHalal: map['isHalal'] ?? false,
+      regionType: List<String>.from(map['regions'] ?? []),
+      selectedAllergens: List<String>.from(map['allergens'] ?? []),
+      selectedIntolerances: List<String>.from(map['intolerances'] ?? []),
+      selectedDislikes: List<String>.from(map['dislikes'] ?? []),
+      wantNotifications: map['notifications'] ?? false,
+      wantMetricUnit: map['unit'] ?? true,
+      createdAt: DateTime.parse(
+        map['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+    );
   }
 }
 
-class RecommendationData{
+class RecommendationData {
   final int? gender;
   final String? category;
   final double? bmr;
@@ -187,6 +350,7 @@ class RecommendationData{
   final int? sleep;
   final int? fitness;
   final double? tdee;
+
   RecommendationData({
     this.gender,
     this.category,
@@ -212,48 +376,57 @@ class DataProvider extends ChangeNotifier {
   SignupPageNineData pageNine = SignupPageNineData();
   SignupPageTenData pageTen = SignupPageTenData();
 
-  void updatePageOne(SignupPageOneData data){
+  void updatePageOne(SignupPageOneData data) {
     pageOne = data;
     notifyListeners();
   }
-  void updatePageTwo(SignupPageTwoData data){
+
+  void updatePageTwo(SignupPageTwoData data) {
     pageTwo = data;
     notifyListeners();
   }
-  void updatePageThree(SignupPageThreeData data){
+
+  void updatePageThree(SignupPageThreeData data) {
     pageThree = data;
     notifyListeners();
   }
-  void updatePageFour(SignupPageFourData data){
+
+  void updatePageFour(SignupPageFourData data) {
     pageFour = data;
     notifyListeners();
   }
-  void updatePageFive(SignupPageFiveData data){
+
+  void updatePageFive(SignupPageFiveData data) {
     pageFive = data;
     notifyListeners();
   }
-  void updatePageSix(SignupPageSixData data){
+
+  void updatePageSix(SignupPageSixData data) {
     pageSix = data;
     notifyListeners();
   }
-  void updatePageSeven(SignupPageSevenData data){
+
+  void updatePageSeven(SignupPageSevenData data) {
     pageSeven = data;
     notifyListeners();
   }
-  void updatePageEight(SignupPageEightData data){
+
+  void updatePageEight(SignupPageEightData data) {
     pageEight = data;
     notifyListeners();
   }
-  void updatePageNine(SignupPageNineData data){
+
+  void updatePageNine(SignupPageNineData data) {
     pageNine = data;
     notifyListeners();
   }
-  void updatePageTen(SignupPageTenData data){
+
+  void updatePageTen(SignupPageTenData data) {
     pageTen = data;
     notifyListeners();
   }
 
-  RecommendationData get recommendationData{
+  RecommendationData get recommendationData {
     return RecommendationData(
       gender: pageOne.gender!,
       category: pageOne.category!,
@@ -266,17 +439,18 @@ class DataProvider extends ChangeNotifier {
       tdee: pageFour.tdee!,
     );
   }
-  RuleResult get finalRecommendation{
+
+  RuleResult get finalRecommendation {
     final d = recommendationData;
-    for(final rule in rules){
-      if(rule.condition(d)){
+    for (final rule in rules) {
+      if (rule.condition(d)) {
         return rule.result;
       }
     }
     return RuleResult(code: 5, profile: 'Starter');
   }
 
-  void reset(){
+  void reset() {
     pageOne = SignupPageOneData();
     pageTwo = SignupPageTwoData();
     pageThree = SignupPageThreeData();
@@ -293,85 +467,207 @@ class DataProvider extends ChangeNotifier {
   UserData? currentUser;
   bool isFetchingUser = false;
 
-  Future<void> fetchUser(String uid) async{
+  Future<void> fetchUser(String uid) async {
     isFetchingUser = true;
     notifyListeners();
-    try{
-      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      if(doc.exists){
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+      if (doc.exists) {
         currentUser = UserData.fromMap(doc.data()!);
       }
-    }catch(e){
+    } catch (e) {
       debugPrint('fetchUser error: $e');
     }
     isFetchingUser = false;
     notifyListeners();
   }
 
-  void clearUser(){
+  void clearUser() {
     currentUser = null;
     notifyListeners();
   }
-  Future<void> deleteUserAccount() async{
-    if(currentUser == null) return;
-    try{
-      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).delete();
-    }catch(e){
+
+  Future<void> deleteUserAccount() async {
+    if (currentUser == null) return;
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .delete();
+    } catch (e) {
       debugPrint('deleteUserAccount error: $e');
       rethrow;
     }
   }
 }
 
-class Rule{
+class Rule {
   final bool Function(RecommendationData data) condition;
   final RuleResult result;
 
-  Rule({
-    required this.condition,
-    required this.result,
-  });
+  Rule({required this.condition, required this.result});
 }
 
-class RuleResult{
+class RuleResult {
   final int code;
   final String profile;
-  RuleResult({
-    required this.code,
-    required this.profile,
-  });
+
+  RuleResult({required this.code, required this.profile});
 }
 
 final List<Rule> rules = [
-  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior', result: RuleResult(code: 0, profile: 'Energy Depleted'),),
-  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Teen', result: RuleResult(code: 0, profile: 'Undernourished'),),
-  Rule(condition: (d) => d.category == 'Underweight' && d.bmr! < 1400 && (d.ageGroup == 'Young Adult' || d.ageGroup == 'Adult'), result: RuleResult(code: 0, profile: 'Underfueled'),),
-  Rule(condition: (d) => d.category == 'Obese' && d.work == 0 && d.ageGroup == 'Adult', result: RuleResult(code: 3, profile: 'Obese Adult'),),
-  Rule(condition: (d) => d.category == 'Obese' && d.work == 0 && d.ageGroup == 'Young Adult', result: RuleResult(code: 3, profile: 'Overweight Starter'),),
-  Rule(condition: (d) => d.sleep == 0 && d.tdee! > 2600 && d.ageGroup == 'Adult', result: RuleResult(code: 0, profile: 'Sleep Deprived'),),
-  Rule(condition: (d) => d.sleep == 0 && d.tdee! > 2600 && d.ageGroup == 'Young Adult', result: RuleResult(code: 0, profile: 'High Output'),),
-  Rule(condition: (d) => (d.category == 'Overweight' || d.category == 'Obese') && d.active == 0 && d.ageGroup == 'Senior', result: RuleResult(code: 2, profile: 'Stiff Retiree'),),
-  Rule(condition: (d) => d.fitness == 0 && d.ageGroup == 'Teen', result: RuleResult(code: 5, profile: 'Inactive Student'),),
-  Rule(condition: (d) => (d.fitness == 1 || d.fitness == 2) && d.ageGroup == 'Teen', result: RuleResult(code: 6, profile: 'Developing Athlete'),),
-  Rule(condition: (d) => d.gender == 1 && d.active == 2 && d.ageGroup == 'Young Adult' && d.fitness == 2, result: RuleResult(code: 6, profile: 'Peak Performer'),),
-  Rule(condition: (d) => d.gender == 1 && d.active == 2 && d.ageGroup == 'Young Adult', result: RuleResult(code: 1, profile: 'Gym Goer'),),
-  Rule(condition: (d) => d.gender == 1 && d.work == 1 && d.ageGroup == 'Young Adult', result: RuleResult(code: 5, profile: 'Desk Bound'),),
-  Rule(condition: (d) => d.gender == 2 && d.ageGroup == 'Young Adult', result: RuleResult(code: 4, profile: 'Wellness Seeker'),),
-  Rule(condition: (d) => d.category == 'Normal' && d.gender == 1 && d.active == 2 && d.ageGroup == 'Adult', result: RuleResult(code: 1, profile: 'Adult Rebuilder'),),
-  Rule(condition: (d) => d.gender == 1 && d.ageGroup == 'Adult', result: RuleResult(code: 3, profile: 'Heavy Carrier'),),
-  Rule(condition: (d) => d.category == 'Overweight' && d.gender == 2 && d.ageGroup == 'Adult', result: RuleResult(code: 4, profile: 'Metabolic Risk'),),
-  Rule(condition: (d) => d.gender == 2 && d.ageGroup == 'Adult', result: RuleResult(code: 2, profile: 'Stiff Mover'),),
-  Rule(condition: (d) => d.category == 'Obese' && d.ageGroup == 'Senior', result: RuleResult(code: 4, profile: 'Metabolic Struggle'),),
-  Rule(condition: (d) => (d.fitness == 1 || d.fitness == 2) && d.active == 2 && d.ageGroup == 'Senior', result: RuleResult(code: 1, profile: 'Active Elder'),),
-  Rule(condition: (d) => d.category == 'Normal' && d.active == 1 && d.ageGroup == 'Senior', result: RuleResult(code: 3, profile: 'Senior Mover'),),
-  Rule(condition: (d) => d.ageGroup == 'Senior', result: RuleResult(code: 5, profile: 'Frail Elder'),),
-  Rule(condition: (d) => d.active == 0 && d.bmr! < 1400 , result: RuleResult(code: 0, profile: 'Depleted Mover'),),
-  Rule(condition: (d) => d.work == 0 && d.active == 0 && d.fitness == 0 , result: RuleResult(code: 5, profile: 'Sedentary Starter'),),
-  Rule(condition: (d) => d.sleep == 1 && d.work == 2, result: RuleResult(code: 2, profile: 'Overworked Mover'),),
-  Rule(condition: (d) => d.active == 2 && d.tdee! > 2600 && d.bmr! > 1800, result: RuleResult(code: 1, profile: 'High Performer'),),
-  Rule(condition: (d) => d.sleep == 3 && d.active == 0, result: RuleResult(code: 4, profile: 'Metabolic Drifter'),),
-  Rule(condition: (d) => d.fitness == 0, result: RuleResult(code: 5, profile: 'Grounded Beginner'),),
-  Rule(condition: (d) => d.fitness == 1, result: RuleResult(code: 1, profile: 'Steady Builder'),),
-  Rule(condition: (d) => d.fitness == 2 && d.active == 2, result: RuleResult(code: 6, profile: 'Elite Performer'),),
-  Rule(condition: (d) => d.fitness == 2 && (d.active == 1 || d.active == 0), result: RuleResult(code: 3, profile: 'Controlled Mover'),),
+  Rule(
+    condition: (d) =>
+    d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior',
+    result: RuleResult(code: 0, profile: 'Energy Depleted'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Teen',
+    result: RuleResult(code: 0, profile: 'Undernourished'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.category == 'Underweight' &&
+        d.bmr! < 1400 &&
+        (d.ageGroup == 'Young Adult' || d.ageGroup == 'Adult'),
+    result: RuleResult(code: 0, profile: 'Underfueled'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.category == 'Obese' && d.work == 0 && d.ageGroup == 'Adult',
+    result: RuleResult(code: 3, profile: 'Obese Adult'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.category == 'Obese' && d.work == 0 && d.ageGroup == 'Young Adult',
+    result: RuleResult(code: 3, profile: 'Overweight Starter'),
+  ),
+  Rule(
+    condition: (d) => d.sleep == 0 && d.tdee! > 2600 && d.ageGroup == 'Adult',
+    result: RuleResult(code: 0, profile: 'Sleep Deprived'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.sleep == 0 && d.tdee! > 2600 && d.ageGroup == 'Young Adult',
+    result: RuleResult(code: 0, profile: 'High Output'),
+  ),
+  Rule(
+    condition: (d) =>
+    (d.category == 'Overweight' || d.category == 'Obese') &&
+        d.active == 0 &&
+        d.ageGroup == 'Senior',
+    result: RuleResult(code: 2, profile: 'Stiff Retiree'),
+  ),
+  Rule(
+    condition: (d) => d.fitness == 0 && d.ageGroup == 'Teen',
+    result: RuleResult(code: 5, profile: 'Inactive Student'),
+  ),
+  Rule(
+    condition: (d) =>
+    (d.fitness == 1 || d.fitness == 2) && d.ageGroup == 'Teen',
+    result: RuleResult(code: 6, profile: 'Developing Athlete'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.gender == 1 &&
+        d.active == 2 &&
+        d.ageGroup == 'Young Adult' &&
+        d.fitness == 2,
+    result: RuleResult(code: 6, profile: 'Peak Performer'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.gender == 1 && d.active == 2 && d.ageGroup == 'Young Adult',
+    result: RuleResult(code: 1, profile: 'Gym Goer'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.gender == 1 && d.work == 1 && d.ageGroup == 'Young Adult',
+    result: RuleResult(code: 5, profile: 'Desk Bound'),
+  ),
+  Rule(
+    condition: (d) => d.gender == 2 && d.ageGroup == 'Young Adult',
+    result: RuleResult(code: 4, profile: 'Wellness Seeker'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.category == 'Normal' &&
+        d.gender == 1 &&
+        d.active == 2 &&
+        d.ageGroup == 'Adult',
+    result: RuleResult(code: 1, profile: 'Adult Rebuilder'),
+  ),
+  Rule(
+    condition: (d) => d.gender == 1 && d.ageGroup == 'Adult',
+    result: RuleResult(code: 3, profile: 'Heavy Carrier'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.category == 'Overweight' && d.gender == 2 && d.ageGroup == 'Adult',
+    result: RuleResult(code: 4, profile: 'Metabolic Risk'),
+  ),
+  Rule(
+    condition: (d) => d.gender == 2 && d.ageGroup == 'Adult',
+    result: RuleResult(code: 2, profile: 'Stiff Mover'),
+  ),
+  Rule(
+    condition: (d) => d.category == 'Obese' && d.ageGroup == 'Senior',
+    result: RuleResult(code: 4, profile: 'Metabolic Struggle'),
+  ),
+  Rule(
+    condition: (d) =>
+    (d.fitness == 1 || d.fitness == 2) &&
+        d.active == 2 &&
+        d.ageGroup == 'Senior',
+    result: RuleResult(code: 1, profile: 'Active Elder'),
+  ),
+  Rule(
+    condition: (d) =>
+    d.category == 'Normal' && d.active == 1 && d.ageGroup == 'Senior',
+    result: RuleResult(code: 3, profile: 'Senior Mover'),
+  ),
+  Rule(
+    condition: (d) => d.ageGroup == 'Senior',
+    result: RuleResult(code: 5, profile: 'Frail Elder'),
+  ),
+  Rule(
+    condition: (d) => d.active == 0 && d.bmr! < 1400,
+    result: RuleResult(code: 0, profile: 'Depleted Mover'),
+  ),
+  Rule(
+    condition: (d) => d.work == 0 && d.active == 0 && d.fitness == 0,
+    result: RuleResult(code: 5, profile: 'Sedentary Starter'),
+  ),
+  Rule(
+    condition: (d) => d.sleep == 1 && d.work == 2,
+    result: RuleResult(code: 2, profile: 'Overworked Mover'),
+  ),
+  Rule(
+    condition: (d) => d.active == 2 && d.tdee! > 2600 && d.bmr! > 1800,
+    result: RuleResult(code: 1, profile: 'High Performer'),
+  ),
+  Rule(
+    condition: (d) => d.sleep == 3 && d.active == 0,
+    result: RuleResult(code: 4, profile: 'Metabolic Drifter'),
+  ),
+  Rule(
+    condition: (d) => d.fitness == 0,
+    result: RuleResult(code: 5, profile: 'Grounded Beginner'),
+  ),
+  Rule(
+    condition: (d) => d.fitness == 1,
+    result: RuleResult(code: 1, profile: 'Steady Builder'),
+  ),
+  Rule(
+    condition: (d) => d.fitness == 2 && d.active == 2,
+    result: RuleResult(code: 6, profile: 'Elite Performer'),
+  ),
+  Rule(
+    condition: (d) => d.fitness == 2 && (d.active == 1 || d.active == 0),
+    result: RuleResult(code: 3, profile: 'Controlled Mover'),
+  ),
 ];
