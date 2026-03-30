@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:core_care/data_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -518,19 +520,37 @@ class ExpandedProfileHeader extends StatefulWidget {
 }
 
 class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _loadImageFromUrl();
+      setState(() {});
+    });
+  }
+  void _loadImageFromUrl(){
+    final base64 = context.read<DataProvider>().profileImageBase64;
+    if(base64 == null || base64.isEmpty) return;
+    final bytes = base64Decode(base64);
+    ExpandedProfileHeader.imageBytes = bytes;
+    ExpandedProfileHeader.hasImage = true;
+  }
+
   Future<void> pickImage() async {
     final imagePicker = ImagePicker();
     final pickedImage = await imagePicker.pickImage(
-      maxHeight: 1080,
-      maxWidth: 1080,
+      maxHeight: 300,
+      maxWidth: 300,
+      imageQuality: 50,
       source: ImageSource.gallery,
     );
     if (pickedImage != null) {
-      XFile? imageFile = XFile(pickedImage.path);
-      ExpandedProfileHeader.imageBytes = await imageFile.readAsBytes();
-      setState(() {
-        ExpandedProfileHeader.hasImage = true;
-      });
+      final imageFile = await XFile(pickedImage.path).readAsBytes();
+      ExpandedProfileHeader.imageBytes = imageFile;
+      setState(() => ExpandedProfileHeader.hasImage = true);
+      if(mounted){
+        await context.read<DataProvider>().uploadProfileImage(imageFile);
+      }
     }
   }
 
@@ -567,8 +587,11 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
     );
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<DataProvider>().currentUser!;
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -601,8 +624,13 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
               child: Column(
                 children: [
                   Text(
-                    "User",
+                    user.name,
                     style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8,),
+                  Text(
+                    user.email,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   Divider(color: Theme.of(context).colorScheme.tertiary,),
                   const SizedBox(height: 20),
@@ -780,6 +808,9 @@ class CollapsedProfileHeader extends StatefulWidget {
 class _CollapsedProfileHeaderState extends State<CollapsedProfileHeader> {
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<DataProvider>();
+    final user = provider.currentUser!;
+    
     return Container(
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
@@ -797,22 +828,21 @@ class _CollapsedProfileHeaderState extends State<CollapsedProfileHeader> {
           CircleAvatar(
             radius: 20,
             backgroundColor: Theme.of(context).colorScheme.surface,
-            child: !ExpandedProfileHeader.hasImage ?
+            child: ExpandedProfileHeader.hasImage ?
             CircleAvatar(
-              backgroundColor: CustomColors.greyDark(context),
-              radius: 37,
-              child: Icon(Icons.person, color: CustomColors.greyLight(context),),
-            )
-                :
-            CircleAvatar(
-              radius: 37,
+              radius: 18,
               foregroundImage: MemoryImage(
                 ExpandedProfileHeader.imageBytes,
               ),
+            ) :
+            CircleAvatar(
+              backgroundColor: CustomColors.greyDark(context),
+              radius: 18,
+              child: Icon(Icons.person, color: CustomColors.greyLight(context),),
             ),
           ),
           const SizedBox(width: 15,),
-          Text('USER', style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600)),
+          Text(user.name, style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600)),
           Spacer(),
           Container(
             padding: const EdgeInsets.all(15),

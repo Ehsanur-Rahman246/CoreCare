@@ -22,7 +22,36 @@ class _DietScreenState extends State<DietScreen> {
       appBar: AppBar(
         leading: Icon(Symbols.dinner_dining),
         title: Text('Diet Module'),
+        actions: [
+          PopupMenuButton(
+            onSelected: (value) async {
+              switch (value) {
+                case 0:
+                  break;
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  value: 0,
+                  child: Row(
+                    children: [
+                      Icon(Icons.history_rounded),
+                      const SizedBox(width: 8),
+                      Text("History"),
+                    ],
+                  ),
+                ),
+              ];
+            },
+            icon: Icon(Icons.more_vert_rounded),
+          ),
+        ],
       ),
+      floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [FloatingActionButton.small(heroTag: 'recipe', onPressed: (){}), const SizedBox(height: 10,),FloatingActionButton.small(heroTag: 'add', onPressed: (){}),]),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: Column(
           children: [
@@ -32,7 +61,7 @@ class _DietScreenState extends State<DietScreen> {
               alignment: Alignment.centerLeft,
               child: Text(
                 'This Week',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             const SizedBox(height: 10),
@@ -55,13 +84,15 @@ class _DietScreenState extends State<DietScreen> {
                   return weekBox(text, state);
                 })
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
+
+            const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.only(left: 10),
               alignment: Alignment.centerLeft,
               child: Text(
                 'Today\'s meals',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             const SizedBox(height: 15),

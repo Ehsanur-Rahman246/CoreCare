@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_care/pages/sign_up_pages.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'dart:typed_data';
 
 class TimeProvider extends ChangeNotifier {
   late Timer _timer;
@@ -110,6 +112,9 @@ class UserData {
   final List<String> selectedDislikes;
   final bool wantNotifications;
   final bool wantMetricUnit;
+  final String language;
+  final String themeMode;
+  final bool is24Hour;
   final DateTime createdAt;
 
   UserData({
@@ -158,7 +163,7 @@ class UserData {
     required this.selectedDislikes,
     required this.wantNotifications,
     required this.wantMetricUnit,
-    required this.createdAt,
+    required this.createdAt, required this.language, required this.themeMode, required this.is24Hour,
   });
 
   factory UserData.fromSignup({
@@ -231,7 +236,7 @@ class UserData {
       selectedDislikes: p8.selectedDislikes,
       wantNotifications: p10.wantNotifications,
       wantMetricUnit: p10.wantMetricUnit,
-      createdAt: DateTime.now(),
+      createdAt: DateTime.now(), language: 'English', themeMode: 'system', is24Hour: true,
     );
   }
 
@@ -282,6 +287,9 @@ class UserData {
       'dislikes': selectedDislikes,
       'notifications': wantNotifications,
       'unit': wantMetricUnit,
+      'language' : language,
+      'theme' : themeMode,
+      'hourFormat' : is24Hour,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -333,6 +341,9 @@ class UserData {
       selectedDislikes: List<String>.from(map['dislikes'] ?? []),
       wantNotifications: map['notifications'] ?? false,
       wantMetricUnit: map['unit'] ?? true,
+      language: map['language'] ?? 'English',
+      themeMode: map['theme'] ?? 'system',
+      is24Hour: map['hourFormat'] ?? true,
       createdAt: DateTime.parse(
         map['createdAt'] ?? DateTime.now().toIso8601String(),
       ),
@@ -464,8 +475,27 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  //user data starts from here
   UserData? currentUser;
   bool isFetchingUser = false;
+  String? profileImageBase64;
+
+  ThemeMode get savedThemeMode => switch (currentUser?.themeMode ?? 'system'){
+    'light' => ThemeMode.light,
+  'dark' => ThemeMode.dark,
+  _ => ThemeMode.system,
+  };
+
+  DataProvider(){
+    _restoreSession();
+  }
+
+  Future<void> _restoreSession() async{
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if(firebaseUser != null){
+      await fetchUser(firebaseUser.uid);
+    }
+  }
 
   Future<void> fetchUser(String uid) async {
     isFetchingUser = true;
@@ -477,12 +507,56 @@ class DataProvider extends ChangeNotifier {
           .get();
       if (doc.exists) {
         currentUser = UserData.fromMap(doc.data()!);
+        profileImageBase64 = doc.data()?['profileImage'];
       }
     } catch (e) {
       debugPrint('fetchUser error: $e');
     }
     isFetchingUser = false;
     notifyListeners();
+  }
+
+  Future<String?> uploadProfileImage(Uint8List imageBytes) async{
+    if(currentUser == null) return null;
+      try{
+        final base64Image = base64Encode(imageBytes);
+        await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update({'profileImage' : base64Image});
+        profileImageBase64 = base64Image;
+        notifyListeners();
+      }catch(e){
+        debugPrint('uploadProfileImage error: $e');
+        rethrow;
+      }
+      return null;
+  }
+
+  Future<void> updateSettings({
+    bool? wantNotifications,
+    bool? wantMetricUnit,
+    String? language,
+    String? themeMode,
+    bool? is24Hour,
+  }) async{
+    if(currentUser == null) return;
+    final fields = <String, dynamic>{};
+    if(wantNotifications != null) fields['notifications'] = wantNotifications;
+    if(wantMetricUnit != null) fields['unit'] = wantMetricUnit;
+    if(language != null) fields['language'] = language;
+    if(themeMode != null) fields['theme'] = themeMode;
+    if(is24Hour != null) fields['hourFormat'] = is24Hour;
+
+    if(fields.isEmpty) return;
+
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
+
+      final updateMap = currentUser!.toMap()..addAll(fields);
+      currentUser = UserData.fromMap(updateMap);
+      notifyListeners();
+    }catch(e){
+      debugPrint('updateSettings error: $e');
+      rethrow;
+    }
   }
 
   void clearUser() {

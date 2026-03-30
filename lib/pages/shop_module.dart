@@ -16,6 +16,14 @@ class _ShopScreenState extends State<ShopScreen> {
         leading: Icon(Icons.shopping_cart_rounded),
         title: Text('Shop Module'),
       ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: SizedBox(
+            height: 50,
+            width: double.infinity,
+            child: FloatingActionButton.extended(onPressed: (){}, label: Text('Go To Cart'), icon: Icon(Icons.shopping_cart_rounded),)),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
           children: [
@@ -75,13 +83,6 @@ class _ShopScreenState extends State<ShopScreen> {
                 ],
               ),
             ),
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-              child: SizedBox(
-                  height: 50,
-                  width: double.infinity,
-                  child: FloatingActionButton.extended(onPressed: (){}, label: Text('Go To Cart'), icon: Icon(Icons.shopping_cart_rounded),)),
-            )
           ],
         ),
       ),

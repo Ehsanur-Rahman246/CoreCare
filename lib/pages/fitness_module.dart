@@ -23,7 +23,34 @@ class _FitScreenState extends State<FitScreen>
       appBar: AppBar(
         leading: Icon(Symbols.exercise),
         title: Text('Exercise Module'),
+        actions: [
+          PopupMenuButton(
+            onSelected: (value) async {
+              switch (value) {
+                case 0:
+                  break;
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  value: 0,
+                  child: Row(
+                    children: [
+                      Icon(Icons.history_rounded),
+                      const SizedBox(width: 8),
+                      Text("History"),
+                    ],
+                  ),
+                ),
+              ];
+            },
+            icon: Icon(Icons.more_vert_rounded),
+          ),
+        ],
       ),
+      floatingActionButton: Column(mainAxisAlignment: MainAxisAlignment.end, children: [FloatingActionButton.small(heroTag: 'tutorial', onPressed: (){}), const SizedBox(height: 10,),FloatingActionButton.small(heroTag: 'schedule', onPressed: (){}),]),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: Column(
           children: [
@@ -33,7 +60,7 @@ class _FitScreenState extends State<FitScreen>
               alignment: Alignment.centerLeft,
               child: Text(
                 'This Week',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             const SizedBox(height: 10),
@@ -62,7 +89,7 @@ class _FitScreenState extends State<FitScreen>
               alignment: Alignment.centerLeft,
               child: Text(
                 'Today\'s exercises',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             const SizedBox(height: 10),

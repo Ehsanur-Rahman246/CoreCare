@@ -2434,13 +2434,33 @@ class _SignupPageSixState extends State<SignupPageSix> {
       selected: styleSelected.contains(value),
       onSelected: (selected) {
         setState(() {
-          if (selected) {
-            styleSelected.add(value);
-            if (styleError != null) {
-              styleError = null;
+          const mixedValue = 9;
+          if (value == mixedValue) {
+            if (selected) {
+              styleSelected.clear();
+              styleSelected.add(mixedValue);
+              if (styleError != null) {
+                styleError = null;
+              }
+            } else {
+              styleSelected.remove(mixedValue);
             }
           } else {
-            styleSelected.remove(value);
+            if (selected) {
+              styleSelected.add(value);
+              styleSelected.remove(mixedValue);
+              if (styleError != null) {
+                styleError = null;
+              }
+            } else {
+              styleSelected.remove(value);
+            }
+          }
+          final allSelected = List.generate(9, (i) => i).every((i) =>
+              styleSelected.contains(i));
+          if (allSelected) {
+            styleSelected.clear();
+            styleSelected.add(mixedValue);
           }
         });
       },

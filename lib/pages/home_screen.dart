@@ -4,6 +4,7 @@ import 'package:core_care/pages/profile_page.dart';
 import 'package:core_care/data_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final time = context.watch<TimeProvider>();
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(heroTag: 'status', onPressed: (){}),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -595,13 +598,8 @@ class _DashboardState extends State<Dashboard> {
 }
 
 class SettingsPage extends StatefulWidget {
-  final ThemeMode currentTheme;
-  final Function(ThemeMode) onThemeChanged;
-
   const SettingsPage({
     super.key,
-    required this.currentTheme,
-    required this.onThemeChanged,
   });
 
   @override
@@ -611,15 +609,49 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   late ThemeMode themeMode;
   late bool isNotificationsOn;
-  String shownValue = 'English';
+  late String shownValue;
   late bool isMetric;
 
   @override
   void initState() {
     super.initState();
-    themeMode = widget.currentTheme;
-    isNotificationsOn = false;
-    isMetric = true;
+    final user = context.read<DataProvider>().currentUser!;
+    themeMode = switch (user.themeMode){
+      'light' => ThemeMode.light,
+    'dark' => ThemeMode.dark,
+    _ => ThemeMode.system,
+    };
+    isNotificationsOn = user.wantNotifications;
+    isMetric = user.wantMetricUnit;
+    shownValue = user.language;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final user = context.read<DataProvider>().currentUser!;
+    final hourProvider = context.read<TimeProvider>();
+    if(hourProvider.is24Hour != user.is24Hour){
+      SchedulerBinding.instance.addPostFrameCallback((_){
+        hourProvider.toggleFormat();
+      });
+    }
+  }
+
+  Future<void> _saveSettings() async{
+    final provider = context.read<DataProvider>();
+    final themeModeString = switch (themeMode){
+      ThemeMode.light => 'light',
+      ThemeMode.dark => 'dark',
+    _ => 'system',
+    };
+    await provider.updateSettings(
+      wantNotifications: isNotificationsOn,
+      wantMetricUnit: isMetric,
+      language: shownValue,
+      themeMode: themeModeString,
+      is24Hour: context.read<TimeProvider>().is24Hour,
+    );
   }
 
   @override
@@ -711,6 +743,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         setState(() {
                           isNotificationsOn = value;
                         });
+                        _saveSettings();
                       },
                     ),
                   ),
@@ -743,6 +776,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       value: hourFormat.is24Hour,
                       onChanged: (bool value) {
                         hourFormat.toggleFormat();
+                        _saveSettings();
                       },
                     ),
                   ),
@@ -785,6 +819,7 @@ class _SettingsPageState extends State<SettingsPage> {
             setState(() {
               isMetric = true;
             });
+            _saveSettings();
           },
           child: Container(
             height: 46,
@@ -810,6 +845,7 @@ class _SettingsPageState extends State<SettingsPage> {
             setState(() {
               isMetric = false;
             });
+            _saveSettings();
           },
           child: Container(
             height: 46,
@@ -849,6 +885,7 @@ class _SettingsPageState extends State<SettingsPage> {
           setState(() {
             shownValue = value!;
           });
+          _saveSettings();
         },
       ),
     );
@@ -878,7 +915,7 @@ class _SettingsPageState extends State<SettingsPage> {
         setState(() {
           themeMode = value.first;
         });
-        widget.onThemeChanged(value.first);
+        _saveSettings();
       },
     );
   }

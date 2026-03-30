@@ -6,6 +6,7 @@ import 'package:core_care/pages/login_screen.dart';
 import 'package:core_care/pages/profile_page.dart';
 import 'package:core_care/pages/shop_module.dart';
 import 'package:core_care/data_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -19,6 +20,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
   await GoogleSignIn.instance.initialize(clientId: '951551089343-jgfn96g1e3drrm51hf5ohs85bs1b2k9k.apps.googleusercontent.com');
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => TimeProvider()),
@@ -36,28 +38,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = ThemeMode.system;
-
-  void updateTheme(ThemeMode mode) {
-    setState(() {
-      _themeMode = mode;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final themeMode = context.watch<DataProvider>().savedThemeMode;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'CoreCare',
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: _themeMode,
+      themeMode: themeMode,
       home: const OnboardingScreen(),
       routes: {
         '/home': (context) => ScreenState(),
         '/profile': (context) => ProfilePage(),
-        '/settings': (context) =>
-            SettingsPage(currentTheme: _themeMode, onThemeChanged: updateTheme),
+        '/settings': (context) => SettingsPage(),
         '/login': (context) => LoginScreen(),
         '/notifications': (context) => NotificationsPage(),
         '/fit': (context) => FitScreen(),
@@ -106,7 +100,7 @@ final ThemeData lightTheme = ThemeData(
     ),
   ),
   popupMenuTheme: PopupMenuThemeData(
-    menuPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+    menuPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     elevation: 5,
     position: PopupMenuPosition.under,
@@ -181,7 +175,7 @@ final ThemeData darkTheme = ThemeData(
     ),
   ),
   popupMenuTheme: PopupMenuThemeData(
-    menuPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+    menuPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     elevation: 5,
     position: PopupMenuPosition.under,

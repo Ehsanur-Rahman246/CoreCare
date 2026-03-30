@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:core_care/data_provider.dart';
 import 'package:core_care/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -28,16 +30,16 @@ class _LoginScreenState extends State<LoginScreen> {
     if(input.isEmpty){
       setState(() {
         emailError = 'Username or email is required';
-        return;
       });
+      return;
     }
     if(password.isEmpty){
       setState(() {
         passError = 'Password is required';
-        return;
       });
+      return;
     }
-    showDialog(context: context,barrierDismissible: false, builder: (context){
+    showDialog(context: context,barrierDismissible: false, builder: (_){
       return Center(
         child: CircularProgressIndicator(),
       );
@@ -51,8 +53,8 @@ class _LoginScreenState extends State<LoginScreen> {
           if(mounted) Navigator.pop(context);
           setState(() {
             emailError = 'Username not found';
-            return;
           });
+          return;
         }
         email = query.docs.first['email'];
       }
@@ -60,7 +62,14 @@ class _LoginScreenState extends State<LoginScreen> {
         email: email,
         password: password,
       );
+      if(mounted) Navigator.of(context, rootNavigator: true).pop();
+      final user = FirebaseAuth.instance.currentUser;
+      if(user != null && mounted){
+        final dataProvider = Provider.of<DataProvider>(context, listen: false);
+        await dataProvider.fetchUser(user.uid);
+      }
     } on FirebaseAuthException catch(e){
+      if(mounted) Navigator.of(context, rootNavigator: true).pop();
       setState(() {
         switch (e.code){
           case 'user-not-found':
@@ -78,15 +87,19 @@ class _LoginScreenState extends State<LoginScreen> {
           case 'invalid-credential':
             passError = 'Incorrect email or password';
             break;
-            default:
-              emailError = 'Login failed. Please try again';
-              passError = null;
+          default:
+            emailError = 'Login failed. Please try again';
+            passError = null;
         }
       });
     }
-    if(mounted) {
-      Navigator.pop(context);
-    }
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -275,261 +288,25 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<User?>(stream: FirebaseAuth.instance.authStateChanges(), builder: (context, snapshot){
-        if(snapshot.hasData){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.hasData) {
+          final isFetching = context.watch<DataProvider>().isFetchingUser;
+          final user = context.watch<DataProvider>().currentUser;
+          if(isFetching || user == null){
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
           return ScreenState();
         }
-        else{
-          return LoginScreen();
-        }
+        return LoginScreen();
       }),
     );
   }
 }
 
-
-// class GoogleLoginScreen extends StatefulWidget {
-//   const GoogleLoginScreen({super.key});
-//
-//   @override
-//   State<GoogleLoginScreen> createState() => _GoogleLoginScreenState();
-// }
-//
-// class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
-//   bool _isObscureG = true;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SafeArea(
-//         child: SingleChildScrollView(
-//           child: Column(
-//             children: [
-//               const SizedBox(height: 50),
-//               Container(
-//                 alignment: Alignment.center,
-//                 padding: const EdgeInsets.symmetric(
-//                   vertical: 10,
-//                   horizontal: 20,
-//                 ),
-//                 child: Column(
-//                   children: [
-//                     SizedBox(
-//                       height: 100,
-//                       width: 100,
-//                       child: Image.asset('assets/logo/google.png'),
-//                     ),
-//                     const SizedBox(height: 10),
-//                     Text(
-//                       "Google ID Login",
-//                       style: Theme.of(context).textTheme.headlineLarge,
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               const SizedBox(height: 20),
-//               Padding(
-//                 padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-//                 child: Column(
-//                   children: [
-//                     TextField(
-//                       decoration: InputDecoration(
-//                         icon: Image.asset(
-//                           'assets/logo/google.png',
-//                           height: 25,
-//                           width: 25,
-//                         ),
-//                         labelText: "E-mail",
-//                       ),
-//                     ),
-//                     const SizedBox(height: 15),
-//                     TextField(
-//                       obscureText: _isObscureG,
-//                       decoration: InputDecoration(
-//                         icon: Icon(Icons.lock),
-//                         labelText: "Password",
-//                         suffixIcon: IconButton(
-//                           onPressed: () {
-//                             setState(() {
-//                               _isObscureG = !_isObscureG;
-//                             });
-//                           },
-//                           icon: Icon(
-//                             _isObscureG
-//                                 ? Icons.visibility
-//                                 : Icons.visibility_off,
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               Padding(
-//                 padding: EdgeInsets.only(right: 20),
-//                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.end,
-//                   children: [
-//                     TextButton(
-//                       onPressed: () {},
-//                       child: Text("Forgot Password?"),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               const SizedBox(height: 15),
-//               FilledButton(
-//                 onPressed: () {
-//                   Navigator.pushReplacementNamed(context, '/home');
-//                 },
-//                 child: Padding(
-//                   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 70),
-//                   child: Text("Sign In"),
-//                 ),
-//               ),
-//               const SizedBox(height: 10),
-//               Row(
-//                 crossAxisAlignment: CrossAxisAlignment.center,
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   Text(
-//                     "Don't have an account?",
-//                     style: TextStyle(fontSize: 14),
-//                   ),
-//                   TextButton(
-//                     onPressed: () {
-//                       Navigator.pushNamed(context, '/signup');
-//                     },
-//                     child: Text("Register now"),
-//                   ),
-//                 ],
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-//
-// class AppleLoginScreen extends StatefulWidget {
-//   const AppleLoginScreen({super.key});
-//
-//   @override
-//   State<AppleLoginScreen> createState() => _AppleLoginScreenState();
-// }
-//
-// class _AppleLoginScreenState extends State<AppleLoginScreen> {
-//   bool _isObscureA = true;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SafeArea(
-//         child: SingleChildScrollView(
-//           child: Column(
-//             children: [
-//               const SizedBox(height: 50),
-//               Container(
-//                 alignment: Alignment.center,
-//                 padding: const EdgeInsets.symmetric(
-//                   vertical: 10,
-//                   horizontal: 20,
-//                 ),
-//                 child: Column(
-//                   children: [
-//                     SizedBox(
-//                       height: 100,
-//                       width: 100,
-//                       child: Image.asset('assets/logo/apple.png'),
-//                     ),
-//                     const SizedBox(height: 10),
-//                     Text(
-//                       "Apple ID Login",
-//                       style: Theme.of(context).textTheme.headlineLarge,
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               const SizedBox(height: 20),
-//               Padding(
-//                 padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-//                 child: Column(
-//                   children: [
-//                     TextField(
-//                       decoration: InputDecoration(
-//                         icon: Image.asset(
-//                           'assets/logo/apple.png',
-//                           width: 25,
-//                           height: 25,
-//                         ),
-//                         labelText: "Apple id",
-//                       ),
-//                     ),
-//                     const SizedBox(height: 15),
-//                     TextField(
-//                       decoration: InputDecoration(
-//                         icon: Icon(Icons.lock),
-//                         labelText: "Password",
-//                         suffixIcon: IconButton(
-//                           onPressed: () {
-//                             setState(() {
-//                               _isObscureA = !_isObscureA;
-//                             });
-//                           },
-//                           icon: Icon(
-//                             _isObscureA
-//                                 ? Icons.visibility
-//                                 : Icons.visibility_off,
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               Padding(
-//                 padding: EdgeInsets.only(right: 20),
-//                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.end,
-//                   children: [
-//                     TextButton(
-//                       onPressed: () {},
-//                       child: Text("Forgot Password?"),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               const SizedBox(height: 15),
-//               FilledButton(
-//                 onPressed: () {
-//                   Navigator.pushReplacementNamed(context, '/home');
-//                 },
-//                 child: Padding(
-//                   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 70),
-//                   child: Text("Sign In"),
-//                 ),
-//               ),
-//               const SizedBox(height: 10),
-//               Row(
-//                 crossAxisAlignment: CrossAxisAlignment.center,
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   Text(
-//                     "Don't have an account?",
-//                     style: TextStyle(fontSize: 14),
-//                   ),
-//                   TextButton(
-//                     onPressed: () {
-//                       Navigator.pushNamed(context, '/signup');
-//                     },
-//                     child: Text("Register now"),
-//                   ),
-//                 ],
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
