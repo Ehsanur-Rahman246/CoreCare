@@ -13,7 +13,8 @@ class HomeScreen extends StatefulWidget {
 
   const HomeScreen({super.key, required this.onNavigate});
 
-  static Future<void> logUserOut() async {
+  static Future<void> logUserOut(DataProvider provider) async {
+    provider.clearUser();
     FirebaseAuth.instance.signOut();
   }
 
@@ -100,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.pushNamed(context, '/settings');
                               break;
                             case 2:
-                              await HomeScreen.logUserOut();
+                              await HomeScreen.logUserOut(context.read<DataProvider>());
                               break;
                           }
                         },

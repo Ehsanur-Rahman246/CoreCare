@@ -559,6 +559,40 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateProfileField(String field, dynamic value) async{
+    if(currentUser == null) return;
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update({field: value});
+      final updatedMap = currentUser!.toMap()..addAll({field: value});
+      currentUser = UserData.fromMap(updatedMap);
+    }catch(e){
+      debugPrint('updatedProfileField error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateDietPreference({String? newDiet, String? newMeals, List<String>? newRegions}) async{
+    if(currentUser == null) return;
+    try{
+      final fields = <String, dynamic>{};
+      if(newDiet != null){
+        fields['dietPref'] = newDiet;
+        fields['intolerances'] = [];
+        fields['dislikes'] = [];
+      }
+      if(newMeals != null) fields['mealsPerDay'] = newMeals;
+      if(newRegions != null) fields['regions'] = newRegions;
+      if(fields.isEmpty) return;
+
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
+      final updatedMap = currentUser!.toMap()..addAll(fields);
+      currentUser = UserData.fromMap(updatedMap);
+      notifyListeners();
+    }catch(e){
+      debugPrint('updateDietPreference error: $e');
+      rethrow;
+    }
+  }
   void clearUser() {
     currentUser = null;
     notifyListeners();

@@ -8,6 +8,7 @@ import 'dart:typed_data';
 import 'package:core_care/main.dart';
 import 'package:core_care/profile_decoration.dart';
 import 'package:core_care/decoration.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'home_screen.dart';
 
@@ -19,6 +20,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+
   @override
   Widget build(BuildContext context) {
     final user = context.watch<DataProvider>().currentUser!;
@@ -66,18 +68,16 @@ class _ProfilePageState extends State<ProfilePage> {
                             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Name', style: Theme.of(context).textTheme.labelLarge,), Text(user.name, style: Theme.of(context).textTheme.bodyMedium,)],),
                             const SizedBox(height: 8,),
                             Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 8,),
+                            const SizedBox(height: 12,),
                             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Age', style: Theme.of(context).textTheme.labelLarge,), Text('${user.age}yrs', style: Theme.of(context).textTheme.bodyMedium,)],),
                             const SizedBox(height: 8,),
                             Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 8,),
+                            const SizedBox(height: 12,),
                             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Gender', style: Theme.of(context).textTheme.labelLarge,), Text(user.gender, style: Theme.of(context).textTheme.bodyMedium,)],),
                             const SizedBox(height: 8,),
                             Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 8,),
+                            const SizedBox(height: 12,),
                             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Group', style: Theme.of(context).textTheme.labelLarge,), Text(user.ageGroup, style: Theme.of(context).textTheme.bodyMedium,)],),
-                            const SizedBox(height: 8,),
-                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
                             const SizedBox(height: 8,),
                           ],
                         ),
@@ -106,24 +106,202 @@ class _ProfilePageState extends State<ProfilePage> {
                     context,
                   ),
                   const SizedBox(height: 10),
-                  profileTile(
-                    Emoji.diet,
-                    'Diet Profile',
-                    'Meal & Diet preferences',
-                    ProfileWidgets.dietList(context),
-                    "Diet Preferences",
-                    EditSheets.dietEdit,
-                    context,
+                  ExpansionTile(
+                    expandedAlignment: Alignment.centerLeft,
+                    expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                    collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
+                    collapsedShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide.none,
+                    ),
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                    ),
+                    leading: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Emoji.diet,
+                    ),
+                    title: Text('Diet Profile'),
+                    subtitle: Text('Meal & Diet preferences', style: Theme.of(context).textTheme.labelSmall),
+                    children: [
+                      Divider(height: 1, color: CustomColors.greyDark(context)),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [Text('Diet Type', style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .labelLarge,), Text(user.dietType, style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium,)
+                              ],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [Text('Meals/Day', style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .labelLarge,), Text(user.mealType, style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium,)
+                              ],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [Text('Calorie Goal', style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .labelLarge,), Text('~${user.tdee.round()} kcal', style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium,)
+                              ],),
+                            const SizedBox(height: 8,),
+                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
+                            const SizedBox(height: 8,),
+                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Regional Food', style: Theme
+                                    .of(context)
+                                    .textTheme
+                                    .labelLarge,),
+                                Text(
+                                  user.regionType.length > 1 ? '${user.regionType.first} & ${user
+                                      .regionType.length - 1} others' : user.regionType.first,
+                                  style: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .bodyMedium,)
+                              ],),
+                            const SizedBox(height: 8,),
+                          ],
+                        ),
+                      ),
+                      Center(
+                        child: OutlinedButton(
+                          onPressed: () => EditSheets.dietEdit(context),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.edit),
+                              const SizedBox(width: 8),
+                              Text("Edit Diet Preferences"),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Symbols.allergies_rounded),
+                                const SizedBox(width: 10,),
+                                Text('Your Allergies'),
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            ProfileAllergyChips(),
+                            const SizedBox(height: 12,),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Symbols.gastroenterology_rounded),
+                                const SizedBox(width: 10,),
+                                Text('Your Intolerances'),
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            ProfileIntoleranceChips(),
+                            const SizedBox(height: 12,),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Symbols.sentiment_dissatisfied_rounded),
+                                const SizedBox(width: 10,),
+                                Text('Your Dislikes in food'),
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            ProfileDislikeChips(),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
-                  profileTile(
-                    Emoji.med,
-                    'Health & Conditions',
-                    'Medical Conditions and allergies',
-                    ProfileWidgets.medList(context),
-                    "Health info",
-                    EditSheets.medEdit,
-                    context,
+                  ExpansionTile(
+                    expandedAlignment: Alignment.centerLeft,
+                    expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                    collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
+                    collapsedShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide.none,
+                    ),
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                    ),
+                    leading: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Emoji.med,
+                    ),
+                    title: Text('Health & Conditions'),
+                    subtitle: Text('Medical Conditions and injuries', style: Theme.of(context).textTheme.labelSmall),
+                    children: [
+                      Divider(height: 1, color: CustomColors.greyDark(context)),
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.medical_services_outlined),
+                                const SizedBox(width: 10,),
+                                Text('Medical Conditions'),
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            ProfileMedChips(),
+                            const SizedBox(height: 12,),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.personal_injury_outlined),
+                                const SizedBox(width: 10,),
+                                Text('Current Injuries'),
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            ProfileInjuryChips(),
+                        ],),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   profileTile(
@@ -269,7 +447,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ).colorScheme.error,
                                   ),
                                   onPressed: () async {
-                                    await HomeScreen.logUserOut();
+                                    await HomeScreen.logUserOut(context.read<DataProvider>());
                                     if (context.mounted) {
                                       Navigator.of(
                                         context,
@@ -325,9 +503,20 @@ class _ProfilePageState extends State<ProfilePage> {
                                   color: Theme.of(context).colorScheme.error,
                                 ),
                               ),
-                              content: Text(
-                                'Do you really want to delete your account?',
-                                style: Theme.of(context).textTheme.labelLarge,
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Do you want to delete your account?',
+                                    style: Theme.of(context).textTheme.labelLarge,
+                                  ),
+                                  const SizedBox(height: 8,),
+                                  Text(
+                                    'All the data of your account will be deleted.',
+                                    style: Theme.of(context).textTheme.labelMedium,
+                                  ),
+                                ],
                               ),
                               actions: [
                                 OutlinedButton(
@@ -617,23 +806,23 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
         Positioned(
           left: 20,
           right: 20,
-          bottom: -120,
+          bottom: -150,
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 40, 20, 15),
+              padding: const EdgeInsets.fromLTRB(20, 50, 20, 15),
               child: Column(
                 children: [
                   Text(
                     user.name,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  const SizedBox(height: 8,),
                   Text(
                     user.email,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   Divider(color: Theme.of(context).colorScheme.tertiary,),
-                  const SizedBox(height: 20),
+
+
                   Divider(color: Theme.of(context).colorScheme.tertiary,),
                   const SizedBox(height: 20),
                   Row(
@@ -810,7 +999,7 @@ class _CollapsedProfileHeaderState extends State<CollapsedProfileHeader> {
   Widget build(BuildContext context) {
     final provider = context.watch<DataProvider>();
     final user = provider.currentUser!;
-    
+
     return Container(
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
