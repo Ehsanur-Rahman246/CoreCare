@@ -362,7 +362,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
                                   child: Row(
                                       mainAxisSize: MainAxisSize.min,
-                                      children: [Icon(Icons.person), const SizedBox(width: 10,),Text('Edit username')]),
+                                      children: [Icon(Icons.person), const SizedBox(width: 10,),Text('Edit username or email')]),
                                 )),
                                 const SizedBox(width: 20,),
                                 OutlinedButton(onPressed: (){}, child: Padding(padding: const EdgeInsetsGeometry.symmetric(vertical: 15),child: Row(
@@ -584,7 +584,7 @@ class _ProfilePageState extends State<ProfilePage> {
       String sub,
       Widget list,
       String edit,
-      void Function(BuildContext) function,
+      Function(BuildContext) function,
       BuildContext context,
       ) {
     return ExpansionTile(

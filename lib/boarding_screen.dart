@@ -174,7 +174,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         for (final c in _lottieController) {
                           c.stop();
                         }
-                        Navigator.pushReplacementNamed(context, '/signup');
+                        Navigator.pushNamed(context, '/signup');
                       },
                       child: Text('Get Started'),
                     )
@@ -280,17 +280,18 @@ class _SignupPageState extends State<SignupPage> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (currentPage == 0)
-                  const SizedBox(height: 40, width: 40)
-                else
                   Padding(
                     padding: const EdgeInsetsGeometry.only(left: 10),
                     child: IconButton(
                       onPressed: () {
-                        _pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
+                        if(currentPage == 0){
+                          Navigator.pop(context);
+                        }else{
+                          _pageController.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
                       },
                       icon: Icon(Icons.chevron_left),
                     ),

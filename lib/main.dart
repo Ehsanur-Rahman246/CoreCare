@@ -57,11 +57,11 @@ class _MyAppState extends State<MyApp> {
         '/fit': (context) => FitScreen(),
         '/diet': (context) => DietScreen(),
         '/shop': (context) => ShopScreen(),
-        // '/google': (context) => GoogleLoginScreen(),
-        // '/apple': (context) => AppleLoginScreen(),
         '/signup': (context) => SignupPage(),
         '/onboard': (context) => OnboardingScreen(),
         '/auth' : (context) => AuthPage(),
+        '/schedule' : (context) => ExerciseScheduleScreen(),
+        '/tutorial' : (context) => ExerciseTutorialScreen(),
       },
     );
   }

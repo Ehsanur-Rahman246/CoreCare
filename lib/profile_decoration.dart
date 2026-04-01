@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:core_care/data_provider.dart';
+import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'decoration.dart';
 import 'main.dart';
+import 'package:core_care/pages/sign_up_pages.dart';
 
 class ProfileWidgets{
   static Widget statList(BuildContext context){
@@ -99,10 +101,6 @@ class ProfileWidgets{
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       child: Column(
         children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Sleep time', style: Theme.of(context).textTheme.labelLarge,), Text(user.sleepPattern, style: Theme.of(context).textTheme.bodyMedium,)],),
-          const SizedBox(height: 8,),
-          Divider(height: 0.5, color: CustomColors.greyDark(context),),
-          const SizedBox(height: 8,),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Total Hrs of sleep', style: Theme.of(context).textTheme.labelLarge,), Text(user.sleepPattern, style: Theme.of(context).textTheme.bodyMedium,)],),
           const SizedBox(height: 8,),
           Divider(height: 0.5, color: CustomColors.greyDark(context),),
@@ -112,6 +110,10 @@ class ProfileWidgets{
           Divider(height: 0.5, color: CustomColors.greyDark(context),),
           const SizedBox(height: 8,),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Workout Session', style: Theme.of(context).textTheme.labelLarge,), Text(user.durationType, style: Theme.of(context).textTheme.bodyMedium,)],),
+          const SizedBox(height: 8,),
+          Divider(height: 0.5, color: CustomColors.greyDark(context),),
+          const SizedBox(height: 8,),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Workout Place', style: Theme.of(context).textTheme.labelLarge,), Text(user.placeType, style: Theme.of(context).textTheme.bodyMedium,)],),
           const SizedBox(height: 8,),
           Divider(height: 0.5, color: CustomColors.greyDark(context),),
           const SizedBox(height: 8,),
@@ -817,6 +819,7 @@ class _ProfileAllergyChipsState extends State<ProfileAllergyChips> {
                                     selected: true,
                                     showCheckmark: false,
                                     avatar: icon,
+                                    deleteButtonTooltipMessage: '',
                                     deleteIcon: Icon(Icons.close, color: ch.error, size: 18,),
                                     onDeleted: (){
                                       setSheet(() => sheetSelected.remove(als));
@@ -850,6 +853,7 @@ class _ProfileAllergyChipsState extends State<ProfileAllergyChips> {
                                     selected: false,
                                     showCheckmark: false,
                                     avatar: icon,
+                                    deleteButtonTooltipMessage: '',
                                     deleteIcon: Icon(Icons.add, color: ch.primary, size: 18,),
                                     onDeleted: (){
                                       setSheet(() => sheetSelected.add(als));
@@ -1783,32 +1787,568 @@ class _ProfileDislikeChipsState extends State<ProfileDislikeChips> {
 }
 
 
-
-
-
 class EditSheets{
   static void Function(BuildContext) statEdit = (BuildContext context){
+    final user = context.read<DataProvider>().currentUser!;
+    bool isHeightFt = user.wantMetricUnit ? false : true;
+    bool isWeightKg = user.wantMetricUnit ? true : false;
+    final totalInches = user.heightCm / 2.54;
+    int initFeet = (totalInches / 12).floor().clamp(3, 8);
+    int initInches = (totalInches % 12).round().clamp(0, 11);
+
+    int selectedFeet = initFeet;
+    int selectedInches = initInches;
+    final heightController = TextEditingController(text: user.heightCm.toStringAsFixed(1));
+    final weightController = TextEditingController(text: user.weightKg.toStringAsFixed(1));
+
+    String? heightError;
+    String? weightError;
+    bool isSaving = false;
+
     showModalBottomSheet(context: context,isScrollControlled: true, builder: (ctx){
-      return Container(
-        height: MediaQuery.of(ctx).size.height * 0.7,
-        decoration: BoxDecoration(
-          color: Theme.of(ctx).colorScheme.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-        ),
+      final ch = Theme.of(ctx).colorScheme;
+      final th = Theme.of(ctx).textTheme;
+      return StatefulBuilder(
+        builder: (ctx, setSheet) {
+          return SizedBox(
+            height: MediaQuery.of(ctx).size.height * 0.85,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: ch.tertiary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Edit Body Stats', style: TextStyle(fontWeight: FontWeight.w500),),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                        },
+                        icon: Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                  Divider(),
+                  const SizedBox(height: 15),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Height', style: th.labelLarge,),
+                          const SizedBox(height: 10,),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if(isHeightFt) ...[
+                                Expanded(
+                                  child: SizedBox(
+                                    height: 56,
+                                    child: DropdownButtonFormField<int>(
+                                        initialValue: selectedFeet,
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: CustomColors.greyLight(context),
+                                          labelText: 'Feet',
+                                          prefixIcon: Icon(Icons.height_rounded),
+                                          errorText: heightError,
+                                        ),
+                                        items: List
+                                            .generate(6, (i) => i + 3)
+                                            .map((f) =>
+                                            DropdownMenuItem(value: f,
+                                                child: Text('$f ft', style: th.bodyLarge,)))
+                                            .toList(),
+                                        onChanged: (v) {
+                                          setSheet(() {
+                                            selectedFeet = v!;
+                                            heightError = null;
+                                          });
+                                        }
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                Expanded(
+                                  child: SizedBox(
+                                    height: 56,
+                                    child: DropdownButtonFormField<int>(
+                                        initialValue: selectedInches,
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: CustomColors.greyLight(context),
+                                          labelText: 'Inches',
+                                        ),
+                                        items: List
+                                            .generate(12, (i) => i)
+                                            .map((i) =>
+                                            DropdownMenuItem(value: i,
+                                                child: Text('$i in', style: th.bodyLarge,)))
+                                            .toList(),
+                                        onChanged: (v) {
+                                          setSheet(() => selectedInches = v!);
+                                        }
+                                    ),
+                                  ),
+                                ),
+                              ] else
+                                  Expanded(
+                                    child: TextField(
+                                      keyboardType: TextInputType.numberWithOptions(
+                                          decimal: true),
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                          RegExp(r'^\d*\.?\d{0,2}'),
+                                        ),
+                                      ],
+                                      controller: heightController,
+                                      onChanged: (_) {
+                                        if (heightError != null) {
+                                          setSheet(() {
+                                            heightError = null;
+                                          });
+                                        }
+                                      },
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: CustomColors.greyLight(context),
+                                        labelText: 'Height',
+                                        prefixIcon: Icon(Icons.height_rounded),
+                                        errorText: heightError,
+                                      ),
+                                    ),
+                                  ),
+                              const SizedBox(width: 10,),
+                              GestureDetector(
+                                onTap: () {
+                                  setSheet(() {
+                                    isHeightFt = true;
+                                    heightError = null;
+                                  });
+                                },
+                                child: Container(
+                                  height: 56,
+                                  width: 60,
+                                  decoration: BoxDecoration(
+                                    color: isHeightFt ? ch.primary : ch.surface,
+                                    borderRadius: BorderRadius.horizontal(
+                                        left: Radius.circular(10)),
+                                    border: Border(
+                                      top: BorderSide(color: ch.primary),
+                                      bottom: BorderSide(color: ch.primary),
+                                      left: BorderSide(color: ch.primary),
+                                      right: BorderSide.none,
+                                    ),
+                                  ),
+                                  child: Center(child: Text('ft', style: TextStyle(
+                                      color: !isHeightFt ? ch.onSurface : ch.onPrimary,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),)),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  setSheet(() {
+                                    isHeightFt = false;
+                                    heightError = null;
+                                  });
+                                },
+                                child: Container(
+                                  height: 56,
+                                  width: 60,
+                                  decoration: BoxDecoration(
+                                    color: !isHeightFt ? ch.primary : ch.surface,
+                                    borderRadius: BorderRadius.horizontal(
+                                        right: Radius.circular(10)),
+                                    border: Border(
+                                      top: BorderSide(color: ch.primary),
+                                      bottom: BorderSide(color: ch.primary),
+                                      right: BorderSide(color: ch.primary),
+                                      left: BorderSide.none,
+                                    ),
+                                  ),
+                                  child: Center(child: Text('cm', style: TextStyle(
+                                      color: isHeightFt ? ch.onSurface : ch.onPrimary,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),)),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20,),
+                          Text('Weight', style: th.labelLarge,),
+                          const SizedBox(height: 10,),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d*\.?\d{0,2}'),
+                                    ),
+                                  ],
+                                  controller: weightController,
+                                  onChanged: (_) {
+                                    if (weightError != null) {
+                                      setSheet(() {
+                                        weightError = null;
+                                      });
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: CustomColors.greyLight(context),
+                                    labelText: 'Weight',
+                                    prefixIcon: Icon(Symbols.weight_rounded),
+                                    errorText: weightError,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10,),
+                              GestureDetector(
+                                onTap: () {
+                                  setSheet(() {
+                                    isWeightKg = true;
+                                    weightError = null;
+                                  });
+                                },
+                                child: Container(
+                                  height: 56,
+                                  width: 60,
+                                  decoration: BoxDecoration(
+                                    color: isWeightKg ? ch.primary : ch.surface,
+                                    borderRadius: BorderRadius.horizontal(
+                                        left: Radius.circular(10)),
+                                    border: Border(
+                                      top: BorderSide(color: ch.primary),
+                                      bottom: BorderSide(color: ch.primary),
+                                      left: BorderSide(color: ch.primary),
+                                      right: BorderSide.none,
+                                    ),
+                                  ),
+                                  child: Center(child: Text('kg', style: TextStyle(
+                                      color: !isWeightKg ? ch.onSurface : ch.onPrimary,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),)),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  setSheet(() {
+                                    isWeightKg = false;
+                                    weightError = null;
+                                  });
+                                },
+                                child: Container(
+                                  height: 56,
+                                  width: 60,
+                                  decoration: BoxDecoration(
+                                    color: !isWeightKg ? ch.primary : ch.surface,
+                                    borderRadius: BorderRadius.horizontal(
+                                        right: Radius.circular(10)),
+                                    border: Border(
+                                      top: BorderSide(color: ch.primary),
+                                      bottom: BorderSide(color: ch.primary),
+                                      right: BorderSide(color: ch.primary),
+                                      left: BorderSide.none,
+                                    ),
+                                  ),
+                                  child: Center(child: Text('lb', style: TextStyle(
+                                      color: isWeightKg ? ch.onSurface : ch.onPrimary,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      OutlinedButton(onPressed: isSaving ? null : (){Navigator.pop(ctx);}, child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 10,
+                        ),
+                        child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.w500),),
+                      ),),
+                      FilledButton(
+                        onPressed: isSaving ? null : () async {
+                          bool isValid = true;
+                          if (!isHeightFt) {
+                            final h = double.tryParse(heightController.text);
+                            if (heightController.text.isEmpty) {
+                              setSheet(() => heightError = 'Height is required');
+                              isValid = false;
+                            } else if (h == null || h < 100 || h > 250) {
+                              setSheet(() => heightError = 'Please enter valid height');
+                              isValid = false;
+                            }
+                          }
+
+                          final w = double.tryParse(weightController.text);
+                          if (weightController.text.isEmpty) {
+                            setSheet(() => weightError = 'Weight is required');
+                            isValid = false;
+                          } else if (isWeightKg && (w == null || w < 30 || w > 300)) {
+                            setSheet(() => weightError = 'Please enter valid weight');
+                            isValid = false;
+                          } else if (!isWeightKg && (w == null || w < 66 || w > 660)) {
+                            setSheet(() => weightError = 'Please enter valid weight');
+                            isValid = false;
+                          }
+
+                          if(!isValid)  return;
+                          final double heightCm = isHeightFt ? (selectedFeet * 30.48) + (selectedInches * 2.54) : double.parse(heightController.text);
+                          final double weightKg = isWeightKg ? double.parse(weightController.text) : double.parse(weightController.text) * 0.453592;
+
+                          setSheet(() => isSaving = true);
+                          try{
+                            await context.read<DataProvider>().updateBodyStats(heightCm: heightCm, weightKg: weightKg);
+                          }catch(e){
+                            if(context.mounted){
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+                            }
+                          }finally{
+                            setSheet(() => isSaving = false);
+                          }
+                          if(context.mounted) Navigator.pop(ctx);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 10,
+                          ),
+                          child: isSaving ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2,)) : Text('Save', style: TextStyle(fontWeight: FontWeight.w500),),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       );
     });
   };
+
   static void Function(BuildContext) fitEdit = (BuildContext context){
+    final user = context.read<DataProvider>().currentUser!;
+
+    String selectedWork = user.workType;
+    String selectedActive = user.activityLevel;
+    String selectedFit = user.fitType;
+    Set<String> selectedStyle = user.styleType.toSet();
+    String selectedEquip = user.equipType;
+    int selectedFundIndex = [
+      'Energy & Fuel',
+      'Strength & build',
+      'Mobility & ease',
+      'Stability & control',
+      'Composition & vitals',
+      'Function & posture',
+      'Growth & adaptation'
+    ].indexOf(user.fundType).clamp(0, 6);
+    String selectedGoal = user.goalType;
+
+    const workOptions = ['Sedentary', 'Moderately Active', 'Physically Active'];
+    const activeOptions = ['Low', 'Moderate', 'High'];
+    const fitOptions = ['Beginner', 'Intermediate', 'Advanced'];
+    const styleOptions = [
+      'Strength Training',
+      'Cardio',
+      'HIIT',
+      'Yoga & Stretching',
+      'Pilates',
+      'Calisthenics',
+      'Sports & Athletics',
+      'Functional Training',
+      'Low Impact',
+      'Mixed',
+    ];
+    const equipOptions = ['None', 'Minimal', 'Full Gym'];
+    const fundLabels = [
+      'Energy & Fuel',
+      'Strength & build',
+      'Mobility & ease',
+      'Stability & control',
+      'Composition & vitals',
+      'Function & posture',
+      'Growth & adaptation'
+    ];
+
+    bool isSaving = false;
+
     showModalBottomSheet(context: context,isScrollControlled: true, builder: (ctx){
-      return Container(
-        height: MediaQuery.of(ctx).size.height * 0.7,
-        decoration: BoxDecoration(
-          color: Theme.of(ctx).colorScheme.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-        ),
+      final ch = Theme.of(ctx).colorScheme;
+      final th = Theme.of(ctx).textTheme;
+
+      return StatefulBuilder(
+        builder: (context, setSheet) {
+          const timedFunds = [0, 1, 4, 6];
+          final planType = timedFunds.contains(selectedFundIndex);
+          final List<String> currentGoals = goalPreviews[user.ageGroup]?[selectedFundIndex] ?? [];
+
+          return SizedBox(
+            height: MediaQuery.of(ctx).size.height * 0.85,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: ch.tertiary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Edit Fitness Profile', style: TextStyle(fontWeight: FontWeight.w500),),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                        },
+                        icon: Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                  Divider(),
+                  const SizedBox(height: 15),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Work / Occupation Type', style: Theme.of(ctx).textTheme.labelLarge,),
+                          const SizedBox(height: 8,),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: workOptions.map((opt){
+                              final isSelected = selectedWork == opt;
+                              return ChoiceChip(label: Text(opt),
+                                shape: StadiumBorder(),
+                                backgroundColor: ch.surface,
+                                selectedColor: CustomColors.primaryMuted(context),
+                                labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                                showCheckmark: false,
+                                selected: isSelected,
+                                onSelected: (_) => setSheet(() => selectedWork = opt),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 25,),
+                          Text('Daily Activity Level', style: Theme.of(ctx).textTheme.labelLarge,),
+                          const SizedBox(height: 8,),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: activeOptions.map((opt){
+                              final isSelected = selectedActive == opt;
+                              return ChoiceChip(label: Text(opt), selected: isSelected,
+                                shape: StadiumBorder(),
+                                backgroundColor: ch.surface,
+                                selectedColor: CustomColors.primaryMuted(context),
+                                labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                                showCheckmark: false,
+                                onSelected: (_) => setSheet(() => selectedActive = opt),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 25,),
+                          Text('Fitness Level', style: Theme.of(ctx).textTheme.labelLarge,),
+                          const SizedBox(height: 8,),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: fitOptions.map((opt){
+                              final isSelected = selectedFit == opt;
+                              return ChoiceChip(label: Text(opt),
+                                  shape: StadiumBorder(),
+                                  backgroundColor: ch.surface,
+                                  selectedColor: CustomColors.primaryMuted(context),
+                                  labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                                  selected: isSelected,
+                                  showCheckmark: false,
+                                  onSelected: (_) => setSheet(() => selectedFit = opt);
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      OutlinedButton(onPressed: isSaving ? null : (){Navigator.pop(ctx);}, child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 10,
+                        ),
+                        child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.w500),),
+                      ),),
+                      FilledButton(
+                        onPressed: isSaving ? null : () async {
+                          setSheet(() => isSaving = true);
+                          try{
+                            final dietChanged = sheetDiet != user.dietType;
+                            await context.read<DataProvider>().updateDietPreference(newDiet: dietChanged ? sheetDiet : null, newMeals: sheetMeals, newRegions: sheetRegions.toList());
+                          }catch(e){
+                            if(context.mounted){
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+                            }
+                          }finally{
+                            setSheet(() => isSaving = false);
+                          }
+                          if(context.mounted) Navigator.pop(ctx);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 10,
+                          ),
+                          child: isSaving ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2,)) : Text('Save', style: TextStyle(fontWeight: FontWeight.w500),),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       );
     });
   };
+
   static void Function(BuildContext) dietEdit = (BuildContext context){
     final user = context.read<DataProvider>().currentUser!;
     String sheetDiet = user.dietType;
@@ -1835,6 +2375,8 @@ class EditSheets{
       {'label': 'Western',         'icon': Symbols.account_balance_rounded},
       {'label': 'No preference',   'icon': Symbols.all_inclusive_rounded},
     ];
+
+    bool isSaving = false;
 
     showModalBottomSheet(context: context,isScrollControlled: true, builder: (ctx){
       final ch = Theme.of(ctx).colorScheme;
@@ -1957,7 +2499,7 @@ class EditSheets{
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      OutlinedButton(onPressed: (){Navigator.pop(ctx);}, child: Padding(
+                      OutlinedButton(onPressed: isSaving ? null : (){Navigator.pop(ctx);}, child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 40,
                           vertical: 10,
@@ -1965,7 +2507,8 @@ class EditSheets{
                         child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.w500),),
                       ),),
                       FilledButton(
-                        onPressed: () async {
+                        onPressed: isSaving ? null : () async {
+                          setSheet(() => isSaving = true);
                           try{
                             final dietChanged = sheetDiet != user.dietType;
                             await context.read<DataProvider>().updateDietPreference(newDiet: dietChanged ? sheetDiet : null, newMeals: sheetMeals, newRegions: sheetRegions.toList());
@@ -1973,6 +2516,8 @@ class EditSheets{
                             if(context.mounted){
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
                             }
+                          }finally{
+                            setSheet(() => isSaving = false);
                           }
                           if(context.mounted) Navigator.pop(ctx);
                         },
@@ -1981,7 +2526,7 @@ class EditSheets{
                             horizontal: 40,
                             vertical: 10,
                           ),
-                          child: Text('Save', style: TextStyle(fontWeight: FontWeight.w500),),
+                          child: isSaving ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2,)) : Text('Save', style: TextStyle(fontWeight: FontWeight.w500),),
                         ),
                       ),
                     ],
@@ -1994,15 +2539,224 @@ class EditSheets{
       );
     });
   };
+
   static void Function(BuildContext) timeEdit = (BuildContext context){
+    final provider = context.read<DataProvider>();
+    final user = provider.currentUser!;
+
+    String selectedSleepPattern = user.sleepPattern;
+    List<String> selectedTimeType = List.from(user.timeType);
+    String selectedDurationType = user.durationType;
+    String selectedDayType = user.dayType;
+    List<String> selectedFreeType = List.from(user.freeType);
+
+    const sleepPatternOptions = [
+      'Less than 5 hours',
+      '5 to 7 hours',
+      '7 to 9 hours',
+      'More than 9 hours'
+    ];
+
+    const timeTypeOptions = ['Early Morning', 'Late Morning', 'Afternoon', 'Evening'];
+    final timeAvatars = [Emoji.s1, Emoji.s2, Emoji.s3, Emoji.s4];
+    const durationOptions = ['15-30 min', '30-45 min', '45-60 min', '60+ min'];
+    const dayOptions = ['2', '3', '4', '5', '6'];
+    const freeDayOptions = ['Son', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    bool isSaving = false;
+
     showModalBottomSheet(context: context,isScrollControlled: true, builder: (ctx){
-      return Container(
-        height: MediaQuery.of(ctx).size.height * 0.7,
-        decoration: BoxDecoration(
-          color: Theme.of(ctx).colorScheme.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-        ),
-      );
+      final ch = Theme.of(ctx).colorScheme;
+      return StatefulBuilder(builder: (ctx, setSheet){
+        return SizedBox(
+          height: MediaQuery.of(ctx).size.height * 0.85,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: ch.tertiary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Edit Schedule', style: TextStyle(fontWeight: FontWeight.w500),),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                      },
+                      icon: Icon(Icons.close),
+                    ),
+                  ],
+                ),
+                Divider(),
+                const SizedBox(height: 15),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Total Hrs of Sleep', style: Theme.of(ctx).textTheme.labelLarge,),
+                        const SizedBox(height: 8,),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: sleepPatternOptions.map((opt){
+                            final isSelected = selectedSleepPattern == opt;
+                            return ChoiceChip(label: Text(opt),
+                              shape: StadiumBorder(),
+                              backgroundColor: ch.surface,
+                              selectedColor: CustomColors.primaryMuted(context),
+                              side: BorderSide(color: isSelected ? Colors.transparent : ch.primary),
+                              labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                              showCheckmark: false,
+                              selected: isSelected,
+                              onSelected: (_) => setSheet(() => selectedSleepPattern = opt),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 25,),
+                        Text('Workout Time', style: Theme.of(ctx).textTheme.labelLarge,),
+                        const SizedBox(height: 8,),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: timeTypeOptions.map((opt){
+                            final isSelected = selectedTimeType.contains(opt);
+                            final index = timeTypeOptions.indexOf(opt);
+                            return FilterChip(label: Text(opt), selected: isSelected,
+                              shape: StadiumBorder(),
+                              backgroundColor: ch.surface,
+                              avatar: timeAvatars[index],
+                              selectedColor: CustomColors.primaryMuted(context),
+                              side: BorderSide(color: isSelected ? Colors.transparent : ch.primary),
+                              labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                              showCheckmark: false,
+                              onSelected: (selected) => setSheet(() {
+                                selected ? selectedTimeType.add(opt):selectedTimeType.remove(opt);
+                              }),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 25,),
+                        Text('Workout Session', style: Theme.of(ctx).textTheme.labelLarge,),
+                        const SizedBox(height: 8,),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: durationOptions.map((opt){
+                            final isSelected = selectedDurationType == opt;
+                            return ChoiceChip(label: Text(opt),
+                                shape: StadiumBorder(),
+                                backgroundColor: ch.surface,
+                                selectedColor: CustomColors.primaryMuted(context),
+                                side: BorderSide(color: isSelected ? Colors.transparent : ch.primary),
+                                labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                                selected: isSelected,
+                                showCheckmark: false,
+                                onSelected: (_){
+                                  setSheet(() => selectedDurationType = opt);
+                                }
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 25,),
+                        Text('Workout Per Week', style: Theme.of(ctx).textTheme.labelLarge,),
+                        const SizedBox(height: 8,),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: dayOptions.map((opt){
+                            final isSelected = selectedDayType == opt;
+                            return ChoiceChip(label: Text(opt),
+                                shape: StadiumBorder(),
+                                backgroundColor: ch.surface,
+                                selectedColor: CustomColors.primaryMuted(context),
+                                side: BorderSide(color: isSelected ? Colors.transparent : ch.primary),
+                                labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                                selected: isSelected,
+                                showCheckmark: false,
+                                onSelected: (_){
+                                  setSheet(() => selectedDayType = opt);
+                                }
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 25,),
+                        Text('Free Days', style: Theme.of(ctx).textTheme.labelLarge,),
+                        const SizedBox(height: 8,),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: freeDayOptions.map((opt){
+                            final isSelected = selectedFreeType.contains(opt);
+                            return FilterChip(label: Text(opt), selected: isSelected,
+                              shape: StadiumBorder(),
+                              backgroundColor: ch.surface,
+                              selectedColor: CustomColors.primaryMuted(context),
+                              side: BorderSide(color: isSelected ? Colors.transparent : ch.primary),
+                              labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                              showCheckmark: false,
+                              onSelected: (selected) => setSheet(() {
+                                selected ? selectedFreeType.add(opt) : selectedFreeType.remove(opt);
+                              }),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    OutlinedButton(onPressed: isSaving ? null : (){Navigator.pop(ctx);}, child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 10,
+                      ),
+                      child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.w500),),
+                    ),),
+                    FilledButton(
+                      onPressed: isSaving ? null : () async {
+                        setSheet(() => isSaving = true);
+                        try{
+                          await context.read<DataProvider>().updateSchedule(sleepPattern: selectedSleepPattern, timeType: selectedTimeType, durationType: selectedDurationType, dayType: selectedDayType, freeType: selectedFreeType);
+                        }catch(e){
+                          if(context.mounted){
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+                          }
+                        }finally{
+                          setSheet(() => isSaving = false);
+                        }
+                        if(context.mounted) Navigator.pop(ctx);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 10,
+                        ),
+                        child: isSaving ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2,)) : Text('Save', style: TextStyle(fontWeight: FontWeight.w500),),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      });
     });
   };
 }

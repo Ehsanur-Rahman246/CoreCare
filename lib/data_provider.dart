@@ -570,6 +570,89 @@ class DataProvider extends ChangeNotifier {
       rethrow;
     }
   }
+  
+  Future<void> updateBodyStats({
+    required double heightCm,
+    required double weightKg,
+  })async{
+    if(currentUser == null) return;
+    final bmi = double.parse((weightKg / ((heightCm / 100) * (heightCm / 100))).toStringAsFixed(1));
+    String bmiCategory;
+    if (bmi < 18.5){
+      bmiCategory = 'Underweight';
+    }else if (bmi < 25) {
+      bmiCategory = 'Normal';
+    }else if (bmi < 30) {
+      bmiCategory = 'Overweight';
+    }else {
+      bmiCategory = 'Obese';
+    }
+    final age = currentUser!.age;
+    final genderInt = currentUser!.gender == 'Male' ? 1 : 2;
+    final base = (10 * weightKg) + (6.25 * heightCm) - (5 * age);
+    final bmr = double.parse((genderInt == 1 ? base + 5 : base - 161).toStringAsFixed(1));
+    const workFactors = {'Sedentary' : 1.2, 'Moderately Active' : 1.35, 'Physically Active' : 1.55};
+    const activeFactors = {'Low' : 1.0, 'Moderate' : 1.1, 'High' : 1.2};
+    const fitFactors = {'Beginner' : 0.95, 'Intermediate' : 1.0, 'Advanced' : 1.05};
+
+    final workF = workFactors[currentUser!.workType] ?? 1.2;
+    final activeF = activeFactors[currentUser!.activityLevel] ?? 1.0;
+    final fitF = fitFactors[currentUser!.fitType] ?? 0.95;
+    final tdee = double.parse((bmr * workF * activeF * fitF).toStringAsFixed(1));
+
+    final fields = <String, dynamic>{
+      'height' : double.parse(heightCm.toStringAsFixed(1)),
+      'weight' : double.parse(weightKg.toStringAsFixed(1)),
+      'bmi' : bmi,
+      'bmiCategory' : bmiCategory,
+      'bmr' : bmr,
+      'tdee' : tdee,
+    };
+
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
+      final updatedMap = currentUser!.toMap()..addAll(fields);
+      currentUser = UserData.fromMap(updatedMap);
+      notifyListeners();
+    }catch(e){
+      debugPrint('updateBodyStats error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateFitnessProfile({required String fitType, required String workType, required String activityLevel, required List<String> styleType, required String equipType, required String fundType, required String goalType, required String planType}) async{
+    if(currentUser == null) return;
+
+    const workFactors = {'Sedentary' : 1.2, 'Moderately Active' : 1.35, 'Physically Active' : 1.55};
+    const activeFactors = {'Low' : 1.0, 'Moderate' : 1.1, 'High' : 1.2};
+    const fitFactors = {'Beginner' : 0.95, 'Intermediate' : 1.0, 'Advanced' : 1.05};
+    final workF = workFactors[workType] ?? 1.2;
+    final activeF = activeFactors[activityLevel] ?? 1.0;
+    final fitF = fitFactors[fitType] ?? 0.95;
+    final tdee = double.parse((currentUser!.bmr * workF * activeF * fitF).toStringAsFixed(1));
+
+    final fields = <String, dynamic>{
+      'fitness' : fitType,
+      'work' : workType,
+      'activity' : activityLevel,
+      'exercise' : styleType,
+      'equipment' : equipType,
+      'fundamental' : fundType,
+      'goal' : goalType,
+      'plan' : planType,
+      'tdee' : tdee,
+    };
+
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
+      final updatedMap = currentUser!.toMap()..addAll(fields);
+      currentUser = UserData.fromMap(updatedMap);
+      notifyListeners();
+    }catch(e){
+      debugPrint('updateFitnessProfile error: $e');
+      rethrow;
+    }
+  }
 
   Future<void> updateDietPreference({String? newDiet, String? newMeals, List<String>? newRegions}) async{
     if(currentUser == null) return;
@@ -593,6 +676,35 @@ class DataProvider extends ChangeNotifier {
       rethrow;
     }
   }
+
+  Future<void> updateSchedule({
+    String? sleepPattern,
+    List<String>? timeType,
+    String? durationType,
+    String? dayType,
+    List<String>? freeType,
+  }) async{
+    if(currentUser == null) return;
+    final fields = <String, dynamic>{};
+    if(sleepPattern != null) fields['sleepPattern'] = sleepPattern;
+    if(timeType != null) fields['time'] = timeType;
+    if(durationType != null) fields['duration'] = durationType;
+    if(dayType != null) fields['workoutDays'] = dayType;
+    if(freeType != null) fields['freeDays'] = freeType;
+
+    if(fields.isEmpty) return;
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
+
+      final updatedMap = currentUser!.toMap()..addAll(fields);
+      currentUser = UserData.fromMap(updatedMap);
+      notifyListeners();
+    }catch(e){
+      debugPrint('updateSchedule error: $e');
+      rethrow;
+    }
+  }
+
   void clearUser() {
     currentUser = null;
     notifyListeners();

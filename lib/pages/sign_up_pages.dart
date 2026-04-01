@@ -2052,7 +2052,7 @@ class SignupPageSixData {
       'Sports & Athletics',
       'Functional Training',
       'Low Impact',
-      'Any'
+      'Mixed'
     ];
     return styleIndex.map((i) => styles[i]).toList();
   }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:core_care/decoration.dart';
 import 'package:core_care/main.dart';
 import 'package:core_care/pages/profile_page.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
+import 'dart:typed_data';
 
 class HomeScreen extends StatefulWidget {
   final Function(int) onNavigate;
@@ -26,17 +28,34 @@ class _HomeScreenState extends State<HomeScreen> {
   bool hasNotification = false;
   late int waterBarCount;
   late int fillCounter;
+  Uint8List? _profileImageBytes;
+  String? _cachedBase64;
 
   @override
   void initState() {
     super.initState();
     waterBarCount = 19;
     fillCounter = 0;
+    _loadProfileImage();
+  }
+
+  void _loadProfileImage(){
+    final base64Str = context.read<DataProvider>().profileImageBase64;
+    if(base64Str != null && base64Str.isNotEmpty){
+      setState(() {
+        _profileImageBytes = base64Decode(base64Str);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final time = context.watch<TimeProvider>();
+    final provider = context.watch<DataProvider>();
+    if(provider.profileImageBase64 != _cachedBase64){
+      _cachedBase64 = provider.profileImageBase64;
+      _profileImageBytes = provider.profileImageBase64 != null ? base64Decode(provider.profileImageBase64!) : null;
+    }
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(heroTag: 'status', onPressed: (){}),
@@ -53,10 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       CircleAvatar(
-                        foregroundImage: ExpandedProfileHeader.hasImage
-                            ? MemoryImage(ExpandedProfileHeader.imageBytes)
+                        foregroundImage: _profileImageBytes != null
+                            ? MemoryImage(_profileImageBytes!)
                             : null,
-                        child: ExpandedProfileHeader.hasImage
+                        child: _profileImageBytes != null
                             ? null
                             : Icon(Icons.person_rounded),
                       ),

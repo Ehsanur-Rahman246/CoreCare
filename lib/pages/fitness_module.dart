@@ -49,7 +49,7 @@ class _FitScreenState extends State<FitScreen>
           ),
         ],
       ),
-      floatingActionButton: Column(mainAxisAlignment: MainAxisAlignment.end, children: [FloatingActionButton.small(heroTag: 'tutorial', onPressed: (){}), const SizedBox(height: 10,),FloatingActionButton.small(heroTag: 'schedule', onPressed: (){}),]),
+      floatingActionButton: Column(mainAxisAlignment: MainAxisAlignment.end, children: [FloatingActionButton.small(heroTag: 'tutorial', onPressed: (){Navigator.pushNamed(context, '/tutorial');}), const SizedBox(height: 10,),FloatingActionButton.small(heroTag: 'schedule', onPressed: (){Navigator.pushNamed(context, '/schedule');}),]),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: Column(
@@ -161,7 +161,7 @@ class _FitScreenState extends State<FitScreen>
       case BoxState.hasSchedule:
         decoration = BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: BoxBorder.all(color: CustomColors.greenOutline(context)),
+          border: BoxBorder.all(color: CustomColors.blueOutline(context)),
           borderRadius: BorderRadius.circular(12),
         );
         icon = Icons.event_available;
@@ -225,6 +225,38 @@ class _FitScreenState extends State<FitScreen>
           ),
         ),
       ),
+    );
+  }
+}
+
+class ExerciseScheduleScreen extends StatefulWidget {
+  const ExerciseScheduleScreen({super.key});
+
+  @override
+  State<ExerciseScheduleScreen> createState() => _ExerciseScheduleScreenState();
+}
+
+class _ExerciseScheduleScreenState extends State<ExerciseScheduleScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(),
+    );
+  }
+}
+
+class ExerciseTutorialScreen extends StatefulWidget {
+  const ExerciseTutorialScreen({super.key});
+
+  @override
+  State<ExerciseTutorialScreen> createState() => _ExerciseTutorialScreenState();
+}
+
+class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(),
     );
   }
 }
