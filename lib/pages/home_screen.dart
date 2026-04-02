@@ -15,8 +15,7 @@ class HomeScreen extends StatefulWidget {
 
   const HomeScreen({super.key, required this.onNavigate});
 
-  static Future<void> logUserOut(DataProvider provider) async {
-    provider.clearUser();
+  static Future<void> logUserOut() async {
     FirebaseAuth.instance.signOut();
   }
 
@@ -126,9 +125,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   content: Text('Do you want to log out?'),
                                   actions: [
                                     OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text('Cancel')),
-                                    FilledButton(onPressed: () async {await HomeScreen.logUserOut(context.read<DataProvider>());
+                                    FilledButton(onPressed: () async {await HomeScreen.logUserOut();
                                       if(context.mounted){
-                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pushNamedAndRemoveUntil('/auth', (route) => false);
+                                        context.read<DataProvider>().clearUser();
                                       }
                                       }, child: Text('Sign Out')),
                                   ],

@@ -2932,10 +2932,377 @@ class EditSheets{
     });
   };
 
-  static void Function(BuildContext) userEdit = (BuildContext context){};
+  static void Function(BuildContext) userEdit = (BuildContext context){
+    final user = context.read<DataProvider>().currentUser!;
+    final usernameController = TextEditingController(text: user.username);
+    final emailController = TextEditingController(text: user.email);
 
-  static void Function(BuildContext) phoneEdit = (BuildContext context){};
+    String? usernameError;
+    String? emailError;
+    bool isSaving = false;
 
-  static void Function(BuildContext) passEdit = (BuildContext context){};
+    showModalBottomSheet(context: context,isScrollControlled: true, builder: (ctx){
+      final ch = Theme.of(ctx).colorScheme;
+      final th = Theme.of(ctx).textTheme;
+      return StatefulBuilder(
+        builder: (ctx, setSheet) {
+          return SizedBox(
+            height: MediaQuery.of(ctx).size.height * 0.85,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: ch.tertiary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Edit Username or Email', style: TextStyle(fontWeight: FontWeight.w500),),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                        },
+                        icon: Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                  Divider(),
+                  const SizedBox(height: 15),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Username', style: th.labelLarge,),
+                          const SizedBox(height: 10,),
+                          TextField(
+                            controller: usernameController,
+                            onChanged: (_) {
+                              if (usernameError != null) {
+                                setSheet(() {
+                                  usernameError = null;
+                                });
+                              }
+                            },
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: CustomColors.greyLight(context),
+                              labelText: 'Username',
+                              prefixIcon: Icon(Icons.height_rounded),
+                              errorText: usernameError,
+                            ),
+                          ),
+                          const SizedBox(height: 20,),
+                          Text('Email', style: th.labelLarge,),
+                          const SizedBox(height: 10,),
+                          TextField(
+                            controller: emailController,
+                            onChanged: (_) {
+                              if (emailError != null) {
+                                setSheet(() {
+                                  emailError = null;
+                                });
+                              }
+                            },
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: CustomColors.greyLight(context),
+                              labelText: 'Email',
+                              prefixIcon: Icon(Symbols.weight_rounded),
+                              errorText: emailError,
+                            ),
+                          ),
+                          const SizedBox(width: 10,),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      OutlinedButton(onPressed: isSaving ? null : (){Navigator.pop(ctx);}, child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 10,
+                        ),
+                        child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.w500),),
+                      ),),
+                      FilledButton(
+                        onPressed: isSaving ? null : () async {
+                          bool isValid = true;
+                          final u = usernameController.text.trim();
+                          if (u.isEmpty) {
+                            usernameError = 'Username is required';
+                            isValid = false;
+                          } else if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(u)) {
+                            usernameError = 'Only letters, numbers and underscore';
+                            isValid = false;
+                          } else {
+                            usernameError = null;
+                          }
+
+                          final e = emailController.text.trim();
+                          if (e.isEmpty) {
+                            emailError = 'Email is required';
+                            isValid = false;
+                          } else if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(e)) {
+                            emailError = 'Enter a valid email';
+                            isValid = false;
+                          } else {
+                            emailError = null;
+                          }
+
+                          if(!isValid)  return;
+
+                          setSheet(() => isSaving = true);
+                          try{
+                            await context.read<DataProvider>().updateUsernameAndEmail(username: usernameController.text, email: emailController.text);
+                          }catch(e){
+                            if(context.mounted){
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+                            }
+                          }finally{
+                            setSheet(() => isSaving = false);
+                          }
+                          if(context.mounted) Navigator.pop(ctx);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 10,
+                          ),
+                          child: isSaving ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2,)) : Text('Save', style: TextStyle(fontWeight: FontWeight.w500),),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    });
+  };
+
+  static void Function(BuildContext) phoneEdit = (BuildContext context){
+    final user = context.read<DataProvider>().currentUser!;
+
+    final List<Map<String, String>> codes = [
+      {'name': 'BAN', 'code': '+880'},
+      {'name': 'US/CAN', 'code': '+1'},
+      {'name': 'UK', 'code': '+44'},
+      {'name': 'IN', 'code': '+91'},
+      {'name': 'AUS', 'code': '+61'},
+      {'name': 'GER', 'code': '+49'},
+      {'name': 'FRA', 'code': '+33'},
+      {'name': 'UAE', 'code': '+971'},
+      {'name': 'SAU', 'code': '+966'},
+    ];
+    String selectedCode = '+880';
+    String initialNumber = '';
+    if(user.phone != null && user.phone != 'None' && user.phone!.isNotEmpty){
+      final allCodes = codes.map((c) => c['code']!).toList();
+      allCodes.sort((a, b) => b.length.compareTo(a.length));
+      final matchedCode = allCodes.firstWhere((code) => user.phone!.startsWith(code), orElse: () => '+880');
+      selectedCode = matchedCode;
+      initialNumber = user.phone!.substring(matchedCode.length);
+    }
+    final phoneController = TextEditingController(text: initialNumber);
+    String? phoneError;
+    bool isSaving = false;
+
+    showModalBottomSheet(context: context,isScrollControlled: true, builder: (ctx){
+      final ch = Theme.of(ctx).colorScheme;
+      final th = Theme.of(ctx).textTheme;
+      return StatefulBuilder(
+        builder: (ctx, setSheet) {
+          return Padding(
+            padding: EdgeInsetsGeometry.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+            child: SizedBox(
+              height: MediaQuery.of(ctx).size.height * 0.5,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: ch.tertiary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Edit Phone Number', style: TextStyle(fontWeight: FontWeight.w500),),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                          },
+                          icon: Icon(Icons.close),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    const SizedBox(height: 15),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Phone NUmber', style: th.labelLarge,),
+                            const SizedBox(height: 10,),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(
+                                      height: 56,
+                                      width: 90,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: CustomColors.greyLight(context),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Center(
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              DropdownButtonHideUnderline(
+                                                child: DropdownButton<String>(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  isDense: true,
+                                                  elevation: 0,
+                                                  style: Theme.of(context).textTheme.bodyMedium,
+                                                  value: selectedCode,
+                                                  items: codes.map<DropdownMenuItem<String>>((country) {
+                                                    return DropdownMenuItem<String>(
+                                                      value: country['code'],
+                                                      child: Text('${country['name']} (${country['code']})'),
+                                                    );
+                                                  }).toList(),
+                                                  onChanged: (String? newCode) {
+                                                    setSheet(() {
+                                                      selectedCode = newCode!;
+                                                      if(phoneError != null) phoneError = null;
+                                                    });
+                                                  },
+                                                  selectedItemBuilder: (BuildContext context) {
+                                                    return codes.map<Widget>((country) {
+                                                      return Text(country['code']!);
+                                                    }).toList();
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    if(phoneError != null) const SizedBox(height: 18),
+                                  ],
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: TextField(
+                                    controller: phoneController,
+                                    keyboardType: TextInputType.phone,
+                                    onChanged: (_){
+                                      if(phoneError != null){
+                                        setSheet(() => phoneError = null);
+                                      }
+                                    },
+                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                    decoration: InputDecoration(
+                                      prefixIcon: Icon(Icons.phone),
+                                      labelText: 'Phone no',
+                                      hintText: 'XXXXXXXXXX',
+                                      helperText: '*Leave Empty to remove',
+                                      errorText: phoneError,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        OutlinedButton(onPressed: isSaving ? null : (){Navigator.pop(ctx);}, child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 10,
+                          ),
+                          child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.w500),),
+                        ),),
+                        FilledButton(
+                          onPressed: isSaving ? null : () async {
+                            final number = phoneController.text.trim();
+                            if(number.isNotEmpty && number.length != 10){
+                              setSheet(() => phoneError = 'Please enter a valid phone no');
+                              return;
+                            }
+                            final merged = number.isNotEmpty ? '$selectedCode$number' : null;
+            
+                            setSheet(() => isSaving = true);
+                            try{
+                              await context.read<DataProvider>().updateProfileField('phone', merged ?? 'None');
+                            }catch(e){
+                              if(context.mounted){
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+                              }
+                            }finally{
+                              setSheet(() => isSaving = false);
+                            }
+                            if(context.mounted) Navigator.pop(ctx);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40,
+                              vertical: 10,
+                            ),
+                            child: isSaving ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2,)) : Text('Save', style: TextStyle(fontWeight: FontWeight.w500),),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    });
+  };
+
+  static void Function(BuildContext) passEdit = (BuildContext context){
+
+  };
 }
 

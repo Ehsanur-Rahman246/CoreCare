@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in_web/web_only.dart' as web;
@@ -25,36 +27,62 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  StreamSubscription? _linkGoogleSub;
+
   Future<void> _linkGoogle() async {
+    if(kIsWeb) return;
     final provider = context.read<DataProvider>();
     try {
-      final googleUser = await GoogleSignIn.instance.authenticate();
-      final existing = await FirebaseFirestore.instance
-          .collection('users')
-          .where('googleId', isEqualTo: googleUser.id)
-          .limit(1)
-          .get();
-      if (existing.docs.isNotEmpty) {
-        await GoogleSignIn.instance.signOut();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'This Google account is already linked to another user',
-              ),
-            ),
-          );
-        }
-        return;
-      }
-      await provider.updateGoogleLink(googleUser.id, googleUser.email);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
-      }
+    final googleUser = await GoogleSignIn.instance.authenticate();
+    final existing = await FirebaseFirestore.instance
+        .collection('users')
+        .where('googleId', isEqualTo: googleUser.id)
+        .limit(1)
+        .get();
+    if (existing.docs.isNotEmpty) {
+    await GoogleSignIn.instance.signOut();
+    Fluttertoast.showToast(msg: 'This Google account is already linked to another user');
+    return;
     }
+    await provider.updateGoogleLink(googleUser.id, googleUser.email);
+    } catch (e) {
+    Fluttertoast.showToast(msg: 'Google sign-in failed: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb) {
+      _linkGoogleSub = GoogleSignIn.instance.authenticationEvents.listen((event) async {
+        if(!mounted) return;
+        if(FirebaseAuth.instance.currentUser == null) return;
+        final GoogleSignInAccount? user = switch (event) {
+          GoogleSignInAuthenticationEventSignIn() => event.user,
+          _ => null,
+        };
+        if (user == null) return;
+        final provider = context.read<DataProvider>();
+        final currentUser = provider.currentUser;
+        if(currentUser == null || currentUser.googleId != null) return;
+        final existing = await FirebaseFirestore.instance
+            .collection('users')
+            .where('googleId', isEqualTo: user.id)
+            .limit(1)
+            .get();
+        if (existing.docs.isNotEmpty) {
+          Fluttertoast.showToast(msg: 'This Google account is already linked to another user');
+          return;
+        }
+        await provider.updateGoogleLink(user.id, user.email);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _linkGoogleSub?.cancel();
+    super.dispose();
   }
 
   Future<void> _unlinkGoogle() async {
@@ -78,24 +106,12 @@ class _ProfilePageState extends State<ProfilePage> {
           .get();
 
       if (existing.docs.isNotEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'This Apple account is already linked to another user',
-              ),
-            ),
-          );
-        }
+        Fluttertoast.showToast(msg: 'This Apple account is already linked to another user');
         return;
       }
       await provider.updateAppleLink(appleCredential.userIdentifier, appleCredential.email);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Apple sign-in failed: $e')));
-      }
+      Fluttertoast.showToast(msg: 'Apple sign-in failed: $e');
     }
   }
 
@@ -128,42 +144,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    final provider = context.read<DataProvider>();
-    if (kIsWeb) {
-      GoogleSignIn.instance.authenticationEvents.listen((event) async {
-        final GoogleSignInAccount? user = switch (event) {
-          GoogleSignInAuthenticationEventSignIn() => event.user,
-          _ => null,
-        };
-        if (user == null) return;
-        final existing = await FirebaseFirestore.instance
-            .collection('users')
-            .where('googleId', isEqualTo: user.id)
-            .limit(1)
-            .get();
-        if (existing.docs.isNotEmpty) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'This Google account is already linked to another user',
-                ),
-              ),
-            );
-          }
-          return;
-        }
-        await provider.updateGoogleLink(user.id, user.email);
-      });
-    }
-  }
-
-
-  @override
   Widget build(BuildContext context) {
-    final user = context.watch<DataProvider>().currentUser!;
+    final user = context.watch<DataProvider>().currentUser;
+    if(user == null) return const SizedBox.shrink();
     final isGoogleConnected = user.googleId != null;
     final isAppleConnected = user.appleId != null;
     return Scaffold(
@@ -500,7 +483,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               spacing: 15,
                               runSpacing: 10,
                               children: [
-                                OutlinedButton(onPressed: (){}, child: Padding(
+                                OutlinedButton(onPressed: () => EditSheets.userEdit(context), child: Padding(
                                   padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
                                   child: Row(
                                       mainAxisSize: MainAxisSize.min,
@@ -595,7 +578,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ).colorScheme.error,
                                   ),
                                   onPressed: () async {
-                                    await HomeScreen.logUserOut(context.read<DataProvider>());
+                                    await HomeScreen.logUserOut();
                                     if (context.mounted) {
                                       Navigator.of(
                                         context,
@@ -603,6 +586,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         '/auth',
                                             (route) => false,
                                       );
+                                      context.read<DataProvider>().clearUser();
                                     }
                                   },
                                   child: Text('Log out'),
@@ -686,11 +670,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                       await FirebaseAuth.instance.signOut();
                                       if(context.mounted){
                                         Navigator.of(context).pushNamedAndRemoveUntil('/auth', (route) => false);
+                                        context.read<DataProvider>().clearUser();
                                       }
                                     }catch(e){
                                       if(context.mounted){
                                         Navigator.of(context).pop();
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete account: $e')));
+                                        Fluttertoast.showToast(msg: 'Failed to delete account: $e');
                                       }
                                     }
                                   },

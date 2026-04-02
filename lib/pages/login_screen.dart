@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_care/data_provider.dart';
 import 'package:core_care/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -24,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
   String? emailError;
   String? passError;
+  StreamSubscription? _googleAuthSub;
 
   void logUserIn() async{
     setState(() {
@@ -101,9 +104,84 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    if(kIsWeb){
+      _googleAuthSub = GoogleSignIn.instance.authenticationEvents.listen((event)async{
+        final googleUser = switch(event){
+          GoogleSignInAuthenticationEventSignIn() => event.user,
+        _ => null,
+        };
+        if(googleUser == null) return;
+        await _handleGoogleUser(googleUser.id, googleUser.email);
+      });
+    }
+  }
+
+  Future<void> _loginWithGoogle() async{
+    try{
+      final googleUser = await GoogleSignIn.instance.authenticate();
+      await _handleGoogleUser(googleUser.id, googleUser.email);
+    }catch(e){
+      Fluttertoast.showToast(msg: 'Google sign-in failed: $e');
+    }
+  }
+
+  Future<void> _handleGoogleUser(String googleId, String? googleEmail) async{
+    _showLoadingDialog();
+    try{
+      final query = await FirebaseFirestore.instance.collection('users').where('googleId', isEqualTo: googleId).limit(1).get();
+      if(query.docs.isEmpty){
+        if(mounted) Navigator.of(context, rootNavigator: true).pop();
+        Fluttertoast.showToast(msg: 'No account linked to this Google account');
+        await GoogleSignIn.instance.signOut();
+        return;
+      }
+      final uid = query.docs.first['uid'] as String;
+      await _fetchAndNavigate(uid);
+    }catch(e){
+      if(mounted) Navigator.of(context, rootNavigator: true).pop();
+      Fluttertoast.showToast(msg: 'Login failed: $e');
+    }
+  }
+
+  Future<void> _loginWithApple() async{
+    _showLoadingDialog();
+    try{
+      final appleCredential = await SignInWithApple.getAppleIDCredential(scopes: [AppleIDAuthorizationScopes.email]);
+
+      final query = await FirebaseFirestore.instance.collection('users').where('appleId', isEqualTo: appleCredential.userIdentifier).limit(1).get();
+      if(query.docs.isEmpty){
+        if(mounted) Navigator.of(context, rootNavigator: true).pop();
+        Fluttertoast.showToast(msg: 'No account linked to this Apple ID');
+        return;
+      }
+
+      final uid = query.docs.first['uid'] as String;
+      await _fetchAndNavigate(uid);
+    }catch(e){
+      if(mounted) Navigator.of(context, rootNavigator: true).pop();
+      Fluttertoast.showToast(msg: 'Apple sign-in failed: $e');
+    }
+  }
+
+  Future<void> _fetchAndNavigate(String uid) async{
+    final dataProvider = Provider.of<DataProvider>(context, listen: false);
+    await dataProvider.fetchUser(uid);
+    if(mounted){
+      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+    }
+  }
+
+  void _showLoadingDialog(){
+    showDialog(context: context,barrierDismissible: false, builder: (_) => const Center(child: CircularProgressIndicator(),));
+  }
 
   @override
   void dispose() {
+    _googleAuthSub?.cancel();
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -247,22 +325,52 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: EdgeInsets.all(10),
+                    onTap: kIsWeb ? null : _loginWithGoogle,
+                    child: SizedBox(
                       height: 50,
                       width: 50,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(10),
+                      child: kIsWeb ?
+                      Stack(children: [
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Image.asset('assets/logo/google.png'),
+                        ),
+                        Opacity(opacity: 0.005,
+                          child: SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: web.renderButton(
+                              configuration: GSIButtonConfiguration(
+                                size: GSIButtonSize.large,
+                                shape: GSIButtonShape.pill,
+                                minimumWidth: 5000,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],) :
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Image.asset('assets/logo/google.png'),
                       ),
-                      child: Image.asset('assets/logo/google.png'),
                     ),
                   ),
 
                   const SizedBox(width: 25),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: _loginWithApple,
                     child: Container(
                       padding: EdgeInsets.all(10),
                       height: 50,
@@ -313,3 +421,29 @@ class AuthPage extends StatelessWidget {
   }
 }
 
+class ForgotPasswordScreen extends StatefulWidget {
+  final String prefill;
+  const ForgotPasswordScreen({super.key, required this.prefill});
+
+  @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  String? inputError;
+  bool isLoading = false;
+  String? resolvedUid;
+  String? resolvedEmail;
+  bool hasGoogle = false;
+  bool hasPhone = false;
+  String? linkedPhone;
+
+  _Step =
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+enum Step{}

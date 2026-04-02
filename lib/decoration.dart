@@ -116,3 +116,24 @@ class Emoji{
 
   static final Image goal = Image.asset('assets/emojis/dart.png');
 }
+
+class Greet{
+  final String text;
+  final Image emoji;
+
+  Greet({required this.text, required this.emoji});
+}
+
+class Greetings extends StatefulWidget {
+  const Greetings({super.key});
+
+  @override
+  State<Greetings> createState() => _GreetingsState();
+}
+
+class _GreetingsState extends State<Greetings> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}

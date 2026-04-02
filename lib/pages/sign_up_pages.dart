@@ -3172,6 +3172,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
   final emailKey = GlobalKey();
   final passKey = GlobalKey();
   final confirmKey = GlobalKey();
+  final phoneKey = GlobalKey();
   bool isLoading = false;
   late SignupPageNineData data;
   bool isHiddenOne = true;
@@ -3194,6 +3195,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
   String? passwordError;
   String? confirmError;
   String? emailError;
+  String? phoneError;
 
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -3255,6 +3257,14 @@ class _SignupPageNineState extends State<SignupPageNine> {
       } else {
         confirmError = null;
       }
+      if(phoneController.text.isEmpty){
+        phoneError = null;
+      }else if(phoneController.text.length != 10){
+        phoneError = 'Please enter a valid phone no';
+        isValid = false;
+      }else{
+        phoneError = null;
+      }
     });
     if (isValid) {
       final results = await Future.wait([
@@ -3309,6 +3319,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
       if (emailError != null) errorKeys.add(emailKey);
       if (passwordError != null) errorKeys.add(passKey);
       if (confirmError != null) errorKeys.add(confirmKey);
+      if(phoneError != null) errorKeys.add(phoneKey);
 
       if (errorKeys.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -3648,12 +3659,22 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
+                    key: phoneKey,
                     controller: phoneController,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (_){
+                      if(phoneError != null){
+                        setState(() {
+                          phoneError = null;
+                        });
+                      }
+                    },
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.phone),
                       labelText: 'Phone no',
                       hintText: 'XXXXXXXXXX',
                       helperText: '*Optional',
+                      errorText: phoneError,
                     ),
                   ),
                 ),
@@ -3878,6 +3899,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
               onChanged: (String? newCode) {
                 setState(() {
                   selectedCode = newCode!;
+                  if(phoneError != null) phoneError = null;
                 });
               },
               selectedItemBuilder: (BuildContext context) {

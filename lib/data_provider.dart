@@ -707,6 +707,26 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateUsernameAndEmail({
+    required String username,
+    required String email,
+  })async{
+    final fields = <String, dynamic>{
+      'username' : username,
+      'email' : email,
+    };
+
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
+      final updatedMap = currentUser!.toMap()..addAll(fields);
+      currentUser = UserData.fromMap(updatedMap);
+      notifyListeners();
+    }catch(e){
+      debugPrint('updateBodyStats error: $e');
+      rethrow;
+    }
+  }
+
   Future<void> updateGoogleLink(String? id, String? email) async{
     if(currentUser == null) return;
     try{
