@@ -4,6 +4,12 @@ import 'package:core_care/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:google_sign_in_web/web_only.dart' as web;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in_web/google_sign_in_web.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -94,6 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
   }
+
 
   @override
   void dispose() {
@@ -240,9 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/google');
-                    },
+                    onTap: () {},
                     child: Container(
                       padding: EdgeInsets.all(10),
                       height: 50,
@@ -257,9 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(width: 25),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/apple');
-                    },
+                    onTap: () {},
                     child: Container(
                       padding: EdgeInsets.all(10),
                       height: 50,

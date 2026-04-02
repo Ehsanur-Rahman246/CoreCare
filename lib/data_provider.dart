@@ -300,10 +300,10 @@ class UserData {
       name: map['name'] ?? '',
       username: map['username'] ?? '',
       email: map['email'] ?? '',
-      googleId: map['googleId'] ?? '',
-      googleEmail: map['googleEmail'] ?? '',
-      appleId: map['appleId'] ?? '',
-      appleEmail: map['appleEmail'] ?? '',
+      googleId: map['googleId'],
+      googleEmail: map['googleEmail'],
+      appleId: map['appleId'],
+      appleEmail: map['appleEmail'],
       phone: map['phone'] ?? 'None',
       address: map['address'] ?? '',
       password: map['password'] ?? '',
@@ -683,6 +683,7 @@ class DataProvider extends ChangeNotifier {
     String? durationType,
     String? dayType,
     List<String>? freeType,
+    String? placeType,
   }) async{
     if(currentUser == null) return;
     final fields = <String, dynamic>{};
@@ -691,6 +692,7 @@ class DataProvider extends ChangeNotifier {
     if(durationType != null) fields['duration'] = durationType;
     if(dayType != null) fields['workoutDays'] = dayType;
     if(freeType != null) fields['freeDays'] = freeType;
+    if(placeType != null) fields['place'] = placeType;
 
     if(fields.isEmpty) return;
     try{
@@ -701,6 +703,40 @@ class DataProvider extends ChangeNotifier {
       notifyListeners();
     }catch(e){
       debugPrint('updateSchedule error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateGoogleLink(String? id, String? email) async{
+    if(currentUser == null) return;
+    try{
+      final fields = <String, dynamic>{
+        'googleId' : id,
+        'googleEmail' : email,
+      };
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
+      final updatedMap = currentUser!.toMap()..addAll(fields);
+      currentUser = UserData.fromMap(updatedMap);
+      notifyListeners();
+    }catch(e){
+      debugPrint('updatedProfileField error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateAppleLink(String? id, String? email) async{
+    if(currentUser == null) return;
+    try{
+      final fields = <String, dynamic>{
+        'appleId' : id,
+        'appleEmail' : email,
+      };
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
+      final updatedMap = currentUser!.toMap()..addAll(fields);
+      currentUser = UserData.fromMap(updatedMap);
+      notifyListeners();
+    }catch(e){
+      debugPrint('updatedProfileField error: $e');
       rethrow;
     }
   }

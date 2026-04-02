@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(width: 10),
                       PopupMenuButton(
-                        onSelected: (value) async {
+                        onSelected: (value){
                           switch (value) {
                             case 0:
                               Navigator.push(
@@ -120,7 +120,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.pushNamed(context, '/settings');
                               break;
                             case 2:
-                              await HomeScreen.logUserOut(context.read<DataProvider>());
+                              showDialog(context: context, builder: (context){
+                                return AlertDialog(
+                                  title: Text('Sign Out'),
+                                  content: Text('Do you want to log out?'),
+                                  actions: [
+                                    OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text('Cancel')),
+                                    FilledButton(onPressed: () async {await HomeScreen.logUserOut(context.read<DataProvider>());
+                                      if(context.mounted){
+                                        Navigator.of(context).pop();
+                                      }
+                                      }, child: Text('Sign Out')),
+                                  ],
+                                );
+                              });
                               break;
                           }
                         },

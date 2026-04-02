@@ -2167,7 +2167,7 @@ class EditSheets{
       'Function & posture',
       'Growth & adaptation'
     ].indexOf(user.fundType).clamp(0, 6);
-    String selectedGoal = user.goalType;
+    final Map<int, String> goalPerFund = {selectedFundIndex : user.goalType,};
 
     const workOptions = ['Sedentary', 'Moderately Active', 'Physically Active'];
     const activeOptions = ['Low', 'Moderate', 'High'];
@@ -2195,6 +2195,13 @@ class EditSheets{
       'Growth & adaptation'
     ];
 
+    final workIcons = [Emoji.o1, Emoji.o2, Emoji.o3];
+    final activeIcons = [Emoji.a1, Emoji.a2, Emoji.a3];
+    final fitIcons = [Emoji.f1, Emoji.f2, Emoji.f3];
+    final equipIcons = [Emoji.e1, Emoji.e2, Emoji.e3];
+    final styleIcons = [Emoji.style1, Emoji.style2, Emoji.style3, Emoji.style4, Emoji.style5, Emoji.style6, Emoji.style7, Emoji.style8, Emoji.style9, Emoji.style10];
+    final fundIcons = [Emoji.fund1, Emoji.fund2, Emoji.fund3, Emoji.fund4, Emoji.fund5, Emoji.fund6, Emoji.fund7];
+
     bool isSaving = false;
 
     showModalBottomSheet(context: context,isScrollControlled: true, builder: (ctx){
@@ -2204,8 +2211,9 @@ class EditSheets{
       return StatefulBuilder(
         builder: (context, setSheet) {
           const timedFunds = [0, 1, 4, 6];
-          final planType = timedFunds.contains(selectedFundIndex);
+          final String planType = timedFunds.contains(selectedFundIndex) ? 'Timed' : 'Ongoing';
           final List<String> currentGoals = goalPreviews[user.ageGroup]?[selectedFundIndex] ?? [];
+          final String selectedGoal = goalPerFund[selectedFundIndex] ?? (currentGoals.isNotEmpty ? currentGoals[0] : '');
 
           return SizedBox(
             height: MediaQuery.of(ctx).size.height * 0.85,
@@ -2250,7 +2258,9 @@ class EditSheets{
                           Wrap(
                             spacing: 10,
                             runSpacing: 10,
-                            children: workOptions.map((opt){
+                            children: workOptions.asMap().entries.map((entry){
+                              final index = entry.key;
+                              final opt = entry.value;
                               final isSelected = selectedWork == opt;
                               return ChoiceChip(label: Text(opt),
                                 shape: StadiumBorder(),
@@ -2258,6 +2268,7 @@ class EditSheets{
                                 selectedColor: CustomColors.primaryMuted(context),
                                 labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
                                 showCheckmark: false,
+                                avatar: workIcons[index],
                                 selected: isSelected,
                                 onSelected: (_) => setSheet(() => selectedWork = opt),
                               );
@@ -2269,7 +2280,9 @@ class EditSheets{
                           Wrap(
                             spacing: 10,
                             runSpacing: 10,
-                            children: activeOptions.map((opt){
+                            children: activeOptions.asMap().entries.map((entry){
+                              final index = entry.key;
+                              final opt = entry.value;
                               final isSelected = selectedActive == opt;
                               return ChoiceChip(label: Text(opt), selected: isSelected,
                                 shape: StadiumBorder(),
@@ -2277,6 +2290,7 @@ class EditSheets{
                                 selectedColor: CustomColors.primaryMuted(context),
                                 labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
                                 showCheckmark: false,
+                                avatar: activeIcons[index],
                                 onSelected: (_) => setSheet(() => selectedActive = opt),
                               );
                             }).toList(),
@@ -2287,7 +2301,9 @@ class EditSheets{
                           Wrap(
                             spacing: 10,
                             runSpacing: 10,
-                            children: fitOptions.map((opt){
+                            children: fitOptions.asMap().entries.map((entry){
+                              final index = entry.key;
+                              final opt = entry.value;
                               final isSelected = selectedFit == opt;
                               return ChoiceChip(label: Text(opt),
                                   shape: StadiumBorder(),
@@ -2295,11 +2311,141 @@ class EditSheets{
                                   selectedColor: CustomColors.primaryMuted(context),
                                   labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
                                   selected: isSelected,
+                                  avatar: fitIcons[index],
                                   showCheckmark: false,
-                                  onSelected: (_) => setSheet(() => selectedFit = opt);
+                                  onSelected: (_) => setSheet(() => selectedFit = opt),
                               );
                             }).toList(),
                           ),
+                          const SizedBox(height: 25,),
+                          Text('Training Style', style: Theme.of(ctx).textTheme.labelLarge,),
+                          const SizedBox(height: 8,),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: styleOptions.asMap().entries.map((entry){
+                              final index = entry.key;
+                              final opt = entry.value;
+                              final isSelected = selectedStyle.contains(opt);
+                              return FilterChip(label: Text(opt),
+                                shape: StadiumBorder(),
+                                backgroundColor: ch.surface,
+                                selectedColor: CustomColors.primaryMuted(context),
+                                labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                                selected: isSelected,
+                                avatar: styleIcons[index],
+                                showCheckmark: false,
+                                onSelected: (selected) {
+                                setSheet((){
+                                  const mixedLabel = 'Mixed';
+                                  if(opt == mixedLabel){
+                                    if(selected){
+                                      selectedStyle.clear();
+                                      selectedStyle.add(mixedLabel);
+                                    }else{
+                                      selectedStyle.remove(mixedLabel);
+                                    }
+                                  }else{
+                                    if(selected){
+                                      selectedStyle.add(opt);
+                                      selectedStyle.remove(mixedLabel);
+                                    }else{
+                                      selectedStyle.remove(opt);
+                                    }
+                                    final allSelected = styleOptions.where((s) => s != mixedLabel).every((s) => selectedStyle.contains(s));
+                                    if(allSelected){
+                                      selectedStyle.clear();
+                                      selectedStyle.add(mixedLabel);
+                                    }
+                                  }
+                                });
+                                },
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 25,),
+                          Text('Equipment Access', style: Theme.of(ctx).textTheme.labelLarge,),
+                          const SizedBox(height: 8,),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: equipOptions.asMap().entries.map((entry){
+                              final index = entry.key;
+                              final opt = entry.value;
+                              final isSelected = selectedEquip == opt;
+                              return ChoiceChip(label: Text(opt),
+                                shape: StadiumBorder(),
+                                backgroundColor: ch.surface,
+                                selectedColor: CustomColors.primaryMuted(context),
+                                labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                                selected: isSelected,
+                                avatar: CircleAvatar(backgroundColor: CustomColors.greyLight(context), child: equipIcons[index],),
+                                showCheckmark: false,
+                                onSelected: (_) => setSheet(() => selectedEquip = opt),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 25,),
+                          Text('Focus Area', style: Theme.of(ctx).textTheme.labelLarge,),
+                          const SizedBox(height: 8,),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: fundLabels.asMap().entries.map((entry){
+                              final index = entry.key;
+                              final label = entry.value;
+                              final isSelected = selectedFundIndex == index;
+                              return ChoiceChip(label: Text(label),
+                                shape: StadiumBorder(),
+                                backgroundColor: ch.surface,
+                                selectedColor: CustomColors.primaryMuted(context),
+                                labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                                selected: isSelected,
+                                avatar: CircleAvatar(backgroundColor: CustomColors.greyLight(context), child: fundIcons[index], ),
+                                showCheckmark: false,
+                                onSelected: (_) => setSheet((){
+                                  selectedFundIndex = index;
+                                  if(!goalPerFund.containsKey(index)){
+                                    final newGoals = goalPreviews[user.ageGroup]?[index] ?? [];
+                                    goalPerFund[index] = newGoals.isNotEmpty ? newGoals[0] : '';
+                                  }
+                                }),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 25,),
+                          Text('Goals', style: Theme.of(ctx).textTheme.labelLarge,),
+                          const SizedBox(height: 8,),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: currentGoals.map((goal){
+                              final isSelected = selectedGoal == goal;
+                              return ChoiceChip(label: Text(goal),
+                                shape: StadiumBorder(),
+                                backgroundColor: ch.surface,
+                                selectedColor: CustomColors.primaryMuted(context),
+                                labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                                selected: isSelected,
+                                avatar: Emoji.goal,
+                                showCheckmark: false,
+                                onSelected: (_) => setSheet(() => goalPerFund[selectedFundIndex] = goal),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 15,),
+                          Row(children: [
+                            Text('Plan Type: ', style: th.labelLarge,),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: planType == 'Timed' ? CustomColors.blueMuted(context) : CustomColors.greenMuted(context),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: planType == 'Timed' ? CustomColors.blueOutline(context) : CustomColors.greenOutline(context))
+                              ),
+                              child: Text(planType, style: TextStyle(color: planType == 'Timed' ? CustomColors.bluePrimary(context) : CustomColors.greenPrimary(context), fontSize: 14, fontWeight: FontWeight.w500),),
+                            ),
+                          ],),
                         ],
                       ),
                     ),
@@ -2319,8 +2465,8 @@ class EditSheets{
                         onPressed: isSaving ? null : () async {
                           setSheet(() => isSaving = true);
                           try{
-                            final dietChanged = sheetDiet != user.dietType;
-                            await context.read<DataProvider>().updateDietPreference(newDiet: dietChanged ? sheetDiet : null, newMeals: sheetMeals, newRegions: sheetRegions.toList());
+                            final String finalGoal = goalPerFund[selectedFundIndex] ?? (currentGoals.isNotEmpty ? currentGoals[0] : '');
+                            await context.read<DataProvider>().updateFitnessProfile(fitType: selectedFit, workType: selectedWork, activityLevel: selectedActive, styleType: selectedStyle.toList(), equipType: selectedEquip, fundType: fundLabels[selectedFundIndex], goalType: finalGoal, planType: planType);
                           }catch(e){
                             if(context.mounted){
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
@@ -2559,6 +2705,8 @@ class EditSheets{
 
     const timeTypeOptions = ['Early Morning', 'Late Morning', 'Afternoon', 'Evening'];
     final timeAvatars = [Emoji.s1, Emoji.s2, Emoji.s3, Emoji.s4];
+    final placeOptions = ['Home', 'Gym', 'Outdoors', 'Any'];
+    final placeIcons = [Emoji.place1, Emoji.place2, Emoji.place3, Emoji.style10];
     const durationOptions = ['15-30 min', '30-45 min', '45-60 min', '60+ min'];
     const dayOptions = ['2', '3', '4', '5', '6'];
     const freeDayOptions = ['Son', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -2671,6 +2819,30 @@ class EditSheets{
                           }).toList(),
                         ),
                         const SizedBox(height: 25,),
+                        Text('Workout Place', style: Theme.of(ctx).textTheme.labelLarge,),
+                        const SizedBox(height: 8,),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: placeOptions.map((opt){
+                            final isSelected = selectedDurationType == opt;
+                            final index = placeOptions.indexOf(opt);
+                            return ChoiceChip(label: Text(opt),
+                                shape: StadiumBorder(),
+                                backgroundColor: ch.surface,
+                                selectedColor: CustomColors.primaryMuted(context),
+                                side: BorderSide(color: isSelected ? Colors.transparent : ch.primary),
+                                labelStyle: TextStyle(color: isSelected ? ch.primary : ch.onSurface),
+                                selected: isSelected,
+                                avatar: placeIcons[index],
+                                showCheckmark: false,
+                                onSelected: (_){
+                                  setSheet(() => selectedDurationType = opt);
+                                }
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 25,),
                         Text('Workout Per Week', style: Theme.of(ctx).textTheme.labelLarge,),
                         const SizedBox(height: 8,),
                         Wrap(
@@ -2759,5 +2931,11 @@ class EditSheets{
       });
     });
   };
+
+  static void Function(BuildContext) userEdit = (BuildContext context){};
+
+  static void Function(BuildContext) phoneEdit = (BuildContext context){};
+
+  static void Function(BuildContext) passEdit = (BuildContext context){};
 }
 

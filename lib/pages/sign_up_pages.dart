@@ -90,14 +90,22 @@ class SignupPageOneData {
   void calculateAndSave() {
     if (height != null && weight != null && dob != null && gender != null) {
       final heightCm = toHeightCm(
-          height!, isHeightFt, inches: heightInches ?? 0);
+        height!,
+        isHeightFt,
+        inches: heightInches ?? 0,
+      );
       final weightKg = toWeightKg(weight!, isWeightKg);
       final calculatedAge = calculateAge(dob!);
       age = calculateAge(dob!);
       bmi = double.parse(calculateBMI(heightCm, weightKg).toStringAsFixed(1));
       bmr = double.parse(
-          calculateBMR(heightCm, weightKg, calculatedAge, gender!)
-              .toStringAsFixed(1));
+        calculateBMR(
+          heightCm,
+          weightKg,
+          calculatedAge,
+          gender!,
+        ).toStringAsFixed(1),
+      );
       ageGroup = getAgeGroup(calculatedAge);
       category = getCategory(bmi!);
     }
@@ -139,10 +147,11 @@ class _SignupPageOneState extends State<SignupPageOne> {
   final TextEditingController dateController = TextEditingController();
 
   Future<void> pickDate() async {
-    DateTime? picked = await showDatePicker(context: context,
-        initialDate: DateTime(2000),
-        firstDate: DateTime(1900),
-        lastDate: DateTime.now()
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
     );
 
     if (picked != null) {
@@ -237,8 +246,9 @@ class _SignupPageOneState extends State<SignupPageOne> {
     data.name = nameController.text.trim();
     data.dob = selectedDate;
     data.gender = genderSelected;
-    data.height = isHeightUnitOne ? selectedFeet.toDouble() : double.tryParse(
-        heightController.text);
+    data.height = isHeightUnitOne
+        ? selectedFeet.toDouble()
+        : double.tryParse(heightController.text);
     data.heightInches = isHeightUnitOne ? selectedInches : 0;
     data.weight = double.tryParse(weightController.text);
     data.isHeightFt = isHeightUnitOne;
@@ -249,9 +259,12 @@ class _SignupPageOneState extends State<SignupPageOne> {
   void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          alignment: 0.2);
+      Scrollable.ensureVisible(
+        context,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
     }
   }
 
@@ -306,156 +319,164 @@ class _SignupPageOneState extends State<SignupPageOne> {
 
   @override
   Widget build(BuildContext context) {
-    final ch = Theme
-        .of(context)
-        .colorScheme;
-    final th = Theme
-        .of(context)
-        .textTheme;
+    final ch = Theme.of(context).colorScheme;
+    final th = Theme.of(context).textTheme;
     return SingleChildScrollView(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Emoji.page1,
-              const SizedBox(width: 10,),
-              Text('Let\'s Get to Know You', style: th.displaySmall,),
-            ],
-          ),
-          const SizedBox(height: 10,),
-          Text(
-            'A few details to set things up for you', style: th.labelMedium,),
-          const SizedBox(height: 20,),
-          TextField(
-            key: nameKey,
-            controller: nameController,
-            decoration: InputDecoration(
-              labelText: 'Name',
-              prefixIcon: Icon(Icons.person_rounded),
-              errorText: nameError,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Emoji.page1,
+                const SizedBox(width: 10),
+                Text('Let\'s Get to Know You', style: th.displaySmall),
+              ],
             ),
-            onChanged: (_) {
-              if (nameError != null) {
-                setState(() {
-                  nameError = null;
-                });
-              }
-            },
-          ),
-          const SizedBox(height: 20,),
-          TextField(
-            key: dobKey,
-            controller: dateController,
-            readOnly: true,
-            decoration: InputDecoration(
-              labelText: 'Date of Birth',
-              prefixIcon: Icon(Icons.calendar_month_outlined),
-              errorText: dobError,
+            const SizedBox(height: 10),
+            Text(
+              'A few details to set things up for you',
+              style: th.labelMedium,
             ),
-            onTap: pickDate,
-            onChanged: (_) {
-              if (dobError != null) {
-                setState(() {
-                  dobError = null;
-                });
-              }
-            },
-          ),
-          const SizedBox(height: 20,),
-          Text(key: genderKey, 'Gender'),
-          const SizedBox(height: 10,),
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => selectGender(1),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: genderSelected != 1 ? ch.surface : CustomColors
-                          .primaryMuted(context),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: genderSelected == 1 ? ch.primary : Colors
-                              .transparent),
-                    ),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10,
-                            vertical: 20),
-                        child: Column(
-                          children: [
-                            Icon(Icons.male_rounded),
-                            const SizedBox(height: 5,),
-                            Text('Male'),
-                            const SizedBox(height: 15,),
-                            genderSelected == 1 ?
-                            Icon(Icons.circle, color: ch.primary,) : Icon(
-                                Icons.circle_outlined),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+            const SizedBox(height: 20),
+            TextField(
+              key: nameKey,
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: 'Name',
+                prefixIcon: Icon(Icons.person_rounded),
+                errorText: nameError,
               ),
-              const SizedBox(width: 20,),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => selectGender(2),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: genderSelected != 2 ? ch.surface : CustomColors
-                          .primaryMuted(context),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: genderSelected == 2 ? ch.primary : Colors
-                              .transparent),
-                    ),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10,
-                            vertical: 20),
-                        child: Column(
-                          children: [
-                            Icon(Icons.female_rounded),
-                            const SizedBox(height: 5,),
-                            Text('Female'),
-                            const SizedBox(height: 15,),
-                            genderSelected == 2 ?
-                            Icon(Icons.circle, color: ch.primary,) : Icon(
-                                Icons.circle_outlined),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if(genderError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(genderError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
-                ),
-              ),
+              onChanged: (_) {
+                if (nameError != null) {
+                  setState(() {
+                    nameError = null;
+                  });
+                }
+              },
             ),
-          const SizedBox(height: 20,),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if(isHeightUnitOne) ...[
+            const SizedBox(height: 20),
+            TextField(
+              key: dobKey,
+              controller: dateController,
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Date of Birth',
+                prefixIcon: Icon(Icons.calendar_month_outlined),
+                errorText: dobError,
+              ),
+              onTap: pickDate,
+              onChanged: (_) {
+                if (dobError != null) {
+                  setState(() {
+                    dobError = null;
+                  });
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+            Text(key: genderKey, 'Gender'),
+            const SizedBox(height: 10),
+            Row(
+              children: [
                 Expanded(
-                  child: SizedBox(
-                    height: 56,
-                    child: DropdownButtonFormField<int>(
+                  child: GestureDetector(
+                    onTap: () => selectGender(1),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: genderSelected != 1
+                            ? ch.surface
+                            : CustomColors.primaryMuted(context),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: genderSelected == 1
+                              ? ch.primary
+                              : Colors.transparent,
+                        ),
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 20,
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(Icons.male_rounded),
+                              const SizedBox(height: 5),
+                              Text('Male'),
+                              const SizedBox(height: 15),
+                              genderSelected == 1
+                                  ? Icon(Icons.circle, color: ch.primary)
+                                  : Icon(Icons.circle_outlined),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => selectGender(2),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: genderSelected != 2
+                            ? ch.surface
+                            : CustomColors.primaryMuted(context),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: genderSelected == 2
+                              ? ch.primary
+                              : Colors.transparent,
+                        ),
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 20,
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(Icons.female_rounded),
+                              const SizedBox(height: 5),
+                              Text('Female'),
+                              const SizedBox(height: 15),
+                              genderSelected == 2
+                                  ? Icon(Icons.circle, color: ch.primary)
+                                  : Icon(Icons.circle_outlined),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (genderError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  genderError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isHeightUnitOne) ...[
+                  Expanded(
+                    child: SizedBox(
+                      height: 56,
+                      child: DropdownButtonFormField<int>(
                         key: heightKey,
                         initialValue: selectedFeet,
                         decoration: InputDecoration(
@@ -463,48 +484,50 @@ class _SignupPageOneState extends State<SignupPageOne> {
                           prefixIcon: Icon(Icons.height_rounded),
                           errorText: heightError,
                         ),
-                        items: List
-                            .generate(6, (i) => i + 3)
-                            .map((f) =>
-                            DropdownMenuItem(value: f,
-                                child: Text('$f ft', style: th.bodyLarge,)))
+                        items: List.generate(6, (i) => i + 3)
+                            .map(
+                              (f) => DropdownMenuItem(
+                                value: f,
+                                child: Text('$f ft', style: th.bodyLarge),
+                              ),
+                            )
                             .toList(),
                         onChanged: (v) {
                           setState(() {
                             selectedFeet = v!;
                             heightError = null;
                           });
-                        }
+                        },
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10,),
-                Expanded(
-                  child: SizedBox(
-                    height: 56,
-                    child: DropdownButtonFormField<int>(
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: SizedBox(
+                      height: 56,
+                      child: DropdownButtonFormField<int>(
                         initialValue: selectedInches,
-                        decoration: InputDecoration(
-                          labelText: 'Inches',
-                        ),
-                        items: List
-                            .generate(12, (i) => i)
-                            .map((i) =>
-                            DropdownMenuItem(value: i,
-                                child: Text('$i in', style: th.bodyLarge,)))
+                        decoration: InputDecoration(labelText: 'Inches'),
+                        items: List.generate(12, (i) => i)
+                            .map(
+                              (i) => DropdownMenuItem(
+                                value: i,
+                                child: Text('$i in', style: th.bodyLarge),
+                              ),
+                            )
                             .toList(),
                         onChanged: (v) {
                           setState(() => selectedInches = v!);
-                        }
+                        },
+                      ),
                     ),
                   ),
-                ),
-              ] else
-                ...[
+                ] else ...[
                   Expanded(
                     child: TextField(
                       keyboardType: TextInputType.numberWithOptions(
-                          decimal: true),
+                        decimal: true,
+                      ),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
                           RegExp(r'^\d*\.?\d{0,2}'),
@@ -527,155 +550,186 @@ class _SignupPageOneState extends State<SignupPageOne> {
                     ),
                   ),
                 ],
-              const SizedBox(width: 10,),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isHeightUnitOne = true;
-                  });
-                },
-                child: Container(
-                  height: 56,
-                  width: 60,
-                  decoration: BoxDecoration(
-                    color: isHeightUnitOne ? ch.primary : ch.surface,
-                    borderRadius: BorderRadius.horizontal(
-                        left: Radius.circular(10)),
-                    border: Border(
-                      top: BorderSide(color: ch.primary),
-                      bottom: BorderSide(color: ch.primary),
-                      left: BorderSide(color: ch.primary),
-                      right: BorderSide.none,
-                    ),
-                  ),
-                  child: Center(child: Text('ft', style: TextStyle(
-                      color: !isHeightUnitOne ? ch.onSurface : ch.onPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),)),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isHeightUnitOne = false;
-                  });
-                },
-                child: Container(
-                  height: 56,
-                  width: 60,
-                  decoration: BoxDecoration(
-                    color: !isHeightUnitOne ? ch.primary : ch.surface,
-                    borderRadius: BorderRadius.horizontal(
-                        right: Radius.circular(10)),
-                    border: Border(
-                      top: BorderSide(color: ch.primary),
-                      bottom: BorderSide(color: ch.primary),
-                      right: BorderSide(color: ch.primary),
-                      left: BorderSide.none,
-                    ),
-                  ),
-                  child: Center(child: Text('cm', style: TextStyle(
-                      color: isHeightUnitOne ? ch.onSurface : ch.onPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),)),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20,),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'^\d*\.?\d{0,2}'),
-                    ),
-                  ],
-                  key: weightKey,
-                  controller: weightController,
-                  onChanged: (_) {
-                    if (weightError != null) {
-                      setState(() {
-                        weightError = null;
-                      });
-                    }
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isHeightUnitOne = true;
+                    });
                   },
-                  decoration: InputDecoration(
-                    labelText: 'Weight',
-                    prefixIcon: Icon(Symbols.weight_rounded),
-                    errorText: weightError,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10,),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isWeightUnitOne = true;
-                  });
-                },
-                child: Container(
-                  height: 56,
-                  width: 60,
-                  decoration: BoxDecoration(
-                    color: isWeightUnitOne ? ch.primary : ch.surface,
-                    borderRadius: BorderRadius.horizontal(
-                        left: Radius.circular(10)),
-                    border: Border(
-                      top: BorderSide(color: ch.primary),
-                      bottom: BorderSide(color: ch.primary),
-                      left: BorderSide(color: ch.primary),
-                      right: BorderSide.none,
+                  child: Container(
+                    height: 56,
+                    width: 60,
+                    decoration: BoxDecoration(
+                      color: isHeightUnitOne ? ch.primary : ch.surface,
+                      borderRadius: BorderRadius.horizontal(
+                        left: Radius.circular(10),
+                      ),
+                      border: Border(
+                        top: BorderSide(color: ch.primary),
+                        bottom: BorderSide(color: ch.primary),
+                        left: BorderSide(color: ch.primary),
+                        right: BorderSide.none,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'ft',
+                        style: TextStyle(
+                          color: !isHeightUnitOne ? ch.onSurface : ch.onPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
-                  child: Center(child: Text('kg', style: TextStyle(
-                      color: !isWeightUnitOne ? ch.onSurface : ch.onPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),)),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isWeightUnitOne = false;
-                  });
-                },
-                child: Container(
-                  height: 56,
-                  width: 60,
-                  decoration: BoxDecoration(
-                    color: !isWeightUnitOne ? ch.primary : ch.surface,
-                    borderRadius: BorderRadius.horizontal(
-                        right: Radius.circular(10)),
-                    border: Border(
-                      top: BorderSide(color: ch.primary),
-                      bottom: BorderSide(color: ch.primary),
-                      right: BorderSide(color: ch.primary),
-                      left: BorderSide.none,
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isHeightUnitOne = false;
+                    });
+                  },
+                  child: Container(
+                    height: 56,
+                    width: 60,
+                    decoration: BoxDecoration(
+                      color: !isHeightUnitOne ? ch.primary : ch.surface,
+                      borderRadius: BorderRadius.horizontal(
+                        right: Radius.circular(10),
+                      ),
+                      border: Border(
+                        top: BorderSide(color: ch.primary),
+                        bottom: BorderSide(color: ch.primary),
+                        right: BorderSide(color: ch.primary),
+                        left: BorderSide.none,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'cm',
+                        style: TextStyle(
+                          color: isHeightUnitOne ? ch.onSurface : ch.onPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
-                  child: Center(child: Text('lb', style: TextStyle(
-                      color: isWeightUnitOne ? ch.onSurface : ch.onPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),)),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 30,),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-              onPressed: handleNext,
-              child: Text("Next",),
+              ],
             ),
-          ),
-        ],),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d*\.?\d{0,2}'),
+                      ),
+                    ],
+                    key: weightKey,
+                    controller: weightController,
+                    onChanged: (_) {
+                      if (weightError != null) {
+                        setState(() {
+                          weightError = null;
+                        });
+                      }
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Weight',
+                      prefixIcon: Icon(Symbols.weight_rounded),
+                      errorText: weightError,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isWeightUnitOne = true;
+                    });
+                  },
+                  child: Container(
+                    height: 56,
+                    width: 60,
+                    decoration: BoxDecoration(
+                      color: isWeightUnitOne ? ch.primary : ch.surface,
+                      borderRadius: BorderRadius.horizontal(
+                        left: Radius.circular(10),
+                      ),
+                      border: Border(
+                        top: BorderSide(color: ch.primary),
+                        bottom: BorderSide(color: ch.primary),
+                        left: BorderSide(color: ch.primary),
+                        right: BorderSide.none,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'kg',
+                        style: TextStyle(
+                          color: !isWeightUnitOne ? ch.onSurface : ch.onPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isWeightUnitOne = false;
+                    });
+                  },
+                  child: Container(
+                    height: 56,
+                    width: 60,
+                    decoration: BoxDecoration(
+                      color: !isWeightUnitOne ? ch.primary : ch.surface,
+                      borderRadius: BorderRadius.horizontal(
+                        right: Radius.circular(10),
+                      ),
+                      border: Border(
+                        top: BorderSide(color: ch.primary),
+                        bottom: BorderSide(color: ch.primary),
+                        right: BorderSide(color: ch.primary),
+                        left: BorderSide.none,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'lb',
+                        style: TextStyle(
+                          color: isWeightUnitOne ? ch.onSurface : ch.onPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                onPressed: handleNext,
+                child: Text("Next"),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -688,9 +742,8 @@ class SignupPageTwoData {
   SignupPageTwoData({
     List<String>? selectedMeds,
     List<String>? selectedInjuries,
-  })
-      : selectedMeds = selectedMeds ?? [],
-        selectedInjuries = selectedInjuries ?? [];
+  }) : selectedMeds = selectedMeds ?? [],
+       selectedInjuries = selectedInjuries ?? [];
 }
 
 class SignupPageTwo extends StatefulWidget {
@@ -711,57 +764,64 @@ class _SignupPageTwoState extends State<SignupPageTwo> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Emoji.page2,
-              const SizedBox(width: 10,),
-              Text('Health Considerations', style: Theme
-                  .of(context)
-                  .textTheme
-                  .displaySmall,),
-            ],
-          ),
-          const SizedBox(height: 10,),
-          Text('Share anything we should be aware of', style: Theme
-              .of(context)
-              .textTheme
-              .labelMedium,),
-          const SizedBox(height: 20,),
-          Text(
-            'Select those which applies, tap next if none applies', style: Theme
-              .of(context)
-              .textTheme
-              .labelLarge,),
-          const SizedBox(height: 10,),
-          Row(children: [
-            Icon(Icons.medical_services_rounded),
-            const SizedBox(width: 10,),
-            Text('Medical Conditions'),
-          ],),
-          const SizedBox(height: 10,),
-          MedChips(),
-          const SizedBox(height: 20,),
-          Row(children: [
-            Icon(Icons.personal_injury_rounded),
-            const SizedBox(width: 10,),
-            Text('Current Injuries'),
-          ],),
-          const SizedBox(height: 10,),
-          InjuryChips(),
-          const SizedBox(height: 30,),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-              onPressed: handleNext,
-              child: Text("Next",),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Emoji.page2,
+                const SizedBox(width: 10),
+                Text(
+                  'Health Considerations',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+              ],
             ),
-          ),
-        ],),
+            const SizedBox(height: 10),
+            Text(
+              'Share anything we should be aware of',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Select those which applies, tap next if none applies',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Icon(Icons.medical_services_rounded),
+                const SizedBox(width: 10),
+                Text('Medical Conditions'),
+              ],
+            ),
+            const SizedBox(height: 10),
+            MedChips(),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Icon(Icons.personal_injury_rounded),
+                const SizedBox(width: 10),
+                Text('Current Injuries'),
+              ],
+            ),
+            const SizedBox(height: 10),
+            InjuryChips(),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                onPressed: handleNext,
+                child: Text("Next"),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -772,11 +832,7 @@ class SignupPageThreeData {
   int? activeIndex;
   int? sleepIndex;
 
-  SignupPageThreeData({
-    this.workIndex,
-    this.activeIndex,
-    this.sleepIndex,
-  });
+  SignupPageThreeData({this.workIndex, this.activeIndex, this.sleepIndex});
 
   String get workType {
     const types = ['Sedentary', 'Moderately Active', 'Physically Active'];
@@ -793,7 +849,7 @@ class SignupPageThreeData {
       'Less than 5 hours',
       '5 to 7 hours',
       '7 to 9 hours',
-      'More than 9 hours'
+      'More than 9 hours',
     ];
     return patterns[sleepIndex!];
   }
@@ -864,9 +920,12 @@ class _SignupPageThreeState extends State<SignupPageThree> {
   void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          alignment: 0.2);
+      Scrollable.ensureVisible(
+        context,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
     }
   }
 
@@ -896,413 +955,433 @@ class _SignupPageThreeState extends State<SignupPageThree> {
 
   @override
   Widget build(BuildContext context) {
-    final th = Theme
-        .of(context)
-        .textTheme;
-    final ch = Theme
-        .of(context)
-        .colorScheme;
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Emoji.page3,
-              const SizedBox(width: 10,),
-              Text('Your Daily Routine', style: th.displaySmall,),
-            ],
-          ),
-          const SizedBox(height: 10,),
-          Text('This helps match your plan to your lifestyle',
-            style: th.labelMedium,),
-          const SizedBox(height: 20,),
-          Text(key: workKey, 'Work / Occupation type'),
-          if(workError != null)
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Emoji.page3,
+                const SizedBox(width: 10),
+                Text('Your Daily Routine', style: th.displaySmall),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'This helps match your plan to your lifestyle',
+              style: th.labelMedium,
+            ),
+            const SizedBox(height: 20),
+            Text(key: workKey, 'Work / Occupation type'),
+            if (workError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  workError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 5),
+            Text('What is your everyday work?', style: th.labelSmall),
+            const SizedBox(height: 5),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedWork = 0;
+                  if (workError != null) {
+                    workError = null;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  color: selectedWork != 0
+                      ? ch.surface
+                      : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: selectedWork == 0 ? ch.primary : Colors.transparent,
+                  ),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: ch.tertiary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Emoji.o1,
+                  ),
+                  title: Text('Sedentary'),
+                  subtitle: Text('desk job . student . driver'),
+                  subtitleTextStyle: th.labelMedium,
+                  trailing: selectedWork == 0 ? Icon(Icons.check) : SizedBox(),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedWork = 1;
+                  if (workError != null) {
+                    workError = null;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  color: selectedWork != 1
+                      ? ch.surface
+                      : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: selectedWork == 1 ? ch.primary : Colors.transparent,
+                  ),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: ch.tertiary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Emoji.o2,
+                  ),
+                  title: Text('Moderately Active'),
+                  subtitle: Text('teacher . retail worker . nurse'),
+                  subtitleTextStyle: th.labelMedium,
+                  trailing: selectedWork == 1 ? Icon(Icons.check) : SizedBox(),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedWork = 2;
+                  if (workError != null) {
+                    workError = null;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  color: selectedWork != 2
+                      ? ch.surface
+                      : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: selectedWork == 2 ? ch.primary : Colors.transparent,
+                  ),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: ch.tertiary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Emoji.o3,
+                  ),
+                  title: Text('Physically Active'),
+                  subtitle: Text('construction worker . farmer . athlete'),
+                  subtitleTextStyle: th.labelMedium,
+                  trailing: selectedWork == 2 ? Icon(Icons.check) : SizedBox(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(key: activeKey, 'Daily activity level'),
+            if (activeError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  activeError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 5),
+            Text('How often do you exercise?', style: th.labelSmall),
+            const SizedBox(height: 5),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedActive = 0;
+                  if (activeError != null) {
+                    activeError = null;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  color: selectedActive != 0
+                      ? ch.surface
+                      : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: selectedActive == 0
+                        ? ch.primary
+                        : Colors.transparent,
+                  ),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: ch.tertiary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Emoji.a1,
+                  ),
+                  title: Text('Low'),
+                  subtitle: Text('rarely'),
+                  subtitleTextStyle: th.labelMedium,
+                  trailing: selectedActive == 0
+                      ? Icon(Icons.check)
+                      : SizedBox(),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedActive = 1;
+                  if (activeError != null) {
+                    activeError = null;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  color: selectedActive != 1
+                      ? ch.surface
+                      : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: selectedActive == 1
+                        ? ch.primary
+                        : Colors.transparent,
+                  ),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: ch.tertiary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Emoji.a2,
+                  ),
+                  title: Text('Moderate'),
+                  subtitle: Text('2-4 days/week'),
+                  subtitleTextStyle: th.labelMedium,
+                  trailing: selectedActive == 1
+                      ? Icon(Icons.check)
+                      : SizedBox(),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedActive = 2;
+                  if (activeError != null) {
+                    activeError = null;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  color: selectedActive != 2
+                      ? ch.surface
+                      : CustomColors.primaryMuted(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: selectedActive == 2
+                        ? ch.primary
+                        : Colors.transparent,
+                  ),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: ch.tertiary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Emoji.a3,
+                  ),
+                  title: Text('High'),
+                  subtitle: Text('5-7 days/week'),
+                  subtitleTextStyle: th.labelMedium,
+                  trailing: selectedActive == 2
+                      ? Icon(Icons.check)
+                      : SizedBox(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(key: sleepKey, 'Sleep Pattern'),
+            if (sleepError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  sleepError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 5),
+            Text('How much sleep do you get everyday?', style: th.labelSmall),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedSleep = 0;
+                      if (sleepError != null) {
+                        sleepError = null;
+                      }
+                    });
+                  },
+                  child: Container(
+                    height: 70,
+                    width: (MediaQuery.of(context).size.width - 80) / 4,
+                    decoration: BoxDecoration(
+                      color: selectedSleep != 0
+                          ? ch.surface
+                          : CustomColors.primaryMuted(context),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: selectedSleep == 0
+                            ? ch.primary
+                            : Colors.transparent,
+                      ),
+                    ),
+                    child: Center(child: Text('< 5h')),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedSleep = 1;
+                      if (sleepError != null) {
+                        sleepError = null;
+                      }
+                    });
+                  },
+                  child: Container(
+                    height: 70,
+                    width: (MediaQuery.of(context).size.width - 80) / 4,
+                    decoration: BoxDecoration(
+                      color: selectedSleep != 1
+                          ? ch.surface
+                          : CustomColors.primaryMuted(context),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: selectedSleep == 1
+                            ? ch.primary
+                            : Colors.transparent,
+                      ),
+                    ),
+                    child: Center(child: Text('5 - 7h')),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedSleep = 2;
+                      if (sleepError != null) {
+                        sleepError = null;
+                      }
+                    });
+                  },
+                  child: Container(
+                    height: 70,
+                    width: (MediaQuery.of(context).size.width - 80) / 4,
+                    decoration: BoxDecoration(
+                      color: selectedSleep != 2
+                          ? ch.surface
+                          : CustomColors.primaryMuted(context),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: selectedSleep == 2
+                            ? ch.primary
+                            : Colors.transparent,
+                      ),
+                    ),
+                    child: Center(child: Text('7 - 9h')),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedSleep = 3;
+                      if (sleepError != null) {
+                        sleepError = null;
+                      }
+                    });
+                  },
+                  child: Container(
+                    height: 70,
+                    width: (MediaQuery.of(context).size.width - 80) / 4,
+                    decoration: BoxDecoration(
+                      color: selectedSleep != 3
+                          ? ch.surface
+                          : CustomColors.primaryMuted(context),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: selectedSleep == 3
+                            ? ch.primary
+                            : Colors.transparent,
+                      ),
+                    ),
+                    child: Center(child: Text('9h +')),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(workError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
                 ),
+                onPressed: handleNext,
+                child: Text("Next"),
               ),
             ),
-          const SizedBox(height: 5,),
-          Text('What is your everyday work?', style: th.labelSmall,),
-          const SizedBox(height: 5,),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedWork = 0;
-                if (workError != null) {
-                  workError = null;
-                }
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                  color: selectedWork != 0 ? ch.surface : CustomColors
-                      .primaryMuted(context),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: selectedWork == 0 ? ch.primary : Colors
-                          .transparent)
-              ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: ch.tertiary,
-                    borderRadius: BorderRadius.circular(12),
-                  ), child: Emoji.o1,
-                ),
-                title: Text('Sedentary'),
-                subtitle: Text('desk job . student . driver'),
-                subtitleTextStyle: th.labelMedium,
-                trailing: selectedWork == 0 ? Icon(Icons.check) : SizedBox(),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedWork = 1;
-                if (workError != null) {
-                  workError = null;
-                }
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                  color: selectedWork != 1 ? ch.surface : CustomColors
-                      .primaryMuted(context),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: selectedWork == 1 ? ch.primary : Colors
-                          .transparent)
-              ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: ch.tertiary,
-                    borderRadius: BorderRadius.circular(12),
-                  ), child: Emoji.o2,
-                ),
-                title: Text('Moderately Active'),
-                subtitle: Text('teacher . retail worker . nurse'),
-                subtitleTextStyle: th.labelMedium,
-                trailing: selectedWork == 1 ? Icon(Icons.check) : SizedBox(),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedWork = 2;
-                if (workError != null) {
-                  workError = null;
-                }
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                  color: selectedWork != 2 ? ch.surface : CustomColors
-                      .primaryMuted(context),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: selectedWork == 2 ? ch.primary : Colors
-                          .transparent)
-              ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: ch.tertiary,
-                    borderRadius: BorderRadius.circular(12),
-                  ), child: Emoji.o3,
-                ),
-                title: Text('Physically Active'),
-                subtitle: Text('construction worker . farmer . athlete'),
-                subtitleTextStyle: th.labelMedium,
-                trailing: selectedWork == 2 ? Icon(Icons.check) : SizedBox(),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20,),
-          Text(key: activeKey, 'Daily activity level'),
-          if(activeError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(activeError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          const SizedBox(height: 5,),
-          Text('How often do you exercise?', style: th.labelSmall,),
-          const SizedBox(height: 5,),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedActive = 0;
-                if (activeError != null) {
-                  activeError = null;
-                }
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                  color: selectedActive != 0 ? ch.surface : CustomColors
-                      .primaryMuted(context),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: selectedActive == 0 ? ch.primary : Colors
-                          .transparent)
-              ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: ch.tertiary,
-                    borderRadius: BorderRadius.circular(12),
-                  ), child: Emoji.a1,
-                ),
-                title: Text('Low'),
-                subtitle: Text('rarely'),
-                subtitleTextStyle: th.labelMedium,
-                trailing: selectedActive == 0 ? Icon(Icons.check) : SizedBox(),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedActive = 1;
-                if (activeError != null) {
-                  activeError = null;
-                }
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                  color: selectedActive != 1 ? ch.surface : CustomColors
-                      .primaryMuted(context),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: selectedActive == 1 ? ch.primary : Colors
-                          .transparent)
-              ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: ch.tertiary,
-                    borderRadius: BorderRadius.circular(12),
-                  ), child: Emoji.a2,
-                ),
-                title: Text('Moderate'),
-                subtitle: Text('2-4 days/week'),
-                subtitleTextStyle: th.labelMedium,
-                trailing: selectedActive == 1 ? Icon(Icons.check) : SizedBox(),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedActive = 2;
-                if (activeError != null) {
-                  activeError = null;
-                }
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                  color: selectedActive != 2 ? ch.surface : CustomColors
-                      .primaryMuted(context),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: selectedActive == 2 ? ch.primary : Colors
-                          .transparent)
-              ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: ch.tertiary,
-                    borderRadius: BorderRadius.circular(12),
-                  ), child: Emoji.a3,
-                ),
-                title: Text('High'),
-                subtitle: Text('5-7 days/week'),
-                subtitleTextStyle: th.labelMedium,
-                trailing: selectedActive == 2 ? Icon(Icons.check) : SizedBox(),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20,),
-          Text(key: sleepKey, 'Sleep Pattern'),
-          if(sleepError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(sleepError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          const SizedBox(height: 5,),
-          Text('How much sleep do you get everyday?', style: th.labelSmall,),
-          const SizedBox(height: 10,),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedSleep = 0;
-                    if (sleepError != null) {
-                      sleepError = null;
-                    }
-                  });
-                },
-                child: Container(
-                  height: 70,
-                  width: (MediaQuery
-                      .of(context)
-                      .size
-                      .width - 80) / 4,
-                  decoration: BoxDecoration(
-                      color: selectedSleep != 0 ? ch.surface : CustomColors
-                          .primaryMuted(context),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: selectedSleep == 0 ? ch.primary : Colors
-                              .transparent)
-                  ),
-                  child: Center(child: Text('< 5h')),
-                ),
-              ),
-              const SizedBox(width: 10,),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedSleep = 1;
-                    if (sleepError != null) {
-                      sleepError = null;
-                    }
-                  });
-                },
-                child: Container(
-                  height: 70,
-                  width: (MediaQuery
-                      .of(context)
-                      .size
-                      .width - 80) / 4,
-                  decoration: BoxDecoration(
-                      color: selectedSleep != 1 ? ch.surface : CustomColors
-                          .primaryMuted(context),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: selectedSleep == 1 ? ch.primary : Colors
-                              .transparent)
-                  ),
-                  child: Center(child: Text('5 - 7h')),
-                ),
-              ),
-              const SizedBox(width: 10,),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedSleep = 2;
-                    if (sleepError != null) {
-                      sleepError = null;
-                    }
-                  });
-                },
-                child: Container(
-                  height: 70,
-                  width: (MediaQuery
-                      .of(context)
-                      .size
-                      .width - 80) / 4,
-                  decoration: BoxDecoration(
-                      color: selectedSleep != 2 ? ch.surface : CustomColors
-                          .primaryMuted(context),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: selectedSleep == 2 ? ch.primary : Colors
-                              .transparent)
-                  ),
-                  child: Center(child: Text('7 - 9h')),
-                ),
-              ),
-              const SizedBox(width: 10,),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedSleep = 3;
-                    if (sleepError != null) {
-                      sleepError = null;
-                    }
-                  });
-                },
-                child: Container(
-                  height: 70,
-                  width: (MediaQuery
-                      .of(context)
-                      .size
-                      .width - 80) / 4,
-                  decoration: BoxDecoration(
-                      color: selectedSleep != 3 ? ch.surface : CustomColors
-                          .primaryMuted(context),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: selectedSleep == 3 ? ch.primary : Colors
-                              .transparent)
-                  ),
-                  child: Center(child: Text('9h +')),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 30,),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-              onPressed: handleNext,
-              child: Text("Next",),
-            ),
-          ),
-        ],),
+          ],
+        ),
       ),
     );
   }
@@ -1312,9 +1391,7 @@ class SignupPageFourData {
   int? fitIndex;
   double? tdee;
 
-  SignupPageFourData({
-    this.fitIndex,
-  });
+  SignupPageFourData({this.fitIndex});
 
   String get fitType {
     const types = ['Beginner', 'Intermediate', 'Advanced'];
@@ -1345,15 +1422,16 @@ class _SignupPageFourState extends State<SignupPageFour> {
 
   double? get previewTDEE {
     if (selectedFit == -1) return null;
-    final data1 = context
-        .read<DataProvider>()
-        .pageOne;
-    final data3 = context
-        .read<DataProvider>()
-        .pageThree;
+    final data1 = context.read<DataProvider>().pageOne;
+    final data3 = context.read<DataProvider>().pageThree;
     const factors = [0.95, 1.0, 1.05];
-    return double.parse((data1.bmr! * data3.workFactor * data3.activeFactor *
-        factors[selectedFit]).toStringAsFixed(1));
+    return double.parse(
+      (data1.bmr! *
+              data3.workFactor *
+              data3.activeFactor *
+              factors[selectedFit])
+          .toStringAsFixed(1),
+    );
   }
 
   bool validateInput() {
@@ -1377,9 +1455,12 @@ class _SignupPageFourState extends State<SignupPageFour> {
   void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          alignment: 0.2);
+      Scrollable.ensureVisible(
+        context,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
     }
   }
 
@@ -1403,9 +1484,7 @@ class _SignupPageFourState extends State<SignupPageFour> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final p = context
-        .read<DataProvider>()
-        .pageOne;
+    final p = context.read<DataProvider>().pageOne;
     if (p.bmi! < 18.5) {
       bmiColor = CustomColors.bluePrimary(context);
     } else if (p.bmi! < 25) {
@@ -1419,232 +1498,263 @@ class _SignupPageFourState extends State<SignupPageFour> {
 
   @override
   Widget build(BuildContext context) {
-    final data1 = context
-        .read<DataProvider>()
-        .pageOne;
-    final th = Theme
-        .of(context)
-        .textTheme;
-    final ch = Theme
-        .of(context)
-        .colorScheme;
+    final data1 = context.read<DataProvider>().pageOne;
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Emoji.page4,
-              const SizedBox(width: 10,),
-              Text('Your fitness experience', style: th.displaySmall,),
-            ],
-          ),
-          const SizedBox(height: 10,),
-          Text('Tell us where you’re starting from.', style: th.labelMedium,),
-          const SizedBox(height: 20,),
-          Text(key: fitKey, 'Workout Level'),
-          if(fitError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(fitError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Emoji.page4,
+                const SizedBox(width: 10),
+                Text('Your fitness experience', style: th.displaySmall),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text('Tell us where you’re starting from.', style: th.labelMedium),
+            const SizedBox(height: 20),
+            Text(key: fitKey, 'Workout Level'),
+            if (fitError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  fitError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
                 ),
               ),
-            ),
-          const SizedBox(height: 5,),
-          Text('What is your current fitness ability?', style: th.labelSmall,),
-          const SizedBox(height: 5,),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedFit = 0;
-                if (fitError != null) {
-                  fitError = null;
-                }
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                  color: selectedFit != 0 ? ch.surface : CustomColors
-                      .primaryMuted(context),
+            const SizedBox(height: 5),
+            Text('What is your current fitness ability?', style: th.labelSmall),
+            const SizedBox(height: 5),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedFit = 0;
+                  if (fitError != null) {
+                    fitError = null;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  color: selectedFit != 0
+                      ? ch.surface
+                      : CustomColors.primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: selectedFit == 0 ? ch.primary : Colors.transparent)
-              ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: ch.tertiary,
-                    borderRadius: BorderRadius.circular(12),
-                  ), child: Emoji.f1,
+                    color: selectedFit == 0 ? ch.primary : Colors.transparent,
+                  ),
                 ),
-                title: Text('Beginner'),
-                subtitle: Text('new to exercise'),
-                subtitleTextStyle: th.labelMedium,
-                trailing: selectedFit == 0 ? Icon(Icons.check) : SizedBox(),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: ch.tertiary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Emoji.f1,
+                  ),
+                  title: Text('Beginner'),
+                  subtitle: Text('new to exercise'),
+                  subtitleTextStyle: th.labelMedium,
+                  trailing: selectedFit == 0 ? Icon(Icons.check) : SizedBox(),
+                ),
               ),
             ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedFit = 1;
-                if (fitError != null) {
-                  fitError = null;
-                }
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                  color: selectedFit != 1 ? ch.surface : CustomColors
-                      .primaryMuted(context),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedFit = 1;
+                  if (fitError != null) {
+                    fitError = null;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  color: selectedFit != 1
+                      ? ch.surface
+                      : CustomColors.primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: selectedFit == 1 ? ch.primary : Colors.transparent)
-              ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: ch.tertiary,
-                    borderRadius: BorderRadius.circular(12),
-                  ), child: Emoji.f2,
+                    color: selectedFit == 1 ? ch.primary : Colors.transparent,
+                  ),
                 ),
-                title: Text('Intermediate'),
-                subtitle: Text('Regular workouts'),
-                subtitleTextStyle: th.labelMedium,
-                trailing: selectedFit == 1 ? Icon(Icons.check) : SizedBox(),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: ch.tertiary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Emoji.f2,
+                  ),
+                  title: Text('Intermediate'),
+                  subtitle: Text('Regular workouts'),
+                  subtitleTextStyle: th.labelMedium,
+                  trailing: selectedFit == 1 ? Icon(Icons.check) : SizedBox(),
+                ),
               ),
             ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedFit = 2;
-                if (fitError != null) {
-                  fitError = null;
-                }
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                  color: selectedFit != 2 ? ch.surface : CustomColors
-                      .primaryMuted(context),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedFit = 2;
+                  if (fitError != null) {
+                    fitError = null;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
+                  color: selectedFit != 2
+                      ? ch.surface
+                      : CustomColors.primaryMuted(context),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: selectedFit == 2 ? ch.primary : Colors.transparent)
-              ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: ch.tertiary,
-                    borderRadius: BorderRadius.circular(12),
-                  ), child: Emoji.f3,
+                    color: selectedFit == 2 ? ch.primary : Colors.transparent,
+                  ),
                 ),
-                title: Text('Advanced'),
-                subtitle: Text('Intense training'),
-                subtitleTextStyle: th.labelMedium,
-                trailing: selectedFit == 2 ? Icon(Icons.check) : SizedBox(),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: ch.tertiary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Emoji.f3,
+                  ),
+                  title: Text('Advanced'),
+                  subtitle: Text('Intense training'),
+                  subtitleTextStyle: th.labelMedium,
+                  trailing: selectedFit == 2 ? Icon(Icons.check) : SizedBox(),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 20,),
-          if(selectedFit != -1)
-            Center(
-              child: Column(
+            const SizedBox(height: 20),
+            if (selectedFit != -1)
+              Center(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 10),
+                        horizontal: 15,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: CustomColors.primaryMuted(context),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                            color: CustomColors.yellowOutline(context)),
+                          color: CustomColors.yellowOutline(context),
+                        ),
                       ),
-                      child: RichText(text: TextSpan(children: [
-                        TextSpan(text: 'Based on your given data,\n\n',
-                            style: TextStyle(color: Theme
-                                .of(context)
-                                .colorScheme
-                                .onSurface)),
-                        TextSpan(text: 'Your BMI is ',
-                            style: TextStyle(color: Theme
-                                .of(context)
-                                .colorScheme
-                                .onSurface)),
-                        TextSpan(text: '${data1.bmi} - ${data1.category}.\n\n',
-                            style: TextStyle(color: bmiColor)),
-                        TextSpan(text: 'Your body needs ',
-                            style: TextStyle(color: Theme
-                                .of(context)
-                                .colorScheme
-                                .onSurface)),
-                        TextSpan(text: '${data1.bmr}',
-                            style: TextStyle(
-                                color: CustomColors.orangePrimary(context))),
-                        TextSpan(text: ' calories at rest and total of ',
-                            style: TextStyle(color: Theme
-                                .of(context)
-                                .colorScheme
-                                .onSurface)),
-                        TextSpan(text: '$previewTDEE',
-                            style: TextStyle(
-                                color: CustomColors.orangePrimary(context))),
-                        TextSpan(text: ' calories are burnt in a day.\n\n',
-                            style: TextStyle(color: Theme
-                                .of(context)
-                                .colorScheme
-                                .onSurface)),
-                        TextSpan(text: 'You belong to the age group ',
-                            style: TextStyle(color: Theme
-                                .of(context)
-                                .colorScheme
-                                .onSurface)),
-                        TextSpan(text: '${data1.ageGroup}',
-                            style: TextStyle(
-                                color: CustomColors.bluePrimary(context))),
-                      ],),
-                        textAlign: TextAlign.center,),
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Based on your given data,\n\n',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'Your BMI is ',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '${data1.bmi} - ${data1.category}.\n\n',
+                              style: TextStyle(color: bmiColor),
+                            ),
+                            TextSpan(
+                              text: 'Your body needs ',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '${data1.bmr}',
+                              style: TextStyle(
+                                color: CustomColors.orangePrimary(context),
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' calories at rest and total of ',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '$previewTDEE',
+                              style: TextStyle(
+                                color: CustomColors.orangePrimary(context),
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' calories are burnt in a day.\n\n',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'You belong to the age group ',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '${data1.ageGroup}',
+                              style: TextStyle(
+                                color: CustomColors.bluePrimary(context),
+                              ),
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    const SizedBox(height: 5,),
+                    const SizedBox(height: 5),
                     Text(
                       'See our recommendation next, or choose your own focus.',
-                      style: TextStyle(color: Theme
-                          .of(context)
-                          .colorScheme
-                          .primary, fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.center,),
-                  ]),
-            ),
-          const SizedBox(height: 30,),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
-              onPressed: handleNext,
-              child: Text("Next",),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                onPressed: handleNext,
+                child: Text("Next"),
+              ),
             ),
-          ),
-        ],),
+          ],
+        ),
       ),
     );
   }
@@ -1694,11 +1804,7 @@ class SignupPageFiveData {
   int? goalIndex;
   String? goalType;
 
-  SignupPageFiveData({
-    this.fundIndex,
-    this.goalIndex,
-    this.goalType,
-  });
+  SignupPageFiveData({this.fundIndex, this.goalIndex, this.goalType});
 
   String get fundType {
     const types = [
@@ -1708,16 +1814,16 @@ class SignupPageFiveData {
       'Stability & control',
       'Composition & vitals',
       'Function & posture',
-      'Growth & adaptation'
+      'Growth & adaptation',
     ];
     return types[fundIndex!];
   }
 
-  String get planType{
+  String get planType {
     const timed = [0, 1, 4, 6];
-    if(timed.contains(fundIndex)){
+    if (timed.contains(fundIndex)) {
       return 'Timed';
-    }else{
+    } else {
       return 'Ongoing';
     }
   }
@@ -1748,9 +1854,7 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   }
 
   List<String> get currentGoals {
-    final data = context
-        .read<DataProvider>()
-        .pageOne;
+    final data = context.read<DataProvider>().pageOne;
     final group = data.ageGroup;
     return goalPreviews[group]?[selectedFund] ?? [];
   }
@@ -1777,9 +1881,12 @@ class _SignupPageFiveState extends State<SignupPageFive> {
   void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          alignment: 0.2);
+      Scrollable.ensureVisible(
+        context,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
     }
   }
 
@@ -1799,145 +1906,177 @@ class _SignupPageFiveState extends State<SignupPageFive> {
     super.initState();
     selectedGoal = widget.data.goalIndex ?? -1;
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final rec = context
-        .read<DataProvider>()
-        .finalRecommendation;
+    final rec = context.read<DataProvider>().finalRecommendation;
     selectedFund = widget.data.fundIndex ?? rec.code;
   }
 
   @override
   Widget build(BuildContext context) {
-    final th = Theme
-        .of(context)
-        .textTheme;
-    final rec = context
-        .read<DataProvider>()
-        .finalRecommendation;
+    final th = Theme.of(context).textTheme;
+    final rec = context.read<DataProvider>().finalRecommendation;
     final goals = currentGoals;
 
     return SingleChildScrollView(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Emoji.page5,
-              const SizedBox(width: 10,),
-              Column(children: [
-                Text('What are your goals?', style: th.displaySmall,)
-              ]),
-            ],
-          ),
-          const SizedBox(height: 10,),
-          Text('We’ll use this to guide your plan', style: th.labelMedium,),
-          const SizedBox(height: 20,),
-          Text('Focus Area'),
-          const SizedBox(height: 5,),
-          Column(children: [
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Emoji.page5,
+                const SizedBox(width: 10),
+                Column(
+                  children: [
+                    Text('What are your goals?', style: th.displaySmall),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text('We’ll use this to guide your plan', style: th.labelMedium),
+            const SizedBox(height: 20),
+            Text('Focus Area'),
+            const SizedBox(height: 5),
+            Column(
+              children: [
+                Text(
+                  'We have selected a starting point for you. Continue or choose yourself.',
+                  style: th.labelSmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                selectFundamental(context, 0, Emoji.fund1, 'Energy & Fuel'),
+                const SizedBox(width: 10),
+                selectFundamental(context, 1, Emoji.fund2, 'Strength & build'),
+              ],
+            ),
+            const SizedBox(height: 5),
+            Row(
+              children: [
+                selectFundamental(context, 2, Emoji.fund3, 'Mobility & ease'),
+                const SizedBox(width: 10),
+                selectFundamental(
+                  context,
+                  3,
+                  Emoji.fund4,
+                  'Stability & control',
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+            Row(
+              children: [
+                selectFundamental(
+                  context,
+                  4,
+                  Emoji.fund5,
+                  'Composition & vitals',
+                ),
+                const SizedBox(width: 10),
+                selectFundamental(
+                  context,
+                  5,
+                  Emoji.fund6,
+                  'Function & posture',
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+            Row(
+              children: [
+                selectFundamental(
+                  context,
+                  6,
+                  Emoji.fund7,
+                  'Growth & adaptation',
+                ),
+                const SizedBox(width: 10),
+                Expanded(child: const SizedBox()),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Column(
+              children: [
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'You are categorized as the ',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '${rec.profile}.',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             Text(
-              'We have selected a starting point for you. Continue or choose yourself.',
-              style: th.labelSmall,)
-          ]),
-          const SizedBox(height: 10,),
-          Row(
-            children: [
-              selectFundamental(context, 0, Emoji.fund1, 'Energy & Fuel'),
-              const SizedBox(width: 10,),
-              selectFundamental(context, 1, Emoji.fund2, 'Strength & build'),
-            ],
-          ),
-          const SizedBox(height: 5,),
-          Row(
-            children: [
-              selectFundamental(context, 2, Emoji.fund3, 'Mobility & ease'),
-              const SizedBox(width: 10,),
-              selectFundamental(context, 3, Emoji.fund4, 'Stability & control'),
-            ],
-          ),
-          const SizedBox(height: 5,),
-          Row(
-            children: [
-              selectFundamental(
-                  context, 4, Emoji.fund5, 'Composition & vitals'),
-              const SizedBox(width: 10,),
-              selectFundamental(context, 5, Emoji.fund6, 'Function & posture'),
-            ],
-          ),
-          const SizedBox(height: 5,),
-          Row(
-            children: [
-              selectFundamental(context, 6, Emoji.fund7, 'Growth & adaptation'),
-              const SizedBox(width: 10,),
-              Expanded(child: const SizedBox(),),
-            ],
-          ),
-          const SizedBox(height: 20,),
-          Column(children: [
-            RichText(text: TextSpan(children: [
-              TextSpan(text: 'You are categorized as the ',
-                  style: TextStyle(color: Theme
-                      .of(context)
-                      .colorScheme
-                      .onSurface)),
-              TextSpan(text: '${rec.profile}.', style: TextStyle(color: Theme
-                  .of(context)
-                  .colorScheme
-                  .primary, fontWeight: FontWeight.w600)),
-            ],),),
-          ]),
-          Text(
-            key: goalKey, 'Choose your goal to start', style: th.labelMedium,),
-          if(goalError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(goalError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+              key: goalKey,
+              'Choose your goal to start',
+              style: th.labelMedium,
+            ),
+            if (goalError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  goalError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
                 ),
               ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: List.generate((goals.length), (i) {
+                final isSelected = selectedGoal == i;
+                return goalSelectionChip(goals[i], isSelected, i);
+              }),
             ),
-          const SizedBox(height: 10,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: List.generate((goals.length), (i) {
-              final isSelected = selectedGoal == i;
-              return goalSelectionChip(goals[i], isSelected, i);
-            }),
-          ),
-          const SizedBox(height: 30,),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                onPressed: handleNext,
+                child: Text("Next"),
               ),
-              onPressed: handleNext,
-              child: Text("Next",),
             ),
-          ),
-        ],),
+          ],
+        ),
       ),
     );
   }
 
-  Widget selectFundamental(BuildContext context, int select, Image icon,
-      String label) {
-    final th = Theme
-        .of(context)
-        .textTheme;
-    final ch = Theme
-        .of(context)
-        .colorScheme;
-    final rec = context
-        .read<DataProvider>()
-        .finalRecommendation;
+  Widget selectFundamental(
+    BuildContext context,
+    int select,
+    Image icon,
+    String label,
+  ) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+    final rec = context.read<DataProvider>().finalRecommendation;
     final isSelected = selectedFund == select;
     final isRecommended = rec.code == select;
     Color bgColor = ch.surface;
@@ -1950,7 +2089,6 @@ class _SignupPageFiveState extends State<SignupPageFive> {
       borderColor = Colors.transparent;
     }
 
-
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -1960,7 +2098,7 @@ class _SignupPageFiveState extends State<SignupPageFive> {
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: borderColor,),
+            border: Border.all(color: borderColor),
           ),
           child: Center(
             child: Padding(
@@ -1969,16 +2107,20 @@ class _SignupPageFiveState extends State<SignupPageFive> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   icon,
-                  const SizedBox(height: 5,),
-                  Text(label, style: th.labelMedium,),
-                  const SizedBox(height: 15,),
-                  selectedFund == select ?
-                  Icon(Icons.circle, color: ch.primary,) : Icon(
-                      Icons.circle_outlined),
-                  if(isRecommended && !isSelected)
-                    Text('Recommended', style: TextStyle(
+                  const SizedBox(height: 5),
+                  Text(label, style: th.labelMedium),
+                  const SizedBox(height: 15),
+                  selectedFund == select
+                      ? Icon(Icons.circle, color: ch.primary)
+                      : Icon(Icons.circle_outlined),
+                  if (isRecommended && !isSelected)
+                    Text(
+                      'Recommended',
+                      style: TextStyle(
                         color: CustomColors.yellowOutline(context),
-                        fontSize: 10),),
+                        fontSize: 10,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -2001,21 +2143,15 @@ class _SignupPageFiveState extends State<SignupPageFive> {
         });
       },
       selectedColor: CustomColors.primaryMuted(context),
-      side: BorderSide(color: selected ? Theme
-          .of(context)
-          .colorScheme
-          .primary : Theme
-          .of(context)
-          .colorScheme
-          .outline),
+      side: BorderSide(
+        color: selected
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.outline,
+      ),
       labelStyle: TextStyle(
-        color: selected ? Theme
-            .of(context)
-            .colorScheme
-            .primary : Theme
-            .of(context)
-            .colorScheme
-            .onSurface,
+        color: selected
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onSurface,
         fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
       ),
     );
@@ -2052,7 +2188,7 @@ class SignupPageSixData {
       'Sports & Athletics',
       'Functional Training',
       'Low Impact',
-      'Mixed'
+      'Mixed',
     ];
     return styleIndex.map((i) => styles[i]).toList();
   }
@@ -2175,9 +2311,12 @@ class _SignupPageSixState extends State<SignupPageSix> {
   void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          alignment: 0.2);
+      Scrollable.ensureVisible(
+        context,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
     }
   }
 
@@ -2215,213 +2354,205 @@ class _SignupPageSixState extends State<SignupPageSix> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Emoji.page6,
-              const SizedBox(width: 10,),
-              Text('How do you like to train?', style: Theme
-                  .of(context)
-                  .textTheme
-                  .displaySmall,),
-            ],
-          ),
-          const SizedBox(height: 10,),
-          Text('Pick what fits your schedule and preferences', style: Theme
-              .of(context)
-              .textTheme
-              .labelMedium,),
-          const SizedBox(height: 20,),
-          Text('Training Style Preference', key: styleKey,),
-          if(styleError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(styleError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Emoji.page6,
+                const SizedBox(width: 10),
+                Text(
+                  'How do you like to train?',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Pick what fits your schedule and preferences',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            const SizedBox(height: 20),
+            Text('Training Style Preference', key: styleKey),
+            if (styleError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  styleError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
                 ),
               ),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                trainingStyle('Strength Training', Emoji.style1, 0),
+                trainingStyle('Cardio', Emoji.style2, 1),
+                trainingStyle('HIIT', Emoji.style3, 2),
+                trainingStyle('Yoga & Stretching', Emoji.style4, 3),
+                trainingStyle('Pilates', Emoji.style5, 4),
+                trainingStyle('Calisthenics', Emoji.style6, 5),
+                trainingStyle('Sports & Athletics', Emoji.style7, 6),
+                trainingStyle('Functional Training', Emoji.style8, 7),
+                trainingStyle('Low Impact', Emoji.style9, 8),
+                trainingStyle('Mixed', Emoji.style10, 9),
+              ],
             ),
-          const SizedBox(height: 5,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              trainingStyle('Strength Training', Emoji.style1, 0),
-              trainingStyle('Cardio', Emoji.style2, 1),
-              trainingStyle('HIIT', Emoji.style3, 2),
-              trainingStyle('Yoga & Stretching', Emoji.style4, 3),
-              trainingStyle('Pilates', Emoji.style5, 4),
-              trainingStyle('Calisthenics', Emoji.style6, 5),
-              trainingStyle('Sports & Athletics', Emoji.style7, 6),
-              trainingStyle('Functional Training', Emoji.style8, 7),
-              trainingStyle('Low Impact', Emoji.style9, 8),
-              trainingStyle('Mixed', Emoji.style10, 9),
-            ],
-          ),
-          const SizedBox(height: 20,),
-          Text('Equipment Access', key: equipKey,),
-          if(equipError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(equipError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+            const SizedBox(height: 20),
+            Text('Equipment Access', key: equipKey),
+            if (equipError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  equipError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
                 ),
               ),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                equipChip('None', Emoji.e1, 0),
+                equipChip('Minimal', Emoji.e2, 1),
+                equipChip('Full Gym', Emoji.e3, 2),
+              ],
             ),
-          const SizedBox(height: 5,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              equipChip('None', Emoji.e1, 0),
-              equipChip('Minimal', Emoji.e2, 1),
-              equipChip('Full Gym', Emoji.e3, 2),
-            ],
-          ),
-          const SizedBox(height: 20,),
-          Text('Location Preference', key: placeKey,),
-          if(placeError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(placeError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+            const SizedBox(height: 20),
+            Text('Location Preference', key: placeKey),
+            if (placeError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  placeError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
                 ),
               ),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                placeChip('Home', Emoji.place1, 0),
+                placeChip('Gym', Emoji.place2, 1),
+                placeChip('Outdoors', Emoji.place3, 2),
+                placeChip('Any', Emoji.style10, 3),
+              ],
             ),
-          const SizedBox(height: 5,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              placeChip('Home', Emoji.place1, 0),
-              placeChip('Gym', Emoji.place2, 1),
-              placeChip('Outdoors', Emoji.place3, 2),
-              placeChip('Any', Emoji.style10, 3),
-            ],
-          ),
-          const SizedBox(height: 20,),
-          Text('Workout days per week', key: dayKey,),
-          if(dayError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(dayError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+            const SizedBox(height: 20),
+            Text('Workout days per week', key: dayKey),
+            if (dayError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  dayError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
                 ),
               ),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                dayChip('2', 0),
+                dayChip('3', 1),
+                dayChip('4', 2),
+                dayChip('5', 3),
+                dayChip('6', 4),
+              ],
             ),
-          const SizedBox(height: 5,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              dayChip('2', 0),
-              dayChip('3', 1),
-              dayChip('4', 2),
-              dayChip('5', 3),
-              dayChip('6', 4),
-            ],
-          ),
-          const SizedBox(height: 20,),
-          Text('Session Duration', key: durationKey,),
-          if(durationError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(durationError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+            const SizedBox(height: 20),
+            Text('Session Duration', key: durationKey),
+            if (durationError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  durationError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
                 ),
               ),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                timeChip('15-30 min', 0),
+                timeChip('30-45 min', 1),
+                timeChip('45-60 min', 2),
+                timeChip('60+ min', 3),
+              ],
             ),
-          const SizedBox(height: 5,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              timeChip('15-30 min', 0),
-              timeChip('30-45 min', 1),
-              timeChip('45-60 min', 2),
-              timeChip('60+ min', 3),
-            ],
-          ),
-          const SizedBox(height: 20,),
-          Text('Session time', key: timeKey,),
-          if(timeError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(timeError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+            const SizedBox(height: 20),
+            Text('Session time', key: timeKey),
+            if (timeError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  timeError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
                 ),
               ),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                sessionChip('Early Morning', Emoji.s1, 0),
+                sessionChip('Late Morning', Emoji.s2, 1),
+                sessionChip('Afternoon', Emoji.s3, 2),
+                sessionChip('Evening', Emoji.s4, 3),
+              ],
             ),
-          const SizedBox(height: 5,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              sessionChip('Early Morning', Emoji.s1, 0),
-              sessionChip('Late Morning', Emoji.s2, 1),
-              sessionChip('Afternoon', Emoji.s3, 2),
-              sessionChip('Evening', Emoji.s4, 3),
-            ],
-          ),
-          const SizedBox(height: 20,),
-          Text('Your Free Days'),
-          const SizedBox(height: 5,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              freeChip('Son', 0),
-              freeChip('Mon', 1),
-              freeChip('Tue', 2),
-              freeChip('Wed', 3),
-              freeChip('Thu', 4),
-              freeChip('Fri', 5),
-              freeChip('Sat', 6),
-            ],
-          ),
-          const SizedBox(height: 30,),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+            const SizedBox(height: 20),
+            Text('Your Free Days'),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                freeChip('Son', 0),
+                freeChip('Mon', 1),
+                freeChip('Tue', 2),
+                freeChip('Wed', 3),
+                freeChip('Thu', 4),
+                freeChip('Fri', 5),
+                freeChip('Sat', 6),
+              ],
+            ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                onPressed: handleNext,
+                child: Text("Next"),
               ),
-              onPressed: handleNext,
-              child: Text("Next",),
             ),
-          ),
-        ],),
+          ],
+        ),
       ),
     );
   }
@@ -2456,8 +2587,10 @@ class _SignupPageSixState extends State<SignupPageSix> {
               styleSelected.remove(value);
             }
           }
-          final allSelected = List.generate(9, (i) => i).every((i) =>
-              styleSelected.contains(i));
+          final allSelected = List.generate(
+            9,
+            (i) => i,
+          ).every((i) => styleSelected.contains(i));
           if (allSelected) {
             styleSelected.clear();
             styleSelected.add(mixedValue);
@@ -2596,7 +2729,7 @@ class SignupPageSevenData {
       'Vegan',
       'Pescatarian',
       'Paleo',
-      'Keto'
+      'Keto',
     ];
     return diets[dietIndex!];
   }
@@ -2611,7 +2744,7 @@ class SignupPageSevenData {
       'East African',
       'North African',
       'Western',
-      'No preference'
+      'No preference',
     ];
     return regionIndex.map((i) => regions[i]).toList();
   }
@@ -2666,9 +2799,12 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
   void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          alignment: 0.2);
+      Scrollable.ensureVisible(
+        context,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
     }
   }
 
@@ -2698,139 +2834,140 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
 
   @override
   Widget build(BuildContext context) {
-    final th = Theme
-        .of(context)
-        .textTheme;
+    final th = Theme.of(context).textTheme;
 
     return SingleChildScrollView(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Emoji.page7,
-              const SizedBox(width: 10,),
-              Text('Your Eating Habits', style: Theme
-                  .of(context)
-                  .textTheme
-                  .displaySmall,),
-            ],
-          ),
-          const SizedBox(height: 10,),
-          Text('Help us shape a plan that works for you', style: Theme
-              .of(context)
-              .textTheme
-              .labelMedium,),
-          const SizedBox(height: 20,),
-          Text('Meals per day', key: mealKey,),
-          if(mealError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(mealError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Emoji.page7,
+                const SizedBox(width: 10),
+                Text(
+                  'Your Eating Habits',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Help us shape a plan that works for you',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            const SizedBox(height: 20),
+            Text('Meals per day', key: mealKey),
+            if (mealError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  mealError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
                 ),
               ),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                mealChip('2', 0),
+                mealChip('3', 1),
+                mealChip('4', 2),
+                mealChip('5+', 3),
+              ],
             ),
-          const SizedBox(height: 5,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              mealChip('2', 0),
-              mealChip('3', 1),
-              mealChip('4', 2),
-              mealChip('5+', 3),
-            ],
-          ),
-          const SizedBox(height: 20,),
-          Text('Your Diet Preference', key: dietKey,),
-          if(dietError != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(dietError!,
-                style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .error,
-                  fontSize: 12,
+            const SizedBox(height: 20),
+            Text('Your Diet Preference', key: dietKey),
+            if (dietError != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  dietError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                  ),
                 ),
               ),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                dietChip('Omnivore', Emoji.omni, 0),
+                dietChip('Vegetarian', Emoji.veg, 1),
+                dietChip('Vegan', Emoji.vegan, 2),
+                dietChip('Pescatarian', Emoji.fish, 3),
+                dietChip('Paleo', Emoji.paleo, 4),
+                dietChip('Keto', Emoji.keto, 5),
+              ],
             ),
-          const SizedBox(height: 5,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              dietChip('Omnivore', Emoji.omni, 0),
-              dietChip('Vegetarian', Emoji.veg, 1),
-              dietChip('Vegan', Emoji.vegan, 2),
-              dietChip('Pescatarian', Emoji.fish, 3),
-              dietChip('Paleo', Emoji.paleo, 4),
-              dietChip('Keto', Emoji.keto, 5),
-            ],
-          ),
-          const SizedBox(height: 5,),
-          CheckboxListTile(
+            const SizedBox(height: 5),
+            CheckboxListTile(
               controlAffinity: ListTileControlAffinity.leading,
               title: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Halal'),
-                    const SizedBox(width: 10,),
-                    Icon(Symbols.prayer_times_rounded)
-                  ]),
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Halal'),
+                  const SizedBox(width: 10),
+                  Icon(Symbols.prayer_times_rounded),
+                ],
+              ),
               value: isHalal,
               onChanged: (bool? value) {
                 setState(() {
                   isHalal = value!;
                 });
-              }
-          ),
-          const SizedBox(height: 5,),
-          Text('Your Regional Preference for food'),
-          const SizedBox(height: 5,),
-          Text('This\'ll be suggested to you more', style: th.labelSmall,),
-          const SizedBox(height: 5,),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              regionChip('South Asian', Symbols.temple_hindu_rounded, 0),
-              regionChip('East Asian', Symbols.temple_buddhist_rounded, 1),
-              regionChip('Southeast Asian', Symbols.forest_rounded, 2),
-              regionChip('Middle Eastern', Symbols.mosque_rounded, 3),
-              regionChip('Mediterranean', Symbols.waves_rounded, 4),
-              regionChip('East African', Symbols.landscape_2_rounded, 5),
-              regionChip('North African', Symbols.sunny_rounded, 6),
-              regionChip('Western', Symbols.account_balance_rounded, 7),
-              regionChip('No preference', Symbols.all_inclusive_rounded, 8),
-            ],
-          ),
-          const SizedBox(height: 20,),
-          Row(children: [
-            Icon(Symbols.allergies_rounded),
-            const SizedBox(width: 10,),
-            Text('Your Allergies'),
-          ],),
-          const SizedBox(height: 5,),
-          AllergenChips(),
-          const SizedBox(height: 30,),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-              onPressed: handleNext,
-              child: Text("Next",),
+              },
             ),
-          ),
-        ],),
+            const SizedBox(height: 5),
+            Text('Your Regional Preference for food'),
+            const SizedBox(height: 5),
+            Text('This\'ll be suggested to you more', style: th.labelSmall),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                regionChip('South Asian', Symbols.temple_hindu_rounded, 0),
+                regionChip('East Asian', Symbols.temple_buddhist_rounded, 1),
+                regionChip('Southeast Asian', Symbols.forest_rounded, 2),
+                regionChip('Middle Eastern', Symbols.mosque_rounded, 3),
+                regionChip('Mediterranean', Symbols.waves_rounded, 4),
+                regionChip('East African', Symbols.landscape_2_rounded, 5),
+                regionChip('North African', Symbols.sunny_rounded, 6),
+                regionChip('Western', Symbols.account_balance_rounded, 7),
+                regionChip('No preference', Symbols.all_inclusive_rounded, 8),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Icon(Symbols.allergies_rounded),
+                const SizedBox(width: 10),
+                Text('Your Allergies'),
+              ],
+            ),
+            const SizedBox(height: 5),
+            AllergenChips(),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                onPressed: handleNext,
+                child: Text("Next"),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -2891,8 +3028,10 @@ class _SignupPageSevenState extends State<SignupPageSeven> {
               region.remove(value);
             }
           }
-          final allSelected = List.generate(8, (i) => i).every((i) =>
-              region.contains(i));
+          final allSelected = List.generate(
+            8,
+            (i) => i,
+          ).every((i) => region.contains(i));
           if (allSelected) {
             region.clear();
             region.add(noPreferenceValue);
@@ -2910,9 +3049,8 @@ class SignupPageEightData {
   SignupPageEightData({
     List<String>? selectedIntolerances,
     List<String>? selectedDislikes,
-  })
-      : selectedIntolerances = selectedIntolerances ?? [],
-        selectedDislikes = selectedDislikes ?? [];
+  }) : selectedIntolerances = selectedIntolerances ?? [],
+       selectedDislikes = selectedDislikes ?? [];
 }
 
 class SignupPageEight extends StatefulWidget {
@@ -2933,51 +3071,59 @@ class _SignupPageEightState extends State<SignupPageEight> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Emoji.page8,
-              const SizedBox(width: 10,),
-              Text('Foods you want to Avoid', style: Theme
-                  .of(context)
-                  .textTheme
-                  .displaySmall,),
-            ],
-          ),
-          const SizedBox(height: 10,),
-          Text('We’ll leave these out of your plan', style: Theme
-              .of(context)
-              .textTheme
-              .labelMedium,),
-          const SizedBox(height: 20,),
-          Row(children: [
-            Icon(Symbols.gastroenterology_rounded),
-            const SizedBox(width: 10,),
-            Text('Your Intolerances'),
-          ],),
-          const SizedBox(height: 5,),
-          IntoleranceChips(),
-          const SizedBox(height: 15,),
-          Row(children: [
-            Icon(Symbols.sentiment_dissatisfied_rounded),
-            const SizedBox(width: 10,),
-            Text('Your dislikes'),
-          ],),
-          const SizedBox(height: 5,),
-          DislikedChips(),
-          const SizedBox(height: 30,),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-              onPressed: handleNext,
-              child: Text("Next",),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Emoji.page8,
+                const SizedBox(width: 10),
+                Text(
+                  'Foods you want to Avoid',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+              ],
             ),
-          ),
-        ],),
+            const SizedBox(height: 10),
+            Text(
+              'We’ll leave these out of your plan',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Icon(Symbols.gastroenterology_rounded),
+                const SizedBox(width: 10),
+                Text('Your Intolerances'),
+              ],
+            ),
+            const SizedBox(height: 5),
+            IntoleranceChips(),
+            const SizedBox(height: 15),
+            Row(
+              children: [
+                Icon(Symbols.sentiment_dissatisfied_rounded),
+                const SizedBox(width: 10),
+                Text('Your dislikes'),
+              ],
+            ),
+            const SizedBox(height: 5),
+            DislikedChips(),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                onPressed: handleNext,
+                child: Text("Next"),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -3078,15 +3224,15 @@ class _SignupPageNineState extends State<SignupPageNine> {
       } else {
         usernameError = null;
       }
-      
+
       final e = emailController.text.trim();
-      if(e.isEmpty){
+      if (e.isEmpty) {
         emailError = 'Email is required';
         isValid = false;
-      }else if(!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(e)){
+      } else if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(e)) {
         emailError = 'Enter a valid email';
         isValid = false;
-      }else{
+      } else {
         emailError = null;
       }
 
@@ -3112,13 +3258,17 @@ class _SignupPageNineState extends State<SignupPageNine> {
     });
     if (isValid) {
       final results = await Future.wait([
-      FirebaseFirestore.instance
-      .collection('users')
-          .where('username', isEqualTo: usernameController.text.trim())
-          .limit(1)
-          .get(),
-          FirebaseFirestore.instance.collection('users').where('email', isEqualTo: emailController.text.trim()).limit(1).get(),
-    ]);
+        FirebaseFirestore.instance
+            .collection('users')
+            .where('username', isEqualTo: usernameController.text.trim())
+            .limit(1)
+            .get(),
+        FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: emailController.text.trim())
+            .limit(1)
+            .get(),
+      ]);
 
       if (results[0].docs.isNotEmpty) {
         setState(() {
@@ -3126,7 +3276,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
         });
         isValid = false;
       }
-      if(results[1].docs.isNotEmpty){
+      if (results[1].docs.isNotEmpty) {
         setState(() {
           emailError = 'Email already in use';
           isValid = false;
@@ -3139,9 +3289,12 @@ class _SignupPageNineState extends State<SignupPageNine> {
   void _scrollToError(GlobalKey key) {
     final context = key.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          alignment: 0.2);
+      Scrollable.ensureVisible(
+        context,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
     }
   }
 
@@ -3164,11 +3317,12 @@ class _SignupPageNineState extends State<SignupPageNine> {
       }
       return;
     }
-    showDialog(context: context, builder: (context) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    });
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(child: CircularProgressIndicator());
+      },
+    );
     saveData();
     if (!mounted) return;
     context.read<DataProvider>().updatePageNine(data);
@@ -3188,9 +3342,13 @@ class _SignupPageNineState extends State<SignupPageNine> {
       if (existing.docs.isNotEmpty) {
         await GoogleSignIn.instance.signOut();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
               content: Text(
-                  'This Google account is already linked to another user')));
+                'This Google account is already linked to another user',
+              ),
+            ),
+          );
         }
         return;
       }
@@ -3201,8 +3359,9 @@ class _SignupPageNineState extends State<SignupPageNine> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Google sign-in failed: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
       }
     }
   }
@@ -3220,7 +3379,8 @@ class _SignupPageNineState extends State<SignupPageNine> {
   Future<void> _linkApple() async {
     try {
       final appleCredential = await SignInWithApple.getAppleIDCredential(
-          scopes: [AppleIDAuthorizationScopes.email]);
+        scopes: [AppleIDAuthorizationScopes.email],
+      );
       final existing = await FirebaseFirestore.instance
           .collection('users')
           .where('appleId', isEqualTo: appleCredential.userIdentifier)
@@ -3229,9 +3389,13 @@ class _SignupPageNineState extends State<SignupPageNine> {
 
       if (existing.docs.isNotEmpty) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
               content: Text(
-                  'This Apple account is already linked to another user')));
+                'This Apple account is already linked to another user',
+              ),
+            ),
+          );
         }
         return;
       }
@@ -3242,8 +3406,9 @@ class _SignupPageNineState extends State<SignupPageNine> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Apple sign-in failed: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Apple sign-in failed: $e')));
       }
     }
   }
@@ -3259,19 +3424,23 @@ class _SignupPageNineState extends State<SignupPageNine> {
 
   Future<bool> _showUnlinkDialog(String provider) async {
     return await showDialog<bool>(
-        context: context,
-        builder: (context) =>
-            AlertDialog(
-              title: Text('Unlink $provider'),
-              content: Text('This will remove your $provider connection.'),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false),
-                    child: const Text('Cancel')),
-                TextButton(onPressed: () => Navigator.pop(context, true),
-                    child: const Text('Unlink')),
-              ],
-            )
-    ) ?? false;
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Unlink $provider'),
+            content: Text('This will remove your $provider connection.'),
+            actions: [
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Unlink'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
   }
 
   @override
@@ -3287,15 +3456,17 @@ class _SignupPageNineState extends State<SignupPageNine> {
     if (data.phone != null) {
       final allCodes = codes.map((c) => c['code']!).toList();
       allCodes.sort((a, b) => b.length.compareTo(a.length));
-      final matchedCode = allCodes.firstWhere((code) =>
-          data.phone!.startsWith(code), orElse: () => '+880');
+      final matchedCode = allCodes.firstWhere(
+        (code) => data.phone!.startsWith(code),
+        orElse: () => '+880',
+      );
       selectedCode = matchedCode;
       phoneController.text = data.phone!.substring(matchedCode.length);
     }
 
     if (kIsWeb) {
       GoogleSignIn.instance.authenticationEvents.listen((event) async {
-        final GoogleSignInAccount? user = switch (event){
+        final GoogleSignInAccount? user = switch (event) {
           GoogleSignInAuthenticationEventSignIn() => event.user,
           _ => null,
         };
@@ -3307,9 +3478,13 @@ class _SignupPageNineState extends State<SignupPageNine> {
             .get();
         if (existing.docs.isNotEmpty) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
                 content: Text(
-                    'This Google account is already linked to another user')));
+                  'This Google account is already linked to another user',
+                ),
+              ),
+            );
           }
           return;
         }
@@ -3345,19 +3520,19 @@ class _SignupPageNineState extends State<SignupPageNine> {
             Row(
               children: [
                 Emoji.page9,
-                const SizedBox(width: 10,),
-                Text('Create Your Account', style: Theme
-                    .of(context)
-                    .textTheme
-                    .displaySmall,),
+                const SizedBox(width: 10),
+                Text(
+                  'Create Your Account',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
               ],
             ),
-            const SizedBox(height: 10,),
-            Text('Save your progress and access your plan anytime', style: Theme
-                .of(context)
-                .textTheme
-                .labelMedium,),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 10),
+            Text(
+              'Save your progress and access your plan anytime',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            const SizedBox(height: 20),
             TextField(
               key: userKey,
               controller: usernameController,
@@ -3375,7 +3550,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 });
               },
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 20),
             TextField(
               key: emailKey,
               controller: emailController,
@@ -3393,7 +3568,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 });
               },
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 20),
             TextField(
               key: passKey,
               controller: passwordController,
@@ -3409,8 +3584,9 @@ class _SignupPageNineState extends State<SignupPageNine> {
                       isHiddenOne = !isHiddenOne;
                     });
                   },
-                  icon: isHiddenOne ? Icon(Icons.visibility_rounded) : Icon(
-                      Icons.visibility_off_rounded),
+                  icon: isHiddenOne
+                      ? Icon(Icons.visibility_rounded)
+                      : Icon(Icons.visibility_off_rounded),
                 ),
               ),
               onChanged: (_) {
@@ -3421,7 +3597,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 });
               },
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 20),
             TextField(
               key: confirmKey,
               controller: confirmController,
@@ -3436,8 +3612,9 @@ class _SignupPageNineState extends State<SignupPageNine> {
                       isHiddenTwo = !isHiddenTwo;
                     });
                   },
-                  icon: isHiddenTwo ? Icon(Icons.visibility_rounded) : Icon(
-                      Icons.visibility_off_rounded),
+                  icon: isHiddenTwo
+                      ? Icon(Icons.visibility_rounded)
+                      : Icon(Icons.visibility_off_rounded),
                 ),
               ),
               onChanged: (_) {
@@ -3448,39 +3625,41 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 });
               },
             ),
-            const SizedBox(height: 20,),
-            Row(children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
                       height: 56,
                       width: 90,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Theme
-                              .of(context)
-                              .colorScheme
-                              .surface,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: countryCode(context),
-                      )),
-                  const SizedBox(height: 18,),
-                ],
-              ),
-              const SizedBox(width: 8,),
-              Expanded(child: TextField(
-                controller: phoneController,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.phone),
-                  labelText: 'Phone no',
-                  hintText: 'XXXXXXXXXX',
-                  helperText: '*Optional',
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                  ],
                 ),
-              ))
-            ]),
-            const SizedBox(height: 20,),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    controller: phoneController,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.phone),
+                      labelText: 'Phone no',
+                      hintText: 'XXXXXXXXXX',
+                      helperText: '*Optional',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: addressController,
               decoration: InputDecoration(
@@ -3489,148 +3668,179 @@ class _SignupPageNineState extends State<SignupPageNine> {
                 helperText: '*Optional',
               ),
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 20),
             Text('Link with your Google or Apple id'),
-            const SizedBox(height: 10,),
-            if(kIsWeb && !data.isGoogleLinked)
+            const SizedBox(height: 10),
+            if (kIsWeb && !data.isGoogleLinked)
               SizedBox(
                 height: 50,
                 width: double.infinity,
                 child: Stack(
                   children: [
                     FilledButton(
-                        style: FilledButton.styleFrom(
-                            minimumSize: Size(double.infinity, 50),
-                            backgroundColor: Theme
-                                .of(context)
-                                .colorScheme
-                                .surface,
-                            foregroundColor: Theme
-                                .of(context)
-                                .colorScheme
-                                .onSurface
-                        ),
-                        onPressed: () {}, child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 20),
-                      child: Row(
-                        children: [
-                          Emoji.google,
-                          Expanded(child: Center(child: Text(
-                            'Connect with Google', style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 16),))),
-                          const SizedBox(height: 24, width: 24,),
-                        ],
+                      style: FilledButton.styleFrom(
+                        minimumSize: Size(double.infinity, 50),
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface,
                       ),
-                    )),
+                      onPressed: () {},
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 20,
+                        ),
+                        child: Row(
+                          children: [
+                            Emoji.google,
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  'Connect with Google',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24, width: 24),
+                          ],
+                        ),
+                      ),
+                    ),
                     Opacity(
                       opacity: 0.005,
                       child: SizedBox(
                         width: double.infinity,
                         height: 50,
                         child: web.renderButton(
-                            configuration: GSIButtonConfiguration(
-                              size: GSIButtonSize.large,
-                              shape: GSIButtonShape.pill,
-                              minimumWidth: 5000,
-                            )
+                          configuration: GSIButtonConfiguration(
+                            size: GSIButtonSize.large,
+                            shape: GSIButtonShape.pill,
+                            minimumWidth: 5000,
+                          ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               )
-            else
-              if(kIsWeb && data.isGoogleLinked)
-                FilledButton(
-                    style: FilledButton.styleFrom(
-                        backgroundColor: Theme
-                            .of(context)
-                            .colorScheme
-                            .surface,
-                        foregroundColor: Theme
-                            .of(context)
-                            .colorScheme
-                            .onSurface
-                    ),
-                    onPressed: _unlinkGoogle, child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 20),
-                  child: Row(
-                    children: [
-                      Emoji.google,
-                      Expanded(child: Center(child: Text(
-                        'Google Connected . Unlink', style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 16),))),
-                      Icon(Icons.check_circle_outline, size: 24,
-                        color: CustomColors.greenPrimary(context),)
-                    ],
-                  ),
-                ))
-              else
-                FilledButton(
-                    style: FilledButton.styleFrom(
-                        backgroundColor: Theme
-                            .of(context)
-                            .colorScheme
-                            .surface,
-                        foregroundColor: Theme
-                            .of(context)
-                            .colorScheme
-                            .onSurface
-                    ),
-                    onPressed: data.isGoogleLinked
-                        ? _unlinkGoogle
-                        : _linkGoogle, child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 20),
-                  child: Row(
-                    children: [
-                      Emoji.google,
-                      Expanded(child: Center(child: Text(data.isGoogleLinked
-                          ? 'Google Connected . Unlink'
-                          : 'Connect with Google', style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 16),))),
-                      data.isGoogleLinked
-                          ?
-                      Icon(Icons.check_circle_outline, size: 24,
-                        color: CustomColors.greenPrimary(context),)
-                          : const SizedBox(height: 24, width: 24,),
-                    ],
-                  ),
-                )),
-            const SizedBox(height: 20,),
-            FilledButton(
+            else if (kIsWeb && data.isGoogleLinked)
+              FilledButton(
                 style: FilledButton.styleFrom(
-                    backgroundColor: Theme
-                        .of(context)
-                        .colorScheme
-                        .surface,
-                    foregroundColor: Theme
-                        .of(context)
-                        .colorScheme
-                        .onSurface
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  foregroundColor: Theme.of(context).colorScheme.onSurface,
                 ),
-                onPressed: data.isAppleLinked ? _unlinkApple : _linkApple,
+                onPressed: _unlinkGoogle,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 20),
+                    vertical: 10,
+                    horizontal: 20,
+                  ),
                   child: Row(
                     children: [
-                      Emoji.apple,
-                      Expanded(child: Center(child: Text(data.isAppleLinked
-                          ? 'Apple Connected . Unlink'
-                          : 'Connect with Apple', style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 16),))),
-                      data.isAppleLinked
-                          ?
-                      Icon(Icons.check_circle_outline, size: 24,
-                        color: CustomColors.greenPrimary(context),)
-                          : const SizedBox(height: 24, width: 24,),
+                      Emoji.google,
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Google Connected . Unlink',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        Icons.check_circle_outline,
+                        size: 24,
+                        color: CustomColors.greenPrimary(context),
+                      ),
                     ],
                   ),
-                )),
-            const SizedBox(height: 30,),
+                ),
+              )
+            else
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  foregroundColor: Theme.of(context).colorScheme.onSurface,
+                ),
+                onPressed: data.isGoogleLinked ? _unlinkGoogle : _linkGoogle,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 20,
+                  ),
+                  child: Row(
+                    children: [
+                      Emoji.google,
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            data.isGoogleLinked
+                                ? 'Google Connected . Unlink'
+                                : 'Connect with Google',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      data.isGoogleLinked
+                          ? Icon(
+                              Icons.check_circle_outline,
+                              size: 24,
+                              color: CustomColors.greenPrimary(context),
+                            )
+                          : const SizedBox(height: 24, width: 24),
+                    ],
+                  ),
+                ),
+              ),
+            const SizedBox(height: 20),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                foregroundColor: Theme.of(context).colorScheme.onSurface,
+              ),
+              onPressed: data.isAppleLinked ? _unlinkApple : _linkApple,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 20,
+                ),
+                child: Row(
+                  children: [
+                    Emoji.apple,
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          data.isAppleLinked
+                              ? 'Apple Connected . Unlink'
+                              : 'Connect with Apple',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                    data.isAppleLinked
+                        ? Icon(
+                            Icons.check_circle_outline,
+                            size: 24,
+                            color: CustomColors.greenPrimary(context),
+                          )
+                        : const SizedBox(height: 24, width: 24),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               child: FilledButton(
@@ -3638,7 +3848,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                   minimumSize: Size(double.infinity, 50),
                 ),
                 onPressed: handleNext,
-                child: Text("Finish Setup",),
+                child: Text("Finish Setup"),
               ),
             ),
           ],
@@ -3657,10 +3867,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
               borderRadius: BorderRadius.circular(10),
               isDense: true,
               elevation: 0,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium,
               value: selectedCode,
               items: codes.map<DropdownMenuItem<String>>((country) {
                 return DropdownMenuItem<String>(
@@ -3689,6 +3896,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
 class SignupPageTenData {
   bool wantNotifications;
   bool wantMetricUnit;
+
   SignupPageTenData({
     this.wantNotifications = false,
     this.wantMetricUnit = true,
@@ -3709,37 +3917,60 @@ class _SignupPageTenState extends State<SignupPageTen> {
   bool unitIsMetric = true;
   bool notificationsIsOn = false;
 
-  void saveData(){
+  void saveData() {
     widget.data.wantMetricUnit = unitIsMetric;
     widget.data.wantNotifications = notificationsIsOn;
   }
 
-  void handleNext() async{
+  void handleNext() async {
     saveData();
     context.read<DataProvider>().updatePageTen(widget.data);
-    showDialog(context: context,barrierDismissible: false, builder: (context){
-      return Center(
-        child: CircularProgressIndicator(),
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+    try {
+      final dp = context.read<DataProvider>();
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: dp.pageNine.email!,
+            password: dp.pageNine.password!,
+          );
+      final uid = credential.user!.uid;
+      final userData = UserData.fromSignup(
+        uid: uid,
+        p1: dp.pageOne,
+        p2: dp.pageTwo,
+        p3: dp.pageThree,
+        p4: dp.pageFour,
+        p5: dp.pageFive,
+        p6: dp.pageSix,
+        p7: dp.pageSeven,
+        p8: dp.pageEight,
+        p9: dp.pageNine,
+        p10: dp.pageTen,
       );
-    });
-      try{
-        final dp = context.read<DataProvider>();
-        final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: dp.pageNine.email!, password: dp.pageNine.password!);
-        final uid = credential.user!.uid;
-        final userData = UserData.fromSignup(uid: uid, p1: dp.pageOne, p2: dp.pageTwo, p3: dp.pageThree, p4: dp.pageFour, p5: dp.pageFive, p6: dp.pageSix, p7: dp.pageSeven, p8: dp.pageEight, p9: dp.pageNine, p10: dp.pageTen);
-        await FirebaseFirestore.instance.collection('users').doc(uid).set(userData.toMap());
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .set(userData.toMap());
 
-        dp.currentUser = userData;
-        dp.reset();
+      dp.currentUser = userData;
+      dp.reset();
 
-        if(!mounted) return;
-        Navigator.pop(context);
-        Navigator.pushReplacementNamed(context, '/home');
-      }catch(e){
-        if(!mounted) return;
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
-      }
+      if (!mounted) return;
+      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
+    }
   }
 
   @override
@@ -3757,123 +3988,252 @@ class _SignupPageTenState extends State<SignupPageTen> {
     final p5 = context.read<DataProvider>().pageFive;
     final p9 = context.read<DataProvider>().pageNine;
     return SingleChildScrollView(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Emoji.page10,
-              const SizedBox(width: 10,),
-              Text('Your Plan is Ready', style: Theme
-                  .of(context)
-                  .textTheme
-                  .displaySmall,),
-            ],
-          ),
-          const SizedBox(height: 10,),
-          Text(
-            'Review your details and see your personalized setup', style: Theme
-              .of(context)
-              .textTheme
-              .labelMedium,),
-          const SizedBox(height: 15,),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Name', style: th.labelLarge,), Text('${p1.name}')]),
-                const SizedBox(height: 10,),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Username', style: th.labelLarge,), Text('${p9.username}')]),
-                const SizedBox(height: 10,),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Email', style: th.labelLarge,), Text('${p9.email}')]),
-                const SizedBox(height: 10,),
-                if(p9.isGoogleLinked && p9.isAppleLinked)
-                  Column(children: [
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Google ID', style: th.labelLarge,), Text(p9.googleEmail == null ? 'Not Linked' : p9.googleEmail!.length > 15 ? '${p9.googleEmail!.substring(0, 5)} ... ${p9.googleEmail!.substring(p9.googleEmail!.length - 10)}' : p9.googleEmail!)]),
-                    const SizedBox(height: 10,),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Apple ID', style: th.labelLarge,), Text(p9.appleEmail == null ? 'Not Linked' : p9.appleEmail!.length > 15 ? '${p9.appleEmail!.substring(0, 5)} ... ${p9.appleEmail!.substring(p9.appleEmail!.length - 10)}' : p9.appleEmail!)]),
-                    const SizedBox(height: 10,),
-                  ],)
-                else if(p9.isGoogleLinked)
-                  Column(children: [
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Google ID', style: th.labelLarge,), Text(p9.googleEmail == null ? 'Not Linked' : p9.googleEmail!.length > 15 ? '${p9.googleEmail!.substring(0, 5)} ... ${p9.googleEmail!.substring(p9.googleEmail!.length - 10)}' : p9.googleEmail!)]),
-                    const SizedBox(height: 10,),
-                  ],)
-                else if(p9.isAppleLinked)
-                  Column(children: [
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Apple ID', style: th.labelLarge,), Text(p9.appleEmail == null ? 'Not Linked' : p9.appleEmail!.length > 15 ? '${p9.appleEmail!.substring(0, 5)} ... ${p9.appleEmail!.substring(p9.appleEmail!.length - 10)}' : p9.appleEmail!)]),
-                    const SizedBox(height: 10,),
-                  ],)
+                Emoji.page10,
+                const SizedBox(width: 10),
+                Text(
+                  'Your Plan is Ready',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Review your details and see your personalized setup',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            const SizedBox(height: 15),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Name', style: th.labelLarge),
+                    Text('${p1.name}'),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Username', style: th.labelLarge),
+                    Text('${p9.username}'),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Email', style: th.labelLarge),
+                    Text('${p9.email}'),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                if (p9.isGoogleLinked && p9.isAppleLinked)
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Google ID', style: th.labelLarge),
+                          Text(
+                            p9.googleEmail == null
+                                ? 'Not Linked'
+                                : p9.googleEmail!.length > 15
+                                ? '${p9.googleEmail!.substring(0, 5)} ... ${p9.googleEmail!.substring(p9.googleEmail!.length - 10)}'
+                                : p9.googleEmail!,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Apple ID', style: th.labelLarge),
+                          Text(
+                            p9.appleEmail == null
+                                ? 'Not Linked'
+                                : p9.appleEmail!.length > 15
+                                ? '${p9.appleEmail!.substring(0, 5)} ... ${p9.appleEmail!.substring(p9.appleEmail!.length - 10)}'
+                                : p9.appleEmail!,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  )
+                else if (p9.isGoogleLinked)
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Google ID', style: th.labelLarge),
+                          Text(
+                            p9.googleEmail == null
+                                ? 'Not Linked'
+                                : p9.googleEmail!.length > 15
+                                ? '${p9.googleEmail!.substring(0, 5)} ... ${p9.googleEmail!.substring(p9.googleEmail!.length - 10)}'
+                                : p9.googleEmail!,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  )
+                else if (p9.isAppleLinked)
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Apple ID', style: th.labelLarge),
+                          Text(
+                            p9.appleEmail == null
+                                ? 'Not Linked'
+                                : p9.appleEmail!.length > 15
+                                ? '${p9.appleEmail!.substring(0, 5)} ... ${p9.appleEmail!.substring(p9.appleEmail!.length - 10)}'
+                                : p9.appleEmail!,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  )
                 else
                   SizedBox(),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('BMI', style: th.labelLarge,), Text('${p1.bmi}-${p1.category}')]),
-                const SizedBox(height: 10,),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Calorie Intake', style: th.labelLarge,), Text('~${p4.tdee!.round()} kcal')]),
-                const SizedBox(height: 10,),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Fundamental', style: th.labelLarge,), Text(p5.fundType)]),
-                const SizedBox(height: 10,),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Current goal', style: th.labelLarge,), Text(p5.goalType!)]),
-                const SizedBox(height: 10,),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Duration of plan', style: th.labelLarge,), Text(p5.planType)]),
-                const SizedBox(height: 10,),
-          ],),
-          const SizedBox(height: 15,),
-          GestureDetector(
-            onTap: (){
-              setState(() {
-                unitIsMetric = !unitIsMetric;
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context).colorScheme.surface,
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                  RichText(text: TextSpan(children: [
-                    TextSpan(text: 'Unit of Measurement is ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                    TextSpan(text: unitIsMetric ? 'Metric' : 'Imperial', style: TextStyle(color: CustomColors.orangePrimary(context), fontWeight: FontWeight.w600)),
-                  ])),
-                    const SizedBox(height: 5,),
-                    Text(unitIsMetric ? 'kg . grams' : 'lbs . oz', style: th.labelSmall,),
-                  const SizedBox(height: 10,),
-                  Text('Tap to change', style: th.labelMedium,),
-                ],),
+                    Text('BMI', style: th.labelLarge),
+                    Text('${p1.bmi}-${p1.category}'),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Calorie Intake', style: th.labelLarge),
+                    Text('~${p4.tdee!.round()} kcal'),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Fundamental', style: th.labelLarge),
+                    Text(p5.fundType),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Current goal', style: th.labelLarge),
+                    Text(p5.goalType!),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Duration of plan', style: th.labelLarge),
+                    Text(p5.planType),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+            const SizedBox(height: 15),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  unitIsMetric = !unitIsMetric;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 15,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Unit of Measurement is ',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextSpan(
+                              text: unitIsMetric ? 'Metric' : 'Imperial',
+                              style: TextStyle(
+                                color: CustomColors.orangePrimary(context),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        unitIsMetric ? 'kg . grams' : 'lbs . oz',
+                        style: th.labelSmall,
+                      ),
+                      const SizedBox(height: 10),
+                      Text('Tap to change', style: th.labelMedium),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 10,),
-          CheckboxListTile(
+            const SizedBox(height: 10),
+            CheckboxListTile(
               controlAffinity: ListTileControlAffinity.leading,
               title: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Get Reminders'),
-                    const SizedBox(width: 10,),
-                    Icon(Icons.notifications_active),
-                  ]),
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Get Reminders'),
+                  const SizedBox(width: 10),
+                  Icon(Icons.notifications_active),
+                ],
+              ),
               value: notificationsIsOn,
               onChanged: (bool? value) {
                 setState(() {
                   notificationsIsOn = value!;
                 });
-              }
-          ),
-          const SizedBox(height: 30,),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-              onPressed: handleNext,
-              child: Text("Go To Dashboard",),
+              },
             ),
-          ),
-        ],),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                onPressed: handleNext,
+                child: Text("Go To Dashboard"),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

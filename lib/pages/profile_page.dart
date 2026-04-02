@@ -1,5 +1,10 @@
 import 'dart:convert';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:google_sign_in_web/web_only.dart' as web;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in_web/google_sign_in_web.dart';
 import 'package:core_care/data_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +25,147 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  Future<void> _linkGoogle() async {
+    final provider = context.read<DataProvider>();
+    try {
+      final googleUser = await GoogleSignIn.instance.authenticate();
+      final existing = await FirebaseFirestore.instance
+          .collection('users')
+          .where('googleId', isEqualTo: googleUser.id)
+          .limit(1)
+          .get();
+      if (existing.docs.isNotEmpty) {
+        await GoogleSignIn.instance.signOut();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'This Google account is already linked to another user',
+              ),
+            ),
+          );
+        }
+        return;
+      }
+      await provider.updateGoogleLink(googleUser.id, googleUser.email);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+      }
+    }
+  }
+
+  Future<void> _unlinkGoogle() async {
+    final provider = context.read<DataProvider>();
+    final confirm = await _showUnlinkDialog('Google');
+    if (!confirm) return;
+    await GoogleSignIn.instance.signOut();
+    await provider.updateGoogleLink(null, null);
+  }
+
+  Future<void> _linkApple() async {
+    final provider = context.read<DataProvider>();
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [AppleIDAuthorizationScopes.email],
+      );
+      final existing = await FirebaseFirestore.instance
+          .collection('users')
+          .where('appleId', isEqualTo: appleCredential.userIdentifier)
+          .limit(1)
+          .get();
+
+      if (existing.docs.isNotEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'This Apple account is already linked to another user',
+              ),
+            ),
+          );
+        }
+        return;
+      }
+      await provider.updateAppleLink(appleCredential.userIdentifier, appleCredential.email);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Apple sign-in failed: $e')));
+      }
+    }
+  }
+
+  Future<void> _unlinkApple() async {
+    final provider = context.read<DataProvider>();
+    final confirm = await _showUnlinkDialog('Apple');
+    if (!confirm) return;
+    await provider.updateAppleLink(null, null);
+  }
+
+  Future<bool> _showUnlinkDialog(String provider) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Unlink $provider'),
+        content: Text('This will remove your $provider connection.'),
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Unlink'),
+          ),
+        ],
+      ),
+    ) ??
+        false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = context.read<DataProvider>();
+    if (kIsWeb) {
+      GoogleSignIn.instance.authenticationEvents.listen((event) async {
+        final GoogleSignInAccount? user = switch (event) {
+          GoogleSignInAuthenticationEventSignIn() => event.user,
+          _ => null,
+        };
+        if (user == null) return;
+        final existing = await FirebaseFirestore.instance
+            .collection('users')
+            .where('googleId', isEqualTo: user.id)
+            .limit(1)
+            .get();
+        if (existing.docs.isNotEmpty) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'This Google account is already linked to another user',
+                ),
+              ),
+            );
+          }
+          return;
+        }
+        await provider.updateGoogleLink(user.id, user.email);
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<DataProvider>().currentUser!;
+    final isGoogleConnected = user.googleId != null;
+    final isAppleConnected = user.appleId != null;
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
@@ -392,9 +534,14 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: ListTile(
                                 leading: Emoji.google,
                                 title: Text('Google ID'),
-                                subtitle: Text('not connected'),
+                                subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [Text(isGoogleConnected ? 'connected' : 'not connected', style: TextStyle(color: isGoogleConnected ? CustomColors.greenOutline(context) : Theme.of(context).colorScheme.onSurface),), isGoogleConnected ? Text('Email: ${user.googleEmail}') : SizedBox()]),
                                 subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                                trailing: IconButton(onPressed: (){}, icon: Icon(Icons.sync)),
+                                trailing: isGoogleConnected ? IconButton(onPressed: _unlinkGoogle, icon: Icon(Icons.link_off)) : kIsWeb ?
+                                    SizedBox(height: 40, width: 40, child: Stack(children: [
+                                      IconButton(onPressed: (){}, icon: Icon(Icons.sync),),Opacity(opacity: 0.005, child: SizedBox(height: 40, width: 40, child: web.renderButton(configuration: GSIButtonConfiguration(size: web.GSIButtonSize.large, shape: GSIButtonShape.pill, minimumWidth: 5000)),),)
+                                    ],),
+                                    ) : IconButton(onPressed: _linkGoogle, icon: Icon(Icons.sync)),
                               ),
                             ),
                             const SizedBox(height: 15,),
@@ -406,9 +553,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: ListTile(
                                 leading: Emoji.apple,
                                 title: Text('Apple ID'),
-                                subtitle: Text('not connected'),
+                                subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [Text(isAppleConnected ? 'connected' : 'not connected', style: TextStyle(color: isAppleConnected ? CustomColors.greenOutline(context) : Theme.of(context).colorScheme.onSurface),), isAppleConnected ? Text('Email: ${user.appleEmail}') : SizedBox()]),
                                 subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                                trailing: IconButton(onPressed: (){},icon: Icon(Icons.sync)),
+                                trailing: IconButton(onPressed: isAppleConnected ? _unlinkApple : _linkApple,
+                                    icon: Icon(isAppleConnected ? Icons.link_off : Icons.sync)),
                               ),
                             ),
                           ],
