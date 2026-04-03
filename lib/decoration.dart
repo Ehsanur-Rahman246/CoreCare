@@ -1,10 +1,14 @@
+import 'package:core_care/data_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'dart:math';
 
 class Emoji{
   Emoji._();
   static const double emojiSize = 24.0;
-  static const double iconSize = 16.0;
+  static const double iconSize = 18.0;
   static const double logoSize = 30.0;
+  static const double textSize = 16.0;
 
   static final Image starter = Image.asset('assets/emojis/reminder_ribbon.png', width: emojiSize, height: emojiSize,);
   static final Image active = Image.asset('assets/emojis/third_place_medal.png', width: emojiSize, height: emojiSize,);
@@ -115,13 +119,55 @@ class Emoji{
   static final Image e3 = Image.asset('assets/emojis/stadium.png');
 
   static final Image goal = Image.asset('assets/emojis/dart.png');
+
+  static final Image m1 = Image.asset('assets/emojis/sunrise.png', height: iconSize, width: iconSize,);
+  static final Image m2 = Image.asset('assets/emojis/sunrise_over_mountains.png', height: iconSize, width: iconSize,);
+  static final Image sun1 = Image.asset('assets/emojis/sunny.png', height: iconSize, width: iconSize,);
+  static final Image sun2 = Image.asset('assets/emojis/sun_with_face.png', height: iconSize, width: iconSize,);
+  static final Image wave = Image.asset('assets/emojis/wave.png', height: iconSize, width: iconSize,);
+  static final Image hi = Image.asset('assets/emojis/raised_hands.png', height: iconSize, width: iconSize,);
+  static final Image smile = Image.asset('assets/emojis/relaxed.png', height: iconSize, width: iconSize,);
+  static final Image grin = Image.asset('assets/emojis/grin.png', height: iconSize, width: iconSize,);
+  static final Image glass = Image.asset('assets/emojis/sunglasses.png', height: iconSize, width: iconSize,);
+  static final Image laugh = Image.asset('assets/emojis/smile.png', height: iconSize, width: iconSize,);
+  static final Image evening = Image.asset('assets/emojis/city_sunset.png', height: iconSize, width: iconSize,);
+  static final Image moon = Image.asset('assets/emojis/crescent_moon.png', height: iconSize, width: iconSize,);
+  static final Image night = Image.asset('assets/emojis/milky_way.png', height: iconSize, width: iconSize,);
+  static final Image noon = Image.asset('assets/emojis/mostly_sunny.png', height: iconSize, width: iconSize,);
+  static final Image sleep1 = Image.asset('assets/emojis/sleeping.png', height: iconSize, width: iconSize,);
+  static final Image sleep2 = Image.asset('assets/emojis/zzz.png', height: iconSize, width: iconSize,);
+  static final Image star = Image.asset('assets/emojis/sparkles.png', height: iconSize, width: iconSize,);
+  static final Image welcome = Image.asset('assets/emojis/tada.png', height: iconSize, width: iconSize,);
+
+  static final Image carb1 = Image.asset('assets/emojis/bread.png', height: textSize, width: textSize,);
+  static final Image pro1 = Image.asset('assets/emojis/poultry_leg.png', height: textSize, width: textSize,);
+  static final Image fat1 = Image.asset('assets/emojis/butter.png', height: textSize, width: textSize,);
+  static final Image carb2 = Image.asset('assets/emojis/corn.png', height: textSize, width: textSize,);
+  static final Image pro2 = Image.asset('assets/emojis/beans.png', height: textSize, width: textSize,);
+  static final Image fat2 = Image.asset('assets/emojis/avocado.png', height: textSize, width: textSize,);
+  static final Image carb3 = Image.asset('assets/emojis/rice.png', height: textSize, width: textSize,);
+  static final Image pro3 = Image.asset('assets/emojis/chestnut.png', height: textSize, width: textSize,);
+  static final Image fat3 = Image.asset('assets/emojis/coconut.png', height: textSize, width: textSize,);
+  static final Image carb4 = Image.asset('assets/emojis/potato.png', height: textSize, width: textSize,);
+  static final Image pro4 = Image.asset('assets/emojis/fish.png', height: textSize, width: textSize,);
+  static final Image fat4 = Image.asset('assets/emojis/olive.png', height: textSize, width: textSize,);
+  static final Image carb5 = Image.asset('assets/emojis/sweet_potato.png', height: textSize, width: textSize,);
+  static final Image pro5 = Image.asset('assets/emojis/cut_of_meat.png', height: textSize, width: textSize,);
+  static final Image fat5 = Image.asset('assets/emojis/peanuts.png', height: textSize, width: textSize,);
+  static final Image carb6 = Image.asset('assets/emojis/broccoli.png', height: textSize, width: textSize,);
+  static final Image pro6 = Image.asset('assets/emojis/egg.png', height: textSize, width: textSize,);
+  static final Image fat6 = Image.asset('assets/emojis/cheese_wedge.png', height: textSize, width: textSize,);
 }
+
+enum TimeType{morning, afternoon, evening, night, midnight}
 
 class Greet{
   final String text;
   final Image emoji;
+  final TimeType time;
+  final List<String> groups;
 
-  Greet({required this.text, required this.emoji});
+  Greet({required this.text, required this.emoji, required this.time, required this.groups});
 }
 
 class Greetings extends StatefulWidget {
@@ -132,8 +178,110 @@ class Greetings extends StatefulWidget {
 }
 
 class _GreetingsState extends State<Greetings> {
+  final List<Greet> greetings = [
+    Greet(text: 'Morning, ', emoji: Emoji.m1, time: TimeType.morning, groups: ['Teen', 'Young Adult', 'Adult', 'Senior']),
+    Greet(text: 'Morning! ', emoji: Emoji.sun1, time: TimeType.morning, groups: ['Teen']),
+    Greet(text: 'Good Morning! ', emoji: Emoji.sun2, time: TimeType.morning, groups: ['Teen']),
+    Greet(text: 'Morning, ', emoji: Emoji.sun2, time: TimeType.morning, groups: ['Young Adult', 'Adult', 'Senior']),
+    Greet(text: 'Hello! ', emoji: Emoji.smile, time: TimeType.morning, groups: ['Teen', 'Young Adult']),
+    Greet(text: 'Welcome, ', emoji: Emoji.hi, time: TimeType.morning, groups: ['Young Adult']),
+    Greet(text: 'Welcome, ', emoji: Emoji.smile, time: TimeType.morning, groups: ['Adult', 'Senior']),
+    Greet(text: 'Rise & shine! ', emoji: Emoji.m2, time: TimeType.morning, groups: ['Teen']),
+    Greet(text: 'Rise and shine, ', emoji: Emoji.m2, time: TimeType.morning, groups: ['Young Adult']),
+    Greet(text: 'Afternoon, ', emoji: Emoji.noon, time: TimeType.afternoon, groups: ['Teen']),
+    Greet(text: 'Good Afternoon, ', emoji: Emoji.noon, time: TimeType.afternoon, groups: ['Young Adult', 'Adult', 'Senior']),
+    Greet(text: 'Hey there! ', emoji: Emoji.laugh, time: TimeType.afternoon, groups: ['Teen']),
+    Greet(text: 'Hello! ', emoji: Emoji.wave, time: TimeType.afternoon, groups: ['Teen']),
+    Greet(text: 'Hello, ', emoji: Emoji.wave, time: TimeType.afternoon, groups: ['Young Adult', 'Adult']),
+    Greet(text: 'Hi! ', emoji: Emoji.smile, time: TimeType.afternoon, groups: ['Teen', 'Young Adult']),
+    Greet(text: 'What’s up? ', emoji: Emoji.glass, time: TimeType.afternoon, groups: ['Teen']),
+    Greet(text: 'Welcome! ', emoji: Emoji.welcome, time: TimeType.afternoon, groups: ['Teen']),
+    Greet(text: 'Welcome back, ', emoji: Emoji.smile, time: TimeType.afternoon, groups: ['Adult']),
+    Greet(text: 'Evening, ', emoji: Emoji.evening, time: TimeType.evening, groups: ['Teen', 'Young Adult', 'Adult', 'Senior']),
+    Greet(text: 'Good evening, ', emoji: Emoji.moon, time: TimeType.evening, groups: ['Teen', 'Young Adult', 'Adult', 'Senior']),
+    Greet(text: 'Welcome back! ', emoji: Emoji.hi, time: TimeType.evening, groups: ['Teen']),
+    Greet(text: 'Welcome back, ', emoji: Emoji.hi, time: TimeType.evening, groups: ['Young Adult']),
+    Greet(text: 'Welcome back, ', emoji: Emoji.smile, time: TimeType.evening, groups: ['Adult']),
+    Greet(text: 'Hello again, ', emoji: Emoji.smile, time: TimeType.evening, groups: ['Young Adult']),
+    Greet(text: 'Hey again! ', emoji: Emoji.grin, time: TimeType.evening, groups: ['Teen']),
+    Greet(text: 'Night, ', emoji: Emoji.moon, time: TimeType.night, groups: ['Teen', 'Young Adult', 'Adult', 'Senior']),
+    Greet(text: 'Good night, ', emoji: Emoji.night, time: TimeType.night, groups: ['Teen', 'Young Adult', 'Adult', 'Senior']),
+    Greet(text: 'Night! ', emoji: Emoji.sleep1, time: TimeType.night, groups: ['Teen', 'Young Adult', 'Adult']),
+    Greet(text: 'Hello tonight! ', emoji: Emoji.moon, time: TimeType.night, groups: ['Teen', 'Young Adult']),
+    Greet(text: 'Sleep tight! ', emoji: Emoji.moon, time: TimeType.midnight, groups: ['Teen']),
+    Greet(text: 'Catch some ', emoji: Emoji.sleep2, time: TimeType.midnight, groups: ['Teen']),
+    Greet(text: 'Night, champ! ', emoji: Emoji.star, time: TimeType.midnight, groups: ['Teen']),
+    Greet(text: 'Sweet dreams! ', emoji: Emoji.night, time: TimeType.midnight, groups: ['Teen']),
+    Greet(text: 'Don’t stay up late! ', emoji: Emoji.moon, time: TimeType.midnight, groups: ['Teen']),
+    Greet(text: 'Time to recharge ', emoji: Emoji.sleep1, time: TimeType.midnight, groups: ['Young Adult']),
+    Greet(text: 'Good night! ', emoji: Emoji.moon, time: TimeType.midnight, groups: ['Young Adult']),
+    Greet(text: 'Rest up ', emoji: Emoji.star, time: TimeType.midnight, groups: ['Young Adult']),
+    Greet(text: 'Sleep well! ', emoji: Emoji.night, time: TimeType.midnight, groups: ['Young Adult']),
+    Greet(text: 'Sweet dreams! ', emoji: Emoji.moon, time: TimeType.midnight, groups: ['Young Adult']),
+    Greet(text: 'Peaceful night ', emoji: Emoji.moon, time: TimeType.midnight, groups: ['Adult']),
+    Greet(text: 'Time to rest ', emoji: Emoji.sleep1, time: TimeType.midnight, groups: ['Adult']),
+    Greet(text: 'Sleep well ', emoji: Emoji.star, time: TimeType.midnight, groups: ['Adult']),
+    Greet(text: 'Rest fuels progress ', emoji: Emoji.moon, time: TimeType.midnight, groups: ['Adult']),
+    Greet(text: 'Good night ', emoji: Emoji.star, time: TimeType.midnight, groups: ['Adult', 'Senior']),
+    Greet(text: 'Restful night ', emoji: Emoji.moon, time: TimeType.midnight, groups: ['Senior']),
+    Greet(text: 'Sleep peacefully ', emoji: Emoji.sleep1, time: TimeType.midnight, groups: ['Senior']),
+    Greet(text: 'Sweet dreams ', emoji: Emoji.night, time: TimeType.midnight, groups: ['Senior']),
+    Greet(text: 'Rest and wake refreshed ', emoji: Emoji.moon, time: TimeType.midnight, groups: ['Senior']),
+  ];
+
+  Greet? _cachedGreet;
+  DateTime? _lastGenerated;
+
+  Greet? getRandomGreeting(List<Greet> greet, BuildContext context){
+    final now = DateTime.now();
+    final time = context.watch<TimeProvider>().now.hour;
+    final group = context.watch<DataProvider>().currentUser!.ageGroup;
+
+    if(_cachedGreet != null && _lastGenerated != null && now.difference(_lastGenerated!).inMinutes < 5){
+      return _cachedGreet;
+    }
+
+    TimeType currentTime;
+    if(time >= 5 && time < 12){
+      currentTime = TimeType.morning;
+    }else if(time >= 12 && time < 17){
+      currentTime = TimeType.afternoon;
+    }else if(time >= 17 && time < 21){
+      currentTime = TimeType.evening;
+    }else if(time >= 21 && time < 24){
+      currentTime = TimeType.night;
+    }else{
+      currentTime = TimeType.midnight;
+    }
+
+    final selectedGreets = greetings.where((g) {
+      return g.time == currentTime && g.groups.contains(group);
+    }).toList();
+
+    if(selectedGreets.isNotEmpty){
+      _cachedGreet = selectedGreets[Random().nextInt(selectedGreets.length)];
+      _lastGenerated = now;
+      return _cachedGreet;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final st = Theme.of(context).textTheme.headlineSmall;
+    final greet = getRandomGreeting(greetings, context);
+    final username = context.watch<DataProvider>().currentUser!.name;
+    final name = username.split(' ')[0];
+
+    return greet != null ?
+        RichText(text: TextSpan(children: [
+          TextSpan(text: greet.text, style: st),
+          if(greet.time != TimeType.midnight)
+            TextSpan(text: '$name ', style: st),
+          WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: greet.emoji),
+        ]))
+        : Text('Welcome to CoreCare!');
   }
 }

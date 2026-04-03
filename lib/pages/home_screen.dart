@@ -35,7 +35,15 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     waterBarCount = 19;
     fillCounter = 0;
-    _loadProfileImage();
+
+    SchedulerBinding.instance.addPostFrameCallback((_){
+      _loadProfileImage();
+      final user = context.read<DataProvider>().currentUser;
+      final timeProvider = context.read<TimeProvider>();
+      if(user != null && timeProvider.is24Hour != user.is24Hour){
+        timeProvider.toggleFormat();
+      }
+    });
   }
 
   void _loadProfileImage(){
@@ -82,15 +90,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Good Morning ${String.fromCharCode(0x2600)}",
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
+                          Greetings(),
                           const SizedBox(height: 7),
-                          Text(
-                            "${time.formatDate}  .  ${time.formatTime}",
-                            style: Theme.of(context).textTheme.labelLarge,
-                          ),
+                          RichText(text: TextSpan(children: [
+                            TextSpan(text: '${time.formatDate}  ', style: Theme.of(context).textTheme.labelLarge),
+                            TextSpan(text: '.  ${time.formatTime}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight(550), fontFamily: 'Poppins')),
+                          ])),
                         ],
                       ),
                       Spacer(),
@@ -453,6 +458,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<DataProvider>();
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -552,7 +558,14 @@ class _DashboardState extends State<Dashboard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("🍞 Carbs"),
+                    RichText(text: TextSpan(
+                      children: [
+                        WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: provider.carbImage),
+                        TextSpan(text: ' Carbs'),
+                      ],
+                    )),
                     SizedBox(height: 8),
                     SizedBox(
                       width: 100,
@@ -576,7 +589,12 @@ class _DashboardState extends State<Dashboard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("🥩 Protein"),
+                    RichText(text: TextSpan(
+                      children: [
+                        WidgetSpan(alignment: PlaceholderAlignment.middle, child: provider.proteinImage),
+                        TextSpan(text: ' Protein'),
+                      ],
+                    )),
                     SizedBox(height: 8),
                     SizedBox(
                       width: 100,
@@ -600,7 +618,12 @@ class _DashboardState extends State<Dashboard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("🧈 Fat"),
+                    RichText(text: TextSpan(
+                      children: [
+                        WidgetSpan(alignment: PlaceholderAlignment.middle, child: provider.fatImage),
+                        TextSpan(text: ' Fats'),
+                      ],
+                    )),
                     SizedBox(height: 8),
                     SizedBox(
                       width: 100,
@@ -1025,3 +1048,5 @@ class _NotificationsPageState extends State<NotificationsPage> {
     );
   }
 }
+
+

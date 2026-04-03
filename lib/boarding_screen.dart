@@ -1,5 +1,8 @@
+import 'package:core_care/data_provider.dart';
 import 'package:core_care/pages/sign_up_pages.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:core_care/main.dart';
@@ -199,11 +202,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       style: OutlinedButton.styleFrom(
                         minimumSize: Size(double.infinity, 50),
                       ),
-                      onPressed: () {
+                      onPressed: () async{
                         for (final c in _lottieController) {
                           c.stop();
                         }
-                        Navigator.pushReplacementNamed(context, '/auth');
+                        final provider = Provider.of<DataProvider>(context, listen: false);
+                        await provider.restoreSession();
+                        if(context.mounted){
+                          Navigator.pushReplacementNamed(context, '/auth');
+                        }
                       },
                       child: Text('Sign In'),
                     )

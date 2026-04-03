@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_care/main.dart';
-import 'package:core_care/tags.dart';
+import 'package:core_care/signup_chips.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:core_care/decoration.dart';
@@ -3962,6 +3962,7 @@ class _SignupPageTenState extends State<SignupPageTen> {
             password: dp.pageNine.password!,
           );
       final uid = credential.user!.uid;
+      final rec = dp.finalRecommendation;
       final userData = UserData.fromSignup(
         uid: uid,
         p1: dp.pageOne,
@@ -3974,6 +3975,7 @@ class _SignupPageTenState extends State<SignupPageTen> {
         p8: dp.pageEight,
         p9: dp.pageNine,
         p10: dp.pageTen,
+        profileTag: rec.profile,
       );
       await FirebaseFirestore.instance
           .collection('users')

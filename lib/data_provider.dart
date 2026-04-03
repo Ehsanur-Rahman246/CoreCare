@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'dart:typed_data';
+import 'package:core_care/decoration.dart';
 
 class TimeProvider extends ChangeNotifier {
   late Timer _timer;
@@ -84,6 +85,7 @@ class UserData {
   final String bmiCategory;
   final double bmr;
   final double tdee;
+  final String profileTag;
   final String ageGroup;
   final int age;
   final String gender;
@@ -163,7 +165,7 @@ class UserData {
     required this.selectedDislikes,
     required this.wantNotifications,
     required this.wantMetricUnit,
-    required this.createdAt, required this.language, required this.themeMode, required this.is24Hour,
+    required this.createdAt, required this.language, required this.themeMode, required this.is24Hour, required this.profileTag,
   });
 
   factory UserData.fromSignup({
@@ -178,6 +180,7 @@ class UserData {
     required SignupPageEightData p8,
     required SignupPageNineData p9,
     required SignupPageTenData p10,
+    required String profileTag,
   }) {
     final hCm = p1.toHeightCm(
       p1.height!,
@@ -236,7 +239,7 @@ class UserData {
       selectedDislikes: p8.selectedDislikes,
       wantNotifications: p10.wantNotifications,
       wantMetricUnit: p10.wantMetricUnit,
-      createdAt: DateTime.now(), language: 'English', themeMode: 'system', is24Hour: true,
+      createdAt: DateTime.now(), language: 'English', themeMode: 'system', is24Hour: true, profileTag: profileTag,
     );
   }
 
@@ -259,6 +262,7 @@ class UserData {
       'bmiCategory': bmiCategory,
       'bmr': bmr,
       'tdee': tdee,
+      'profileTag' : profileTag,
       'group': ageGroup,
       'age': age,
       'gender': gender,
@@ -347,6 +351,7 @@ class UserData {
       createdAt: DateTime.parse(
         map['createdAt'] ?? DateTime.now().toIso8601String(),
       ),
+      profileTag: map['profileTag'] ?? 'Starter',
     );
   }
 }
@@ -475,10 +480,51 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  static final Map<String, List<Image>> dietMap = {
+    'Omnivore': [
+      Emoji.carb1,
+      Emoji.pro1,
+      Emoji.fat1,
+    ],
+    'Vegetarian': [
+      Emoji.carb2,
+      Emoji.pro2,
+      Emoji.fat2,
+    ],
+    'Vegan': [
+      Emoji.carb3,
+      Emoji.pro3,
+      Emoji.fat3,
+    ],
+    'Pescatarian': [
+      Emoji.carb4,
+      Emoji.pro4,
+      Emoji.fat4,
+    ],
+    'Paleo': [
+      Emoji.carb5,
+      Emoji.pro5,
+      Emoji.fat5,
+    ],
+    'Keto': [
+      Emoji.carb6,
+      Emoji.pro6,
+      Emoji.fat6,
+    ],
+  };
+
+  List<Image> get _macroImages => dietMap[currentUser!.dietType]!;
+  Image get carbImage => _macroImages[0];
+  Image get proteinImage => _macroImages[1];
+  Image get fatImage => _macroImages[2];
+
   //user data starts from here
   UserData? currentUser;
   bool isFetchingUser = false;
   String? profileImageBase64;
+  bool _sessionRestored = false;
+
+  bool get sessionRestored => _sessionRestored;
 
   ThemeMode get savedThemeMode => switch (currentUser?.themeMode ?? 'system'){
     'light' => ThemeMode.light,
@@ -487,14 +533,25 @@ class DataProvider extends ChangeNotifier {
   };
 
   DataProvider(){
-    _restoreSession();
+    restoreSession();
   }
 
-  Future<void> _restoreSession() async{
+  Future<void> restoreSession() async{
+    _sessionRestored = false;
     final firebaseUser = FirebaseAuth.instance.currentUser;
     if(firebaseUser != null){
       await fetchUser(firebaseUser.uid);
     }
+    finishSession();
+  }
+
+  void beginSession(){
+    _sessionRestored = false;
+    notifyListeners();
+  }
+  void finishSession(){
+    _sessionRestored = true;
+    notifyListeners();
   }
 
   Future<void> fetchUser(String uid) async {
@@ -547,12 +604,11 @@ class DataProvider extends ChangeNotifier {
 
     if(fields.isEmpty) return;
 
+    final updateMap = currentUser!.toMap()..addAll(fields);
+    currentUser = UserData.fromMap(updateMap);
+    notifyListeners();
     try{
       await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-
-      final updateMap = currentUser!.toMap()..addAll(fields);
-      currentUser = UserData.fromMap(updateMap);
-      notifyListeners();
     }catch(e){
       debugPrint('updateSettings error: $e');
       rethrow;
@@ -565,10 +621,35 @@ class DataProvider extends ChangeNotifier {
       await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update({field: value});
       final updatedMap = currentUser!.toMap()..addAll({field: value});
       currentUser = UserData.fromMap(updatedMap);
+      notifyListeners();
     }catch(e){
       debugPrint('updatedProfileField error: $e');
       rethrow;
     }
+  }
+
+  String computeProfileTag({required String gender, required String bmiCategory, required double bmr, required String ageGroup, required String workType, required String activityLevel, required String sleepPattern, required String fitType, required double tdee}){
+    const workMap = {'Sedentary': 0, 'Moderately Active': 1, 'Physically Active': 2};
+    const activeMap = {'Low': 0, 'Moderate': 1, 'High': 2};
+    const sleepMap = {'Less than 5 hours': 0, '5 to 7 hours': 1, '7 to 9 hours': 2, 'More than 9 hours': 3};
+    const fitMap = {'Beginner': 0, 'Intermediate': 1, 'Advanced': 2};
+
+    final d = RecommendationData(
+      gender: gender == 'Male' ? 1 : 2,
+      category: bmiCategory,
+      bmr: bmr,
+      ageGroup: ageGroup,
+      work: workMap[workType] ?? 0,
+      active: activeMap[activityLevel] ?? 0,
+      sleep: sleepMap[sleepPattern] ?? 2,
+      fitness: fitMap[fitType] ?? 0,
+      tdee: tdee,
+    );
+
+    for(final rule in rules){
+      if(rule.condition(d)) return rule.result.profile;
+    }
+    return 'Starter';
   }
   
   Future<void> updateBodyStats({
@@ -600,6 +681,8 @@ class DataProvider extends ChangeNotifier {
     final fitF = fitFactors[currentUser!.fitType] ?? 0.95;
     final tdee = double.parse((bmr * workF * activeF * fitF).toStringAsFixed(1));
 
+    final profileTag = computeProfileTag(gender: currentUser!.gender, bmiCategory: bmiCategory, bmr: bmr, ageGroup: currentUser!.ageGroup, workType: currentUser!.workType, activityLevel: currentUser!.activityLevel, sleepPattern: currentUser!.sleepPattern, fitType: currentUser!.fitType, tdee: tdee);
+
     final fields = <String, dynamic>{
       'height' : double.parse(heightCm.toStringAsFixed(1)),
       'weight' : double.parse(weightKg.toStringAsFixed(1)),
@@ -607,13 +690,14 @@ class DataProvider extends ChangeNotifier {
       'bmiCategory' : bmiCategory,
       'bmr' : bmr,
       'tdee' : tdee,
+      'profileTag' : profileTag,
     };
 
+    final updatedMap = currentUser!.toMap()..addAll(fields);
+    currentUser = UserData.fromMap(updatedMap);
+    notifyListeners();
     try{
       await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-      final updatedMap = currentUser!.toMap()..addAll(fields);
-      currentUser = UserData.fromMap(updatedMap);
-      notifyListeners();
     }catch(e){
       debugPrint('updateBodyStats error: $e');
       rethrow;
@@ -630,6 +714,8 @@ class DataProvider extends ChangeNotifier {
     final activeF = activeFactors[activityLevel] ?? 1.0;
     final fitF = fitFactors[fitType] ?? 0.95;
     final tdee = double.parse((currentUser!.bmr * workF * activeF * fitF).toStringAsFixed(1));
+    final profileTag = computeProfileTag(gender: currentUser!.gender, bmiCategory: currentUser!.bmiCategory, bmr: currentUser!.bmr, ageGroup: currentUser!.ageGroup, workType: workType, activityLevel: activityLevel, sleepPattern: currentUser!.sleepPattern, fitType: fitType, tdee: tdee);
+
 
     final fields = <String, dynamic>{
       'fitness' : fitType,
@@ -641,13 +727,14 @@ class DataProvider extends ChangeNotifier {
       'goal' : goalType,
       'plan' : planType,
       'tdee' : tdee,
+      'profileTag' : profileTag,
     };
 
+    final updatedMap = currentUser!.toMap()..addAll(fields);
+    currentUser = UserData.fromMap(updatedMap);
+    notifyListeners();
     try{
       await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-      final updatedMap = currentUser!.toMap()..addAll(fields);
-      currentUser = UserData.fromMap(updatedMap);
-      notifyListeners();
     }catch(e){
       debugPrint('updateFitnessProfile error: $e');
       rethrow;
@@ -656,21 +743,22 @@ class DataProvider extends ChangeNotifier {
 
   Future<void> updateDietPreference({String? newDiet, String? newMeals, List<String>? newRegions}) async{
     if(currentUser == null) return;
-    try{
-      final fields = <String, dynamic>{};
-      if(newDiet != null){
-        fields['dietPref'] = newDiet;
-        fields['intolerances'] = [];
-        fields['dislikes'] = [];
-      }
-      if(newMeals != null) fields['mealsPerDay'] = newMeals;
-      if(newRegions != null) fields['regions'] = newRegions;
-      if(fields.isEmpty) return;
 
+    final fields = <String, dynamic>{};
+    if(newDiet != null){
+      fields['dietPref'] = newDiet;
+      fields['intolerances'] = [];
+      fields['dislikes'] = [];
+    }
+    if(newMeals != null) fields['mealsPerDay'] = newMeals;
+    if(newRegions != null) fields['regions'] = newRegions;
+    if(fields.isEmpty) return;
+
+    final updatedMap = currentUser!.toMap()..addAll(fields);
+    currentUser = UserData.fromMap(updatedMap);
+    notifyListeners();
+    try{
       await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-      final updatedMap = currentUser!.toMap()..addAll(fields);
-      currentUser = UserData.fromMap(updatedMap);
-      notifyListeners();
     }catch(e){
       debugPrint('updateDietPreference error: $e');
       rethrow;
@@ -695,12 +783,12 @@ class DataProvider extends ChangeNotifier {
     if(placeType != null) fields['place'] = placeType;
 
     if(fields.isEmpty) return;
+
+    final updatedMap = currentUser!.toMap()..addAll(fields);
+    currentUser = UserData.fromMap(updatedMap);
+    notifyListeners();
     try{
       await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-
-      final updatedMap = currentUser!.toMap()..addAll(fields);
-      currentUser = UserData.fromMap(updatedMap);
-      notifyListeners();
     }catch(e){
       debugPrint('updateSchedule error: $e');
       rethrow;
@@ -711,33 +799,36 @@ class DataProvider extends ChangeNotifier {
     required String username,
     required String email,
   })async{
+    if(currentUser == null) return;
     final fields = <String, dynamic>{
       'username' : username,
       'email' : email,
     };
 
+    final updatedMap = currentUser!.toMap()..addAll(fields);
+    currentUser = UserData.fromMap(updatedMap);
+    notifyListeners();
     try{
       await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-      final updatedMap = currentUser!.toMap()..addAll(fields);
-      currentUser = UserData.fromMap(updatedMap);
-      notifyListeners();
     }catch(e){
-      debugPrint('updateBodyStats error: $e');
+      debugPrint('updateUsernameAndEmail error: $e');
       rethrow;
     }
   }
 
   Future<void> updateGoogleLink(String? id, String? email) async{
     if(currentUser == null) return;
+
+    final fields = <String, dynamic>{
+      'googleId' : id,
+      'googleEmail' : email,
+    };
+
+    final updatedMap = currentUser!.toMap()..addAll(fields);
+    currentUser = UserData.fromMap(updatedMap);
+    notifyListeners();
     try{
-      final fields = <String, dynamic>{
-        'googleId' : id,
-        'googleEmail' : email,
-      };
       await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-      final updatedMap = currentUser!.toMap()..addAll(fields);
-      currentUser = UserData.fromMap(updatedMap);
-      notifyListeners();
     }catch(e){
       debugPrint('updatedProfileField error: $e');
       rethrow;
@@ -746,15 +837,17 @@ class DataProvider extends ChangeNotifier {
 
   Future<void> updateAppleLink(String? id, String? email) async{
     if(currentUser == null) return;
+
+    final fields = <String, dynamic>{
+      'appleId' : id,
+      'appleEmail' : email,
+    };
+    final updatedMap = currentUser!.toMap()..addAll(fields);
+    currentUser = UserData.fromMap(updatedMap);
+    notifyListeners();
     try{
-      final fields = <String, dynamic>{
-        'appleId' : id,
-        'appleEmail' : email,
-      };
       await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-      final updatedMap = currentUser!.toMap()..addAll(fields);
-      currentUser = UserData.fromMap(updatedMap);
-      notifyListeners();
+
     }catch(e){
       debugPrint('updatedProfileField error: $e');
       rethrow;

@@ -886,23 +886,30 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text("Edit Profile Image"),
-          actions: [
-            OutlinedButton(
-              onPressed: () {
-                removeImage();
-                Navigator.pop(context);
-              },
-              child: Text('Remove Image'),
+        return Stack(
+          children: [
+            AlertDialog(
+              title: Text("Edit Profile Image"),
+              actions: [
+                OutlinedButton(
+                  onPressed: () {
+                    removeImage();
+                    Navigator.pop(context);
+                  },
+                  child: Text('Remove Image'),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    pickImage();
+                    Navigator.pop(context);
+                  },
+                  child: Text('Change Image'),
+                ),
+              ],
             ),
-            FilledButton(
-              onPressed: () {
-                pickImage();
-                Navigator.pop(context);
-              },
-              child: Text('Change Image'),
-            ),
+            Align(
+              alignment: Alignment(0.6, -0.09),
+                child: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.close))),
           ],
         );
       },

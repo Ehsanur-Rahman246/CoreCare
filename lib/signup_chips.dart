@@ -3,15 +3,6 @@ import 'package:core_care/decoration.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Tags extends StatelessWidget {
-  const Tags({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
 class MedChips extends StatefulWidget {
   const MedChips({super.key});
 
