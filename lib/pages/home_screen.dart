@@ -10,6 +10,8 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'dart:typed_data';
 
+enum Status { sick, injured, travelling, active, rest, fasting }
+
 class HomeScreen extends StatefulWidget {
   final Function(int) onNavigate;
 
@@ -29,26 +31,240 @@ class _HomeScreenState extends State<HomeScreen> {
   late int fillCounter;
   Uint8List? _profileImageBytes;
   String? _cachedBase64;
+  static late Status currentStatus;
+
+  bool _buttonA = false;
+  bool _buttonB = false;
+  bool _buttonC = false;
+  bool _buttonD = false;
+  bool _buttonE = false;
+  bool _buttonF = false;
+
+  void _showStatusSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        final ch = Theme.of(context).colorScheme;
+        return StatefulBuilder(
+          builder: (context, setSheet) {
+            void update(VoidCallback fn) {
+              setSheet(() => setState(fn));
+            }
+
+            return SizedBox(
+              height: MediaQuery.of(context).size.height * 0.85,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: ch.tertiary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Your Status',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(Icons.close),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    const SizedBox(height: 15),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ListTile(
+                                  leading: Icon(Symbols.directions_run_rounded),
+                                  title: Text('Active'),
+                                  trailing: Transform.scale(
+                                    scale: 0.7,
+                                    child: Switch(
+                                        value: _buttonA,
+                                        onChanged: (val) => update(() {
+                                          _buttonA = val;
+                                          if (val) _buttonB = false;
+                                          if(val) currentStatus = Status.active;
+                                        })
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 15,),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ListTile(
+                                  leading: Icon(Symbols.directions_run_rounded),
+                                  title: Text('Resting'),
+                                  trailing: Transform.scale(
+                                    scale: 0.7,
+                                    child: Switch(
+                                        value: _buttonB,
+                                        onChanged: (val) => update(() {
+                                          _buttonB = val;
+                                          if (val) _buttonA = false;
+                                          if(val) currentStatus = Status.rest;
+                                        })
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 15,),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ListTile(
+                                  leading: Icon(Symbols.directions_run_rounded),
+                                  title: Text('Sick'),
+                                  trailing: Transform.scale(
+                                    scale: 0.7,
+                                    child: Switch(
+                                        value: _buttonC,
+                                        onChanged: (val) => update(() {
+                                          _buttonC = val;
+                                          if (val) {
+                                            _buttonB = true;
+                                            _buttonA = false;
+                                          }
+                                          if(val) currentStatus = Status.sick;
+                                        })
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ListTile(
+                                  leading: Icon(Symbols.directions_run_rounded),
+                                  title: Text('Travelling'),
+                                  trailing: Transform.scale(
+                                    scale: 0.7,
+                                    child: Switch(
+                                        value: _buttonD,
+                                        onChanged: (val) => update(() {
+                                          _buttonD = val;
+                                          if(val) currentStatus = Status.travelling;
+                                        }),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 15,),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ListTile(
+                                  leading: Icon(Symbols.directions_run_rounded),
+                                  title: Text('Fasting'),
+                                  trailing: Transform.scale(
+                                    scale: 0.7,
+                                    child: Switch(
+                                        value: _buttonE,
+                                        onChanged:
+                                            _buttonE ?
+                                            (val) => update(() => _buttonE = false) : null,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 15,),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ListTile(
+                                  leading: Icon(Symbols.directions_run_rounded),
+                                  title: Text('Injured'),
+                                  trailing: Transform.scale(
+                                    scale: 0.7,
+                                    child: Switch(
+                                        value: _buttonF,
+                                        onChanged: (val) => update(() {
+                                          _buttonA = val;
+                                          if (val) _buttonB = false;
+                                        })
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     waterBarCount = 19;
     fillCounter = 0;
-
-    SchedulerBinding.instance.addPostFrameCallback((_){
+    currentStatus = Status.fasting;
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       _loadProfileImage();
       final user = context.read<DataProvider>().currentUser;
       final timeProvider = context.read<TimeProvider>();
-      if(user != null && timeProvider.is24Hour != user.is24Hour){
+      if (user != null && timeProvider.is24Hour != user.is24Hour) {
         timeProvider.toggleFormat();
       }
     });
   }
 
-  void _loadProfileImage(){
+  void _loadProfileImage() {
     final base64Str = context.read<DataProvider>().profileImageBase64;
-    if(base64Str != null && base64Str.isNotEmpty){
+    if (base64Str != null && base64Str.isNotEmpty) {
       setState(() {
         _profileImageBytes = base64Decode(base64Str);
       });
@@ -59,13 +275,41 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final time = context.watch<TimeProvider>();
     final provider = context.watch<DataProvider>();
-    if(provider.profileImageBase64 != _cachedBase64){
+    if (provider.profileImageBase64 != _cachedBase64) {
       _cachedBase64 = provider.profileImageBase64;
-      _profileImageBytes = provider.profileImageBase64 != null ? base64Decode(provider.profileImageBase64!) : null;
+      _profileImageBytes = provider.profileImageBase64 != null
+          ? base64Decode(provider.profileImageBase64!)
+          : null;
+    }
+
+    IconData statusIcon = Symbols.directions_run_rounded;
+    switch (currentStatus) {
+      case Status.fasting:
+        statusIcon = Symbols.hourglass_arrow_down_rounded;
+        break;
+      case Status.travelling:
+        statusIcon = Symbols.travel_rounded;
+        break;
+      case Status.injured:
+        statusIcon = Symbols.healing_rounded;
+        break;
+      case Status.sick:
+        statusIcon = Symbols.sick_rounded;
+        break;
+      case Status.active:
+        statusIcon = Symbols.directions_run_rounded;
+        break;
+      case Status.rest:
+        statusIcon = Symbols.bed_rounded;
+        break;
     }
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(heroTag: 'status', onPressed: (){}),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'status',
+        onPressed: _showStatusSheet,
+        child: Icon(statusIcon),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -92,10 +336,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Greetings(),
                           const SizedBox(height: 7),
-                          RichText(text: TextSpan(children: [
-                            TextSpan(text: '${time.formatDate}  ', style: Theme.of(context).textTheme.labelLarge),
-                            TextSpan(text: '.  ${time.formatTime}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight(550), fontFamily: 'Poppins')),
-                          ])),
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '${time.formatDate}  ',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                TextSpan(
+                                  text: '.  ${time.formatTime}',
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                    fontWeight: FontWeight(550),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       Spacer(),
@@ -110,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(width: 10),
                       PopupMenuButton(
-                        onSelected: (value){
+                        onSelected: (value) {
                           switch (value) {
                             case 0:
                               Navigator.push(
@@ -118,27 +378,49 @@ class _HomeScreenState extends State<HomeScreen> {
                                 MaterialPageRoute(
                                   builder: (_) => ProfilePage(),
                                 ),
-                              ).then((_) => setState(() {}));
+                              ).then((_) {
+                                if(!mounted) return;
+                                setState(() {});
+                              });
                               break;
                             case 1:
                               Navigator.pushNamed(context, '/settings');
                               break;
                             case 2:
-                              showDialog(context: context, builder: (context){
-                                return AlertDialog(
-                                  title: Text('Sign Out'),
-                                  content: Text('Do you want to log out?'),
-                                  actions: [
-                                    OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text('Cancel')),
-                                    FilledButton(onPressed: () async {await HomeScreen.logUserOut();
-                                      if(context.mounted){
-                                        Navigator.of(context).pushNamedAndRemoveUntil('/auth', (route) => false);
-                                        context.read<DataProvider>().clearUser();
-                                      }
-                                      }, child: Text('Sign Out')),
-                                  ],
-                                );
-                              });
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('Sign Out'),
+                                    content: Text('Do you want to log out?'),
+                                    actions: [
+                                      OutlinedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text('Cancel'),
+                                      ),
+                                      FilledButton(
+                                        onPressed: () async {
+                                          await HomeScreen.logUserOut();
+                                          if (context.mounted) {
+                                            Navigator.of(
+                                              context,
+                                            ).pushNamedAndRemoveUntil(
+                                              '/auth',
+                                              (route) => false,
+                                            );
+                                            context
+                                                .read<DataProvider>()
+                                                .clearUser();
+                                          }
+                                        },
+                                        child: Text('Sign Out'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                               break;
                           }
                         },
@@ -456,15 +738,21 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DataProvider>();
+    final unit = context.watch<DataProvider>().currentUser!.wantMetricUnit;
+    String showUnit = 'g';
+    if(unit){
+      showUnit = 'g';
+    }else{
+      showUnit = 'oz';
+    }
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 15,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
         child: Column(
           children: [
             Row(
@@ -478,13 +766,9 @@ class _DashboardState extends State<Dashboard> {
                       width: 140,
                       height: 140,
                       child: CircularProgressIndicator(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.tertiary,
+                        backgroundColor: Theme.of(context).colorScheme.tertiary,
                         value: (1300 / 2000).clamp(0.0, 1.0),
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.secondary,
+                        color: Theme.of(context).colorScheme.secondary,
                         strokeWidth: 10,
                       ),
                     ),
@@ -493,16 +777,12 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           Text(
                             "1300",
-                            style: Theme.of(
-                              context,
-                            ).textTheme.titleMedium,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 7),
                           Text(
                             "Calories left",
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelLarge,
+                            style: Theme.of(context).textTheme.labelLarge,
                           ),
                         ],
                       ),
@@ -513,18 +793,14 @@ class _DashboardState extends State<Dashboard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      backgroundColor: CustomColors.greenPrimary(
-                        context,
-                      ),
+                      backgroundColor: CustomColors.greenPrimary(context),
                       child: Icon(Symbols.fork_spoon),
                     ),
                     const SizedBox(height: 10),
                     Text("2500 cal"),
                     Text(
                       "Eaten",
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelMedium,
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
                 ),
@@ -532,20 +808,14 @@ class _DashboardState extends State<Dashboard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      backgroundColor: CustomColors.orangePrimary(
-                        context,
-                      ),
-                      child: Icon(
-                        Icons.local_fire_department_rounded,
-                      ),
+                      backgroundColor: CustomColors.orangePrimary(context),
+                      child: Icon(Icons.local_fire_department_rounded),
                     ),
                     const SizedBox(height: 10),
                     Text("1200 cal"),
                     Text(
                       "Burned",
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelMedium,
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
                 ),
@@ -558,89 +828,90 @@ class _DashboardState extends State<Dashboard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(text: TextSpan(
-                      children: [
-                        WidgetSpan(
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          WidgetSpan(
                             alignment: PlaceholderAlignment.middle,
-                            child: provider.carbImage),
-                        TextSpan(text: ' Carbs'),
-                      ],
-                    )),
+                            child: provider.carbImage,
+                          ),
+                          TextSpan(text: ' Carbs', style: Theme.of(context).textTheme.bodyMedium,),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: 8),
                     SizedBox(
                       width: 100,
                       child: LinearProgressIndicator(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.tertiary,
+                        backgroundColor: Theme.of(context).colorScheme.tertiary,
                         value: 0.7,
                         color: CustomColors.yellowOutline(context),
                       ),
                     ),
                     SizedBox(height: 5),
                     Text(
-                      "70/100 g",
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelMedium,
+                      "70/100 $showUnit",
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(text: TextSpan(
-                      children: [
-                        WidgetSpan(alignment: PlaceholderAlignment.middle, child: provider.proteinImage),
-                        TextSpan(text: ' Protein'),
-                      ],
-                    )),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: provider.proteinImage,
+                          ),
+                          TextSpan(text: ' Protein', style: Theme.of(context).textTheme.bodyMedium,),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: 8),
                     SizedBox(
                       width: 100,
                       child: LinearProgressIndicator(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.tertiary,
+                        backgroundColor: Theme.of(context).colorScheme.tertiary,
                         value: 0.8,
                         color: CustomColors.blueOutline(context),
                       ),
                     ),
                     SizedBox(height: 5),
                     Text(
-                      "70/100 g",
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelMedium,
+                      "70/100 $showUnit",
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(text: TextSpan(
-                      children: [
-                        WidgetSpan(alignment: PlaceholderAlignment.middle, child: provider.fatImage),
-                        TextSpan(text: ' Fats'),
-                      ],
-                    )),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: provider.fatImage,
+                          ),
+                          TextSpan(text: ' Fats', style: Theme.of(context).textTheme.bodyMedium,),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: 8),
                     SizedBox(
                       width: 100,
                       child: LinearProgressIndicator(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.tertiary,
+                        backgroundColor: Theme.of(context).colorScheme.tertiary,
                         value: 0.6,
-                        color: CustomColors.redOutline(context),
+                        color: CustomColors.orangeOutline(context),
                       ),
                     ),
                     SizedBox(height: 5),
                     Text(
-                      "70/100 g",
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelMedium,
+                      "70/100 $showUnit",
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
                 ),
@@ -653,10 +924,10 @@ class _DashboardState extends State<Dashboard> {
   }
 }
 
+
+
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({
-    super.key,
-  });
+  const SettingsPage({super.key});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -672,10 +943,10 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
     final user = context.read<DataProvider>().currentUser!;
-    themeMode = switch (user.themeMode){
+    themeMode = switch (user.themeMode) {
       'light' => ThemeMode.light,
-    'dark' => ThemeMode.dark,
-    _ => ThemeMode.system,
+      'dark' => ThemeMode.dark,
+      _ => ThemeMode.system,
     };
     isNotificationsOn = user.wantNotifications;
     isMetric = user.wantMetricUnit;
@@ -687,19 +958,19 @@ class _SettingsPageState extends State<SettingsPage> {
     super.didChangeDependencies();
     final user = context.read<DataProvider>().currentUser!;
     final hourProvider = context.read<TimeProvider>();
-    if(hourProvider.is24Hour != user.is24Hour){
-      SchedulerBinding.instance.addPostFrameCallback((_){
+    if (hourProvider.is24Hour != user.is24Hour) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
         hourProvider.toggleFormat();
       });
     }
   }
 
-  Future<void> _saveSettings() async{
+  Future<void> _saveSettings() async {
     final provider = context.read<DataProvider>();
-    final themeModeString = switch (themeMode){
+    final themeModeString = switch (themeMode) {
       ThemeMode.light => 'light',
       ThemeMode.dark => 'dark',
-    _ => 'system',
+      _ => 'system',
     };
     await provider.updateSettings(
       wantNotifications: isNotificationsOn,
@@ -767,7 +1038,10 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               const SizedBox(height: 50),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 5,
+                  horizontal: 10,
+                ),
                 child: Card(
                   child: ListTile(
                     isThreeLine: true,
@@ -786,7 +1060,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 5,
+                  horizontal: 10,
+                ),
                 child: Card(
                   child: ListTile(
                     leading: Icon(Icons.notifications_active),
@@ -806,7 +1083,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 5,
+                  horizontal: 10,
+                ),
                 child: Card(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5),
@@ -819,7 +1099,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 5,
+                  horizontal: 10,
+                ),
                 child: Card(
                   child: ListTile(
                     leading: Icon(Icons.watch_later_outlined),
@@ -839,18 +1122,26 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 5,
+                  horizontal: 10,
+                ),
                 child: Card(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5),
                     child: ListTile(
                       leading: Icon(Icons.square_foot_outlined),
                       title: Text('Unit of measurement'),
-                      subtitle: isMetric ? Text('kg . g . cm') : Text('lb . ft . oz'),
-                      subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
+                      subtitle: isMetric
+                          ? Text('kg . g . cm')
+                          : Text('lb . ft . oz'),
+                      subtitleTextStyle: Theme.of(
+                        context,
+                      ).textTheme.labelMedium,
                       trailing: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: unitButton(context)),
+                        fit: BoxFit.scaleDown,
+                        child: unitButton(context),
+                      ),
                     ),
                   ),
                 ),
@@ -861,8 +1152,8 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
-  
-  Widget unitButton(BuildContext context){
+
+  Widget unitButton(BuildContext context) {
     final ch = Theme.of(context).colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -871,7 +1162,7 @@ class _SettingsPageState extends State<SettingsPage> {
           hoverColor: Colors.transparent,
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
-          onTap: (){
+          onTap: () {
             setState(() {
               isMetric = true;
             });
@@ -890,14 +1181,23 @@ class _SettingsPageState extends State<SettingsPage> {
                 right: BorderSide.none,
               ),
             ),
-            child: Center(child: Text('Metric', style: TextStyle(color: !isMetric ? ch.onSurface : ch.onPrimary, fontSize: 12, fontWeight: FontWeight.w400),)),
+            child: Center(
+              child: Text(
+                'Metric',
+                style: TextStyle(
+                  color: !isMetric ? ch.onSurface : ch.onPrimary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
           ),
         ),
         InkWell(
           hoverColor: Colors.transparent,
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
-          onTap: (){
+          onTap: () {
             setState(() {
               isMetric = false;
             });
@@ -916,7 +1216,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 left: BorderSide.none,
               ),
             ),
-            child: Center(child: Text('Imperial', style: TextStyle(color: isMetric ? ch.onSurface : ch.onPrimary,  fontSize: 12, fontWeight: FontWeight.w400),)),
+            child: Center(
+              child: Text(
+                'Imperial',
+                style: TextStyle(
+                  color: isMetric ? ch.onSurface : ch.onPrimary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -1048,5 +1357,3 @@ class _NotificationsPageState extends State<NotificationsPage> {
     );
   }
 }
-
-

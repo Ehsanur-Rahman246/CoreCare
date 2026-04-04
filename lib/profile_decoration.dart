@@ -3169,7 +3169,7 @@ class EditSheets{
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Phone NUmber', style: th.labelLarge,),
+                            Text('Phone Number', style: th.labelLarge,),
                             const SizedBox(height: 10,),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -3235,6 +3235,8 @@ class EditSheets{
                                     },
                                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                     decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: CustomColors.greyLight(context),
                                       prefixIcon: Icon(Icons.phone),
                                       labelText: 'Phone no',
                                       hintText: 'XXXXXXXXXX',

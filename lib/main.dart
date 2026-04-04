@@ -64,6 +64,11 @@ class _MyAppState extends State<MyApp> {
         '/auth' : (context) => AuthPage(),
         '/schedule' : (context) => ExerciseScheduleScreen(),
         '/tutorial' : (context) => ExerciseTutorialScreen(),
+        '/recipe' : (context) => RecipeScreen(),
+        '/meal' : (context) => AddMealScreen(),
+        '/fitH' : (context) => FitnessHistory(),
+        '/dietH' : (context) => DietHistory(),
+        '/cart' : (context) => CartScreen(),
       },
     );
   }

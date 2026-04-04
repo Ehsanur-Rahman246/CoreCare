@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:core_care/pages/profile_tags.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -158,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
               floating: false,
               delegate: ProfileHeader(maxHeight: MediaQuery.of(context).size.height * 0.3, minHeight: MediaQuery.of(context).size.height * 0.1),
             ),
-            SliverPersistentHeader(delegate: SpacerDelegate(maxSpace: 170, minSpace: 20)),
+            SliverPersistentHeader(delegate: SpacerDelegate(maxSpace: 200, minSpace: 20)),
             SliverPadding(
               padding: const EdgeInsetsGeometry.symmetric(horizontal: 15),
               sliver: SliverList(
@@ -490,7 +491,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       children: [Icon(Icons.person), const SizedBox(width: 10,),Text('Edit username or email')]),
                                 )),
                                 const SizedBox(width: 20,),
-                                OutlinedButton(onPressed: (){}, child: Padding(padding: const EdgeInsetsGeometry.symmetric(vertical: 15),child: Row(
+                                OutlinedButton(onPressed: () => EditSheets.phoneEdit(context), child: Padding(padding: const EdgeInsetsGeometry.symmetric(vertical: 15),child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [Icon(Icons.phone), const SizedBox(width: 10,),Text('Edit mobile no')]))),
                                 OutlinedButton(
@@ -939,14 +940,14 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
             padding: EdgeInsets.symmetric(vertical: 15),
             child: Text(
               "Profile",
-              style: Theme.of(context).textTheme.headlineLarge,
+              style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
             ),
           ),
         ),
         Positioned(
           left: 20,
           right: 20,
-          bottom: -150,
+          bottom: -190,
           child: Card(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 50, 20, 15),
@@ -961,8 +962,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   Divider(color: Theme.of(context).colorScheme.tertiary,),
-
-
+                  ProfileTags(),
                   Divider(color: Theme.of(context).colorScheme.tertiary,),
                   const SizedBox(height: 20),
                   Row(
