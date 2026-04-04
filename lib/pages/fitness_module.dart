@@ -1,8 +1,10 @@
 import 'package:core_care/main.dart';
-import 'package:core_care/time_provider.dart';
+import 'package:core_care/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'home_screen.dart';
 
 class FitScreen extends StatefulWidget {
   const FitScreen({super.key});
@@ -11,10 +13,39 @@ class FitScreen extends StatefulWidget {
   State<FitScreen> createState() => _FitScreenState();
 }
 
-enum BoxState { normal, today, notCompleted, completed, hasSchedule, cancelled }
+enum BoxState { normal, today, notCompleted, completed, restDay, cancelled }
 
 class _FitScreenState extends State<FitScreen>
     with SingleTickerProviderStateMixin {
+  late Status currentStatus;
+  late IconData statusIcon;
+
+  @override
+  void initState() {
+    super.initState();
+    currentStatus = Status.active;
+    switch (currentStatus) {
+      case Status.fasting:
+        statusIcon = Symbols.hourglass_arrow_down_rounded;
+        break;
+      case Status.travelling:
+        statusIcon = Symbols.travel_rounded;
+        break;
+      case Status.injured:
+        statusIcon = Symbols.healing_rounded;
+        break;
+      case Status.sick:
+        statusIcon = Symbols.sick_rounded;
+        break;
+      case Status.active:
+        statusIcon = Symbols.directions_run_rounded;
+        break;
+      case Status.rest:
+        statusIcon = Symbols.bed_rounded;
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final day = context.watch<TimeProvider>();
@@ -23,66 +54,219 @@ class _FitScreenState extends State<FitScreen>
       appBar: AppBar(
         leading: Icon(Symbols.exercise),
         title: Text('Exercise Module'),
+        actions: [
+          PopupMenuButton(
+            onSelected: (value) async {
+              switch (value) {
+                case 0:
+                  break;
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  value: 0,
+                  child: Row(
+                    children: [
+                      Icon(Icons.history_rounded),
+                      const SizedBox(width: 8),
+                      Text("History"),
+                    ],
+                  ),
+                ),
+              ];
+            },
+            icon: Icon(Icons.more_vert_rounded),
+          ),
+        ],
       ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'tutorial',
+            onPressed: () {
+              Navigator.pushNamed(context, '/tutorial');
+            },
+            child: Icon(Symbols.play_lesson_rounded),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton.small(
+            heroTag: 'schedule',
+            onPressed: () {
+              Navigator.pushNamed(context, '/schedule');
+            },
+            child: Icon(Symbols.calendar_month_rounded),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.only(left: 10),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'This Week',
-                style: Theme.of(context).textTheme.titleSmall,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Column(
+            children: [
+              SizedBox(height: 5),
+              Container(
+                padding: const EdgeInsets.only(left: 10),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'This Week',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(7, (i){
-                final now = day.now;
-                final firstDayOfWeek = now.subtract(Duration(days: now.weekday % 7));
-                final date = firstDayOfWeek.add(Duration(days: i));
-                BoxState state;
-                if(date.day == now.day && date.month == now.month && date.year == now.year){
-                  state = BoxState.today;
-                }
-                else{
-                  state = BoxState.normal;
-                }
-                final dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7];
-                final text = "$dayName\n${date.day}";
+              const SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(7, (i) {
+                  final now = day.now;
+                  final firstDayOfWeek = now.subtract(
+                    Duration(days: now.weekday % 7),
+                  );
+                  final date = firstDayOfWeek.add(Duration(days: i));
+                  BoxState state;
+                  if (date.day == now.day &&
+                      date.month == now.month &&
+                      date.year == now.year) {
+                    state = BoxState.today;
+                  } else {
+                    state = BoxState.normal;
+                  }
+                  final dayName = [
+                    'Sun',
+                    'Mon',
+                    'Tue',
+                    'Wed',
+                    'Thu',
+                    'Fri',
+                    'Sat',
+                  ][date.weekday % 7];
+                  final text = "$dayName\n${date.day}";
 
-                return weekBox(text, state);
-              })
-            ),
-            SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.only(left: 10),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Today\'s exercises',
-                style: Theme.of(context).textTheme.titleSmall,
+                  return weekBox(text, state);
+                }),
               ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView(
+              const SizedBox(height: 5),
+              Container(
+                padding: const EdgeInsets.only(left: 10),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Today\'s exercises',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  exerciseCard("Push Up", "15 reps"),
-                  exerciseCard("Squat", "20 reps"),
-                  exerciseCard("Plank", "30 reps"),
-                  exerciseCard("Jumping Jack", "25 reps"),
-                  exerciseCard("Lunges", "15 reps"),
-                  exerciseCard("Sit Up", "20 reps"),
-                  exerciseCard("Burpees", "10 reps"),
-                  exerciseCard("Mountain Climber", "20 sec"),
-                  exerciseCard("High Knees", "30 sec"),
-                  exerciseCard("Stretching", "5 min"),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 15,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Exercises:",
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              "7 / 20 left",
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 15,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Calories Burned:",
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              "50 kcal",
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              Container(
+                alignment: Alignment.centerLeft,
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Progress: ',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      TextSpan(
+                        text: '60%',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5),
+              SizedBox(
+                height: 10,
+                child: LinearProgressIndicator(
+                  value: 0.6,
+                  backgroundColor: Theme.of(context).colorScheme.tertiary,
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const SizedBox(height: 5),
+              Expanded(
+                child: ListView(
+                  children: [
+                    exerciseCard("Push Up", "15 reps"),
+                    exerciseCard("Squat", "20 reps"),
+                    exerciseCard("Plank", "30 reps"),
+                    exerciseCard("Jumping Jack", "25 reps"),
+                    exerciseCard("Lunges", "15 reps"),
+                    exerciseCard("Sit Up", "20 reps"),
+                    exerciseCard("Burpees", "10 reps"),
+                    exerciseCard("Mountain Climber", "20 sec"),
+                    exerciseCard("High Knees", "30 sec"),
+                    exerciseCard("Stretching", "5 min"),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -110,8 +294,8 @@ class _FitScreenState extends State<FitScreen>
           border: BoxBorder.all(color: Colors.transparent),
           borderRadius: BorderRadius.circular(12),
         );
-        icon = null;
-        color = null;
+        icon = statusIcon;
+        color = Theme.of(context).colorScheme.onPrimary;
         break;
       case BoxState.notCompleted:
         decoration = BoxDecoration(
@@ -131,13 +315,13 @@ class _FitScreenState extends State<FitScreen>
         icon = Icons.check_circle_outline;
         color = CustomColors.greenOutline(context);
         break;
-      case BoxState.hasSchedule:
+      case BoxState.restDay:
         decoration = BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: BoxBorder.all(color: CustomColors.greenOutline(context)),
+          border: BoxBorder.all(color: CustomColors.blueOutline(context)),
           borderRadius: BorderRadius.circular(12),
         );
-        icon = Icons.event_available;
+        icon = Icons.bed_rounded;
         color = Theme.of(context).colorScheme.onSurface;
         break;
       case BoxState.cancelled:
@@ -153,8 +337,7 @@ class _FitScreenState extends State<FitScreen>
 
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-        },
+        onTap: () {},
         child: Container(
           height: isToday(state) ? 84 : 70,
           margin: const EdgeInsets.all(5),
@@ -178,9 +361,8 @@ class _FitScreenState extends State<FitScreen>
 
   Widget exerciseCard(String name, String rep) {
     return Padding(
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Card(
-        elevation: 5,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: Row(
@@ -199,5 +381,204 @@ class _FitScreenState extends State<FitScreen>
         ),
       ),
     );
+  }
+}
+
+class ExerciseScheduleScreen extends StatefulWidget {
+  const ExerciseScheduleScreen({super.key});
+
+  @override
+  State<ExerciseScheduleScreen> createState() => _ExerciseScheduleScreenState();
+}
+
+class _ExerciseScheduleScreenState extends State<ExerciseScheduleScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(body: Container());
+  }
+}
+
+class ExerciseTutorialScreen extends StatefulWidget {
+  const ExerciseTutorialScreen({super.key});
+
+  @override
+  State<ExerciseTutorialScreen> createState() => _ExerciseTutorialScreenState();
+}
+
+class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(title: Text('Your Exercise Tutorials')),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+          child: Column(
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TutorialPlayer(playerNumber: 0),
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Text('Player one'),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TutorialPlayer(playerNumber: 1),
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Text('Player two'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 25),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TutorialPlayer(playerNumber: 2),
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Text('Player three'),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TutorialPlayer(playerNumber: 3),
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Text('Player four'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TutorialPlayer extends StatefulWidget {
+  final int playerNumber;
+
+  const TutorialPlayer({super.key, required this.playerNumber});
+
+  @override
+  State<TutorialPlayer> createState() => _TutorialPlayerState();
+}
+
+class _TutorialPlayerState extends State<TutorialPlayer> {
+  late List<String> selectedPlaylist;
+  late List<YoutubePlayerController> controllers;
+
+  final List<List<String>> _playlists = [
+    ['ZgA51PiCNug', 'BQmUqC2M_1Q'],
+    ['5YlN0gdHjEg', 'JoHFxUFtXyY'],
+    ['--Yp8u_h7Wo', 'sH0HpObnivg'],
+    ['p2Umm_4VRGk', 'MZ_cL3PqzsQ'],
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedPlaylist = _playlists[widget.playerNumber];
+    controllers = selectedPlaylist.map((id) {
+      return YoutubePlayerController.fromVideoId(
+        videoId: id,
+        params: const YoutubePlayerParams(
+          showControls: true,
+          showFullscreenButton: true,
+        ),
+      );
+    }).toList();
+  }
+
+  @override
+  void dispose() {
+    for (final controller in controllers) {
+      controller.close();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(),
+        body: ListView.builder(
+          itemCount: controllers.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: YoutubePlayer(
+                controller: controllers[index],
+                aspectRatio: 16 / 9,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class FitnessHistory extends StatefulWidget {
+  const FitnessHistory({super.key});
+
+  @override
+  State<FitnessHistory> createState() => _FitnessHistoryState();
+}
+
+class _FitnessHistoryState extends State<FitnessHistory> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

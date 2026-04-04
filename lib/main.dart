@@ -5,9 +5,12 @@ import 'package:core_care/pages/home_screen.dart';
 import 'package:core_care/pages/login_screen.dart';
 import 'package:core_care/pages/profile_page.dart';
 import 'package:core_care/pages/shop_module.dart';
-import 'package:core_care/time_provider.dart';
+import 'package:core_care/data_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,10 +18,21 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+  await GoogleSignIn.instance.initialize(
+    clientId:
+        '951551089343-jgfn96g1e3drrm51hf5ohs85bs1b2k9k.apps.googleusercontent.com',
   );
-  runApp(ChangeNotifierProvider(create: (_) => TimeProvider(), child: MyApp()));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TimeProvider()),
+        ChangeNotifierProvider(create: (_) => DataProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -29,38 +43,36 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = ThemeMode.system;
-
-  void updateTheme(ThemeMode mode) {
-    setState(() {
-      _themeMode = mode;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final themeMode = context.watch<DataProvider>().savedThemeMode;
     return MaterialApp(
+      builder: FToastBuilder(),
       debugShowCheckedModeBanner: false,
       title: 'CoreCare',
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: _themeMode,
+      themeMode: themeMode,
       home: const OnboardingScreen(),
       routes: {
         '/home': (context) => ScreenState(),
         '/profile': (context) => ProfilePage(),
-        '/settings': (context) =>
-            SettingsPage(currentTheme: _themeMode, onThemeChanged: updateTheme),
+        '/settings': (context) => SettingsPage(),
         '/login': (context) => LoginScreen(),
         '/notifications': (context) => NotificationsPage(),
         '/fit': (context) => FitScreen(),
         '/diet': (context) => DietScreen(),
         '/shop': (context) => ShopScreen(),
-        // '/google': (context) => GoogleLoginScreen(),
-        // '/apple': (context) => AppleLoginScreen(),
         '/signup': (context) => SignupPage(),
         '/onboard': (context) => OnboardingScreen(),
-        '/auth' : (context) => AuthPage(),
+        '/auth': (context) => AuthPage(),
+        '/schedule': (context) => ExerciseScheduleScreen(),
+        '/tutorial': (context) => ExerciseTutorialScreen(),
+        '/recipe': (context) => RecipeScreen(),
+        '/meal': (context) => AddMealScreen(),
+        '/fitH': (context) => FitnessHistory(),
+        '/dietH': (context) => DietHistory(),
+        '/cart': (context) => CartScreen(),
       },
     );
   }
@@ -72,7 +84,7 @@ final ColorScheme lightMode = ColorScheme(
   onPrimary: Color(0xfffcfcfc),
   secondary: Color(0xff009999),
   onSecondary: Color(0xfffcfcfc),
-  error: Color(0xffcc0000),
+  error: Color(0xffb71c1c),
   onError: Color(0xffffe6e6),
   surface: Color(0xfff2f2f2),
   onSurface: Color(0xff0d0d0d),
@@ -99,7 +111,7 @@ final ThemeData lightTheme = ThemeData(
     ),
   ),
   popupMenuTheme: PopupMenuThemeData(
-    menuPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+    menuPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     elevation: 5,
     position: PopupMenuPosition.under,
@@ -109,10 +121,10 @@ final ThemeData lightTheme = ThemeData(
     contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
     fillColor: Color(0xfff2f2f2),
     iconColor: Color(0xff4d4d4d),
-    labelStyle: TextStyle(fontSize: 14, color: Color(0xffdddddd)),
+    labelStyle: TextStyle(fontSize: 14, color: Color(0xff4d4d4d)),
     floatingLabelStyle: TextStyle(color: Color(0xff009999)),
     floatingLabelBehavior: FloatingLabelBehavior.never,
-    hintStyle: TextStyle(fontSize: 14, color: Color(0xff4d4d4d)),
+    hintStyle: TextStyle(fontSize: 14, color: Color(0xffdddddd)),
     helperStyle: TextStyle(fontSize: 12, color: Color(0xff0d0d0d)),
     errorStyle: TextStyle(fontSize: 10, color: Color(0xffb71c1c)),
     errorBorder: OutlineInputBorder(
@@ -136,6 +148,7 @@ final ThemeData lightTheme = ThemeData(
     backgroundColor: Color(0xffe53935),
     alignment: Alignment.topRight,
   ),
+  chipTheme: ChipThemeData(selectedColor: Color(0xff2a3f3f)),
 );
 
 final ColorScheme darkMode = ColorScheme(
@@ -144,7 +157,7 @@ final ColorScheme darkMode = ColorScheme(
   onPrimary: Color(0xff030303),
   secondary: Color(0xff33cccc),
   onSecondary: Color(0xff030303),
-  error: Color(0xffff6666),
+  error: Color(0xfff28b82),
   onError: Color(0xff660000),
   surface: Color(0xff262626),
   onSurface: Color(0xfff2f2f2),
@@ -171,7 +184,7 @@ final ThemeData darkTheme = ThemeData(
     ),
   ),
   popupMenuTheme: PopupMenuThemeData(
-    menuPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+    menuPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     elevation: 5,
     position: PopupMenuPosition.under,
@@ -181,10 +194,10 @@ final ThemeData darkTheme = ThemeData(
     fillColor: Color(0xff262626),
     contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
     iconColor: Color(0xffdddddd),
-    labelStyle: TextStyle(fontSize: 14, color: Color(0xff4d4d4d)),
+    labelStyle: TextStyle(fontSize: 14, color: Color(0xffdddddd)),
     floatingLabelStyle: TextStyle(color: Color(0xff33cccc)),
     floatingLabelBehavior: FloatingLabelBehavior.never,
-    hintStyle: TextStyle(fontSize: 14, color: Color(0xffdddddd)),
+    hintStyle: TextStyle(fontSize: 14, color: Color(0xff4d4d4d)),
     helperStyle: TextStyle(fontSize: 12, color: Color(0xfff2f2f2)),
     errorStyle: TextStyle(fontSize: 10, color: Color(0xfff28b82)),
     errorBorder: OutlineInputBorder(
@@ -210,6 +223,7 @@ final ThemeData darkTheme = ThemeData(
     padding: const EdgeInsets.all(8),
     alignment: Alignment.topRight,
   ),
+  chipTheme: ChipThemeData(selectedColor: Color(0xffd1e6e6)),
 );
 
 TextTheme customTexts(ColorScheme scheme) {
@@ -378,9 +392,8 @@ class CustomColors {
   static Color black(BuildContext context) =>
       _isDark(context) ? const Color(0xff000000) : Color(0xff080808);
 
-  static Color back(BuildContext context) => _isDark(context)
-      ? const Color(0xff000000).withValues(alpha: 0.6)
-      : Color(0xff000000).withValues(alpha: 0.4);
+  static Color primaryMuted(BuildContext context) =>
+      _isDark(context) ? const Color(0xff2a3f3f) : Color(0xffd1e6e6);
 }
 
 class ScreenState extends StatefulWidget {
