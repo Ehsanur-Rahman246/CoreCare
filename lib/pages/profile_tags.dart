@@ -21,25 +21,58 @@ class _ProfileTagsState extends State<ProfileTags> {
       spacing: 15,
       runSpacing: 5,
       children: [
-        Chip(label: Text(user.ageGroup, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),),
-            avatar: Icon(Icons.cake_rounded, color: CustomColors.bluePrimary(context),),
-            shape: StadiumBorder(),
-            backgroundColor: CustomColors.blueMuted(context),
-          side: BorderSide(color: CustomColors.blueOutline(context),),
+        Chip(
+          label: Text(
+            user.ageGroup,
+            style: Theme.of(
+              context,
+            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),
+          ),
+          avatar: Icon(
+            Icons.cake_rounded,
+            color: CustomColors.bluePrimary(context),
+          ),
+          shape: StadiumBorder(),
+          backgroundColor: CustomColors.blueMuted(context),
+          side: BorderSide(color: CustomColors.blueOutline(context)),
         ),
-        Chip(label: Text(user.profileTag, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),),
-          avatar: Icon(Icons.person_rounded, color: CustomColors.purplePrimary(context),),
+        Chip(
+          label: Text(
+            user.profileTag,
+            style: Theme.of(
+              context,
+            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),
+          ),
+          avatar: Icon(
+            Icons.person_rounded,
+            color: CustomColors.purplePrimary(context),
+          ),
           shape: StadiumBorder(),
           backgroundColor: CustomColors.purpleMuted(context),
           side: BorderSide(color: CustomColors.purpleOutline(context)),
         ),
-        Chip(label: Text(user.goalType, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),),
-          avatar: Icon(Symbols.target_rounded, color: CustomColors.greenPrimary(context),),
+        Chip(
+          label: Text(
+            user.goalType,
+            style: Theme.of(
+              context,
+            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),
+          ),
+          avatar: Icon(
+            Symbols.target_rounded,
+            color: CustomColors.greenPrimary(context),
+          ),
           shape: StadiumBorder(),
           backgroundColor: CustomColors.greenMuted(context),
           side: BorderSide(color: CustomColors.greenOutline(context)),
         ),
-        Chip(label: Text(user.goalType, style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),),
+        Chip(
+          label: Text(
+            user.goalType,
+            style: Theme.of(
+              context,
+            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),
+          ),
           shape: StadiumBorder(),
           backgroundColor: CustomColors.greenMuted(context),
           side: BorderSide(color: CustomColors.greenOutline(context)),

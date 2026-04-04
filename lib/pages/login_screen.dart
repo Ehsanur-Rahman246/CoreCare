@@ -431,29 +431,29 @@ class AuthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.hasData) {
+          final provider = context.watch<DataProvider>();
+
+          if (!provider.sessionRestored ||
+              provider.isFetchingUser ||
+              provider.currentUser == null) {
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             );
           }
-
-          if (snapshot.hasData) {
-            final provider = context.watch<DataProvider>();
-
-            if (!provider.sessionRestored ||
-                provider.isFetchingUser ||
-                provider.currentUser == null) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-            return ScreenState();
-          }
-          return LoginScreen();
-        },
-      );
+          return ScreenState();
+        }
+        return LoginScreen();
+      },
+    );
   }
 }
 
@@ -1525,4 +1525,3 @@ class AuthPage extends StatelessWidget {
 //     );
 //   }
 // }
-

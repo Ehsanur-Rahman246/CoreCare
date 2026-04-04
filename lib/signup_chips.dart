@@ -114,7 +114,7 @@ class _MedChipsState extends State<MedChips> {
 
   final Set<String> selectedMeds = {};
 
-  void updateMeds(){
+  void updateMeds() {
     final data = context.read<DataProvider>().pageTwo;
     data.selectedMeds = selectedMeds.toList();
     context.read<DataProvider>().updatePageTwo(data);
@@ -138,10 +138,17 @@ class _MedChipsState extends State<MedChips> {
 
               chips.add(
                 InputChip(
-                  label: Text(med, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
+                  label: Text(
+                    med,
+                    style: TextStyle(
+                      fontWeight: isSelected
+                          ? FontWeight.w500
+                          : FontWeight.w400,
+                    ),
+                  ),
                   selected: isSelected,
                   showCheckmark: false,
-                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add,),
+                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add),
                   onPressed: () {
                     setModalState(() {
                       if (isSelected) {
@@ -360,7 +367,7 @@ class _InjuryChipsState extends State<InjuryChips> {
 
   final Set<String> selectedIns = {};
 
-  void updateInjuries(){
+  void updateInjuries() {
     final data = context.read<DataProvider>().pageTwo;
     data.selectedInjuries = selectedIns.toList();
     context.read<DataProvider>().updatePageTwo(data);
@@ -384,10 +391,17 @@ class _InjuryChipsState extends State<InjuryChips> {
 
               chips.add(
                 InputChip(
-                  label: Text(ins, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
+                  label: Text(
+                    ins,
+                    style: TextStyle(
+                      fontWeight: isSelected
+                          ? FontWeight.w500
+                          : FontWeight.w400,
+                    ),
+                  ),
                   selected: isSelected,
                   showCheckmark: false,
-                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add,),
+                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add),
                   onPressed: () {
                     setModalState(() {
                       if (isSelected) {
@@ -606,7 +620,7 @@ class _AllergenChipsState extends State<AllergenChips> {
 
   final Set<String> selectedAllergens = {};
 
-  void updateAllergens(){
+  void updateAllergens() {
     final data = context.read<DataProvider>().pageSeven;
     data.selectedAllergens = selectedAllergens.toList();
     context.read<DataProvider>().updatePageSeven(data);
@@ -615,7 +629,7 @@ class _AllergenChipsState extends State<AllergenChips> {
   Future<List<String>?> openBottomSheet(
     BuildContext context,
     List<String> list,
-      List<Image> logo,
+    List<Image> logo,
   ) {
     List<String> tempSelection = [];
     return showModalBottomSheet<List<String>>(
@@ -632,7 +646,14 @@ class _AllergenChipsState extends State<AllergenChips> {
 
               chips.add(
                 InputChip(
-                  label: Text(allergy, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
+                  label: Text(
+                    allergy,
+                    style: TextStyle(
+                      fontWeight: isSelected
+                          ? FontWeight.w500
+                          : FontWeight.w400,
+                    ),
+                  ),
                   selected: isSelected,
                   showCheckmark: false,
                   avatar: avatar,
@@ -722,13 +743,14 @@ class _AllergenChipsState extends State<AllergenChips> {
     }
     return remains;
   }
+
   List<Image> getRemainingLogos() {
     List<Image> remains = [];
     for (int i = 8; i < allergens.length; i++) {
       String allergy = allergens[i];
-        if(!selectedAllergens.contains(allergy)){
-          remains.add(allergenIcons[i]);
-        }
+      if (!selectedAllergens.contains(allergy)) {
+        remains.add(allergenIcons[i]);
+      }
     }
     return remains;
   }
@@ -736,7 +758,11 @@ class _AllergenChipsState extends State<AllergenChips> {
   Future<void> handleOpenSheet() async {
     List<String> remainingAllergens = getRemainingAllergens();
     List<Image> remainingLogos = getRemainingLogos();
-    final sheet = await openBottomSheet(context, remainingAllergens, remainingLogos);
+    final sheet = await openBottomSheet(
+      context,
+      remainingAllergens,
+      remainingLogos,
+    );
     if (sheet != null) {
       setState(() {
         selectedAllergens.addAll(sheet);
@@ -925,7 +951,7 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
 
   late List<String> intolerances;
 
-  void updateIntolerances(){
+  void updateIntolerances() {
     final data = context.read<DataProvider>().pageEight;
     data.selectedIntolerances = selectedIntolerances.toList();
     context.read<DataProvider>().updatePageEight(data);
@@ -935,7 +961,7 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
   void initState() {
     super.initState();
     final diet = context.read<DataProvider>().pageSeven.dietIndex;
-    switch(diet){
+    switch (diet) {
       case 0:
         intolerances = omnivoreIntolerances;
         break;
@@ -979,10 +1005,17 @@ class _IntoleranceChipsState extends State<IntoleranceChips> {
 
               chips.add(
                 InputChip(
-                  label: Text(ints, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
+                  label: Text(
+                    ints,
+                    style: TextStyle(
+                      fontWeight: isSelected
+                          ? FontWeight.w500
+                          : FontWeight.w400,
+                    ),
+                  ),
                   selected: isSelected,
                   showCheckmark: false,
-                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add,),
+                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add),
                   onPressed: () {
                     setModalState(() {
                       if (isSelected) {
@@ -1438,7 +1471,7 @@ class _DislikedChipsState extends State<DislikedChips> {
 
   late List<String> dislikes;
 
-  void updateDislikes(){
+  void updateDislikes() {
     final data = context.read<DataProvider>().pageEight;
     data.selectedDislikes = selectedDislikes.toList();
     context.read<DataProvider>().updatePageEight(data);
@@ -1448,7 +1481,7 @@ class _DislikedChipsState extends State<DislikedChips> {
   void initState() {
     super.initState();
     final diet = context.read<DataProvider>().pageSeven.dietIndex;
-    switch(diet){
+    switch (diet) {
       case 0:
         dislikes = omnivoreDislikes;
         break;
@@ -1471,12 +1504,13 @@ class _DislikedChipsState extends State<DislikedChips> {
     final saved = context.read<DataProvider>().pageEight.selectedDislikes;
     selectedDislikes.addAll(saved);
   }
+
   final Set<String> selectedDislikes = {};
 
   Future<List<String>?> openBottomSheet(
-      BuildContext context,
-      List<String> list,
-      ) {
+    BuildContext context,
+    List<String> list,
+  ) {
     List<String> tempSelection = [];
     return showModalBottomSheet<List<String>>(
       isScrollControlled: true,
@@ -1491,10 +1525,17 @@ class _DislikedChipsState extends State<DislikedChips> {
 
               chips.add(
                 InputChip(
-                  label: Text(ints, style: TextStyle(fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400),),
+                  label: Text(
+                    ints,
+                    style: TextStyle(
+                      fontWeight: isSelected
+                          ? FontWeight.w500
+                          : FontWeight.w400,
+                    ),
+                  ),
                   selected: isSelected,
                   showCheckmark: false,
-                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add,),
+                  avatar: isSelected ? Icon(Icons.close) : Icon(Icons.add),
                   onPressed: () {
                     setModalState(() {
                       if (isSelected) {

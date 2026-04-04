@@ -114,10 +114,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 25),
                           child: Text(
-                                title[index],
-                                style: Theme.of(context).textTheme.displayLarge,
+                            title[index],
+                            style: Theme.of(context).textTheme.displayLarge,
                             textAlign: TextAlign.center,
-                              ),
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Padding(
@@ -202,13 +202,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       style: OutlinedButton.styleFrom(
                         minimumSize: Size(double.infinity, 50),
                       ),
-                      onPressed: () async{
+                      onPressed: () async {
                         for (final c in _lottieController) {
                           c.stop();
                         }
-                        final provider = Provider.of<DataProvider>(context, listen: false);
+                        final provider = Provider.of<DataProvider>(
+                          context,
+                          listen: false,
+                        );
                         await provider.restoreSession();
-                        if(context.mounted){
+                        if (context.mounted) {
                           Navigator.pushReplacementNamed(context, '/auth');
                         }
                       },
@@ -267,7 +270,7 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  void onNext(){
+  void onNext() {
     if (currentPage < _totalSteps - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -287,22 +290,22 @@ class _SignupPageState extends State<SignupPage> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                  Padding(
-                    padding: const EdgeInsetsGeometry.only(left: 10),
-                    child: IconButton(
-                      onPressed: () {
-                        if(currentPage == 0){
-                          Navigator.pop(context);
-                        }else{
-                          _pageController.previousPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        }
-                      },
-                      icon: Icon(Icons.chevron_left),
-                    ),
+                Padding(
+                  padding: const EdgeInsetsGeometry.only(left: 10),
+                  child: IconButton(
+                    onPressed: () {
+                      if (currentPage == 0) {
+                        Navigator.pop(context);
+                      } else {
+                        _pageController.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.chevron_left),
                   ),
+                ),
                 Expanded(
                   child: Center(
                     child: Text(
@@ -347,16 +350,16 @@ class _SignupPageState extends State<SignupPage> {
                 },
 
                 children: [
-                  SignupPageOne(data: pageOne, onNext: onNext,),
-                  SignupPageTwo(data: pageTwo, onNext: onNext,),
-                  SignupPageThree(data: pageThree, onNext: onNext,),
-                  SignupPageFour(data: pageFour, onNext: onNext,),
-                  SignupPageFive(data: pageFive, onNext: onNext,),
-                  SignupPageSix(data: pageSix, onNext: onNext,),
-                  SignupPageSeven(data: pageSeven, onNext: onNext,),
-                  SignupPageEight(data: pageEight, onNext: onNext,),
-                  SignupPageNine(data: pageNine, onNext: onNext,),
-                  SignupPageTen(data: pageTen, onNext: onNext,),
+                  SignupPageOne(data: pageOne, onNext: onNext),
+                  SignupPageTwo(data: pageTwo, onNext: onNext),
+                  SignupPageThree(data: pageThree, onNext: onNext),
+                  SignupPageFour(data: pageFour, onNext: onNext),
+                  SignupPageFive(data: pageFive, onNext: onNext),
+                  SignupPageSix(data: pageSix, onNext: onNext),
+                  SignupPageSeven(data: pageSeven, onNext: onNext),
+                  SignupPageEight(data: pageEight, onNext: onNext),
+                  SignupPageNine(data: pageNine, onNext: onNext),
+                  SignupPageTen(data: pageTen, onNext: onNext),
                 ],
               ),
             ),

@@ -3257,12 +3257,12 @@ class _SignupPageNineState extends State<SignupPageNine> {
       } else {
         confirmError = null;
       }
-      if(phoneController.text.isEmpty){
+      if (phoneController.text.isEmpty) {
         phoneError = null;
-      }else if(phoneController.text.length != 10){
+      } else if (phoneController.text.length != 10) {
         phoneError = 'Please enter a valid phone no';
         isValid = false;
-      }else{
+      } else {
         phoneError = null;
       }
     });
@@ -3319,7 +3319,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
       if (emailError != null) errorKeys.add(emailKey);
       if (passwordError != null) errorKeys.add(passKey);
       if (confirmError != null) errorKeys.add(confirmKey);
-      if(phoneError != null) errorKeys.add(phoneKey);
+      if (phoneError != null) errorKeys.add(phoneKey);
 
       if (errorKeys.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -3662,8 +3662,8 @@ class _SignupPageNineState extends State<SignupPageNine> {
                     key: phoneKey,
                     controller: phoneController,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    onChanged: (_){
-                      if(phoneError != null){
+                    onChanged: (_) {
+                      if (phoneError != null) {
                         setState(() {
                           phoneError = null;
                         });
@@ -3899,7 +3899,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
               onChanged: (String? newCode) {
                 setState(() {
                   selectedCode = newCode!;
-                  if(phoneError != null) phoneError = null;
+                  if (phoneError != null) phoneError = null;
                 });
               },
               selectedItemBuilder: (BuildContext context) {

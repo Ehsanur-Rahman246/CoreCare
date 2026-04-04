@@ -165,7 +165,11 @@ class UserData {
     required this.selectedDislikes,
     required this.wantNotifications,
     required this.wantMetricUnit,
-    required this.createdAt, required this.language, required this.themeMode, required this.is24Hour, required this.profileTag,
+    required this.createdAt,
+    required this.language,
+    required this.themeMode,
+    required this.is24Hour,
+    required this.profileTag,
   });
 
   factory UserData.fromSignup({
@@ -239,7 +243,11 @@ class UserData {
       selectedDislikes: p8.selectedDislikes,
       wantNotifications: p10.wantNotifications,
       wantMetricUnit: p10.wantMetricUnit,
-      createdAt: DateTime.now(), language: 'English', themeMode: 'system', is24Hour: true, profileTag: profileTag,
+      createdAt: DateTime.now(),
+      language: 'English',
+      themeMode: 'system',
+      is24Hour: true,
+      profileTag: profileTag,
     );
   }
 
@@ -262,7 +270,7 @@ class UserData {
       'bmiCategory': bmiCategory,
       'bmr': bmr,
       'tdee': tdee,
-      'profileTag' : profileTag,
+      'profileTag': profileTag,
       'group': ageGroup,
       'age': age,
       'gender': gender,
@@ -291,9 +299,9 @@ class UserData {
       'dislikes': selectedDislikes,
       'notifications': wantNotifications,
       'unit': wantMetricUnit,
-      'language' : language,
-      'theme' : themeMode,
-      'hourFormat' : is24Hour,
+      'language': language,
+      'theme': themeMode,
+      'hourFormat': is24Hour,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -481,41 +489,20 @@ class DataProvider extends ChangeNotifier {
   }
 
   static final Map<String, List<Image>> dietMap = {
-    'Omnivore': [
-      Emoji.carb1,
-      Emoji.pro1,
-      Emoji.fat1,
-    ],
-    'Vegetarian': [
-      Emoji.carb2,
-      Emoji.pro2,
-      Emoji.fat2,
-    ],
-    'Vegan': [
-      Emoji.carb3,
-      Emoji.pro3,
-      Emoji.fat3,
-    ],
-    'Pescatarian': [
-      Emoji.carb4,
-      Emoji.pro4,
-      Emoji.fat4,
-    ],
-    'Paleo': [
-      Emoji.carb5,
-      Emoji.pro5,
-      Emoji.fat5,
-    ],
-    'Keto': [
-      Emoji.carb6,
-      Emoji.pro6,
-      Emoji.fat6,
-    ],
+    'Omnivore': [Emoji.carb1, Emoji.pro1, Emoji.fat1],
+    'Vegetarian': [Emoji.carb2, Emoji.pro2, Emoji.fat2],
+    'Vegan': [Emoji.carb3, Emoji.pro3, Emoji.fat3],
+    'Pescatarian': [Emoji.carb4, Emoji.pro4, Emoji.fat4],
+    'Paleo': [Emoji.carb5, Emoji.pro5, Emoji.fat5],
+    'Keto': [Emoji.carb6, Emoji.pro6, Emoji.fat6],
   };
 
   List<Image> get _macroImages => dietMap[currentUser!.dietType]!;
+
   Image get carbImage => _macroImages[0];
+
   Image get proteinImage => _macroImages[1];
+
   Image get fatImage => _macroImages[2];
 
   //user data starts from here
@@ -526,30 +513,31 @@ class DataProvider extends ChangeNotifier {
 
   bool get sessionRestored => _sessionRestored;
 
-  ThemeMode get savedThemeMode => switch (currentUser?.themeMode ?? 'system'){
+  ThemeMode get savedThemeMode => switch (currentUser?.themeMode ?? 'system') {
     'light' => ThemeMode.light,
-  'dark' => ThemeMode.dark,
-  _ => ThemeMode.system,
+    'dark' => ThemeMode.dark,
+    _ => ThemeMode.system,
   };
 
-  DataProvider(){
+  DataProvider() {
     restoreSession();
   }
 
-  Future<void> restoreSession() async{
+  Future<void> restoreSession() async {
     _sessionRestored = false;
     final firebaseUser = FirebaseAuth.instance.currentUser;
-    if(firebaseUser != null){
+    if (firebaseUser != null) {
       await fetchUser(firebaseUser.uid);
     }
     finishSession();
   }
 
-  void beginSession(){
+  void beginSession() {
     _sessionRestored = false;
     notifyListeners();
   }
-  void finishSession(){
+
+  void finishSession() {
     _sessionRestored = true;
     notifyListeners();
   }
@@ -573,18 +561,21 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> uploadProfileImage(Uint8List imageBytes) async{
-    if(currentUser == null) return null;
-      try{
-        final base64Image = base64Encode(imageBytes);
-        await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update({'profileImage' : base64Image});
-        profileImageBase64 = base64Image;
-        notifyListeners();
-      }catch(e){
-        debugPrint('uploadProfileImage error: $e');
-        rethrow;
-      }
-      return null;
+  Future<String?> uploadProfileImage(Uint8List imageBytes) async {
+    if (currentUser == null) return null;
+    try {
+      final base64Image = base64Encode(imageBytes);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update({'profileImage': base64Image});
+      profileImageBase64 = base64Image;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('uploadProfileImage error: $e');
+      rethrow;
+    }
+    return null;
   }
 
   Future<void> updateSettings({
@@ -593,45 +584,70 @@ class DataProvider extends ChangeNotifier {
     String? language,
     String? themeMode,
     bool? is24Hour,
-  }) async{
-    if(currentUser == null) return;
+  }) async {
+    if (currentUser == null) return;
     final fields = <String, dynamic>{};
-    if(wantNotifications != null) fields['notifications'] = wantNotifications;
-    if(wantMetricUnit != null) fields['unit'] = wantMetricUnit;
-    if(language != null) fields['language'] = language;
-    if(themeMode != null) fields['theme'] = themeMode;
-    if(is24Hour != null) fields['hourFormat'] = is24Hour;
+    if (wantNotifications != null) fields['notifications'] = wantNotifications;
+    if (wantMetricUnit != null) fields['unit'] = wantMetricUnit;
+    if (language != null) fields['language'] = language;
+    if (themeMode != null) fields['theme'] = themeMode;
+    if (is24Hour != null) fields['hourFormat'] = is24Hour;
 
-    if(fields.isEmpty) return;
+    if (fields.isEmpty) return;
 
     final updateMap = currentUser!.toMap()..addAll(fields);
     currentUser = UserData.fromMap(updateMap);
     notifyListeners();
-    try{
-      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-    }catch(e){
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update(fields);
+    } catch (e) {
       debugPrint('updateSettings error: $e');
       rethrow;
     }
   }
 
-  Future<void> updateProfileField(String field, dynamic value) async{
-    if(currentUser == null) return;
-    try{
-      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update({field: value});
+  Future<void> updateProfileField(String field, dynamic value) async {
+    if (currentUser == null) return;
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update({field: value});
       final updatedMap = currentUser!.toMap()..addAll({field: value});
       currentUser = UserData.fromMap(updatedMap);
       notifyListeners();
-    }catch(e){
+    } catch (e) {
       debugPrint('updatedProfileField error: $e');
       rethrow;
     }
   }
 
-  String computeProfileTag({required String gender, required String bmiCategory, required double bmr, required String ageGroup, required String workType, required String activityLevel, required String sleepPattern, required String fitType, required double tdee}){
-    const workMap = {'Sedentary': 0, 'Moderately Active': 1, 'Physically Active': 2};
+  String computeProfileTag({
+    required String gender,
+    required String bmiCategory,
+    required double bmr,
+    required String ageGroup,
+    required String workType,
+    required String activityLevel,
+    required String sleepPattern,
+    required String fitType,
+    required double tdee,
+  }) {
+    const workMap = {
+      'Sedentary': 0,
+      'Moderately Active': 1,
+      'Physically Active': 2,
+    };
     const activeMap = {'Low': 0, 'Moderate': 1, 'High': 2};
-    const sleepMap = {'Less than 5 hours': 0, '5 to 7 hours': 1, '7 to 9 hours': 2, 'More than 9 hours': 3};
+    const sleepMap = {
+      'Less than 5 hours': 0,
+      '5 to 7 hours': 1,
+      '7 to 9 hours': 2,
+      'More than 9 hours': 3,
+    };
     const fitMap = {'Beginner': 0, 'Intermediate': 1, 'Advanced': 2};
 
     final d = RecommendationData(
@@ -646,120 +662,185 @@ class DataProvider extends ChangeNotifier {
       tdee: tdee,
     );
 
-    for(final rule in rules){
-      if(rule.condition(d)) return rule.result.profile;
+    for (final rule in rules) {
+      if (rule.condition(d)) return rule.result.profile;
     }
     return 'Starter';
   }
-  
+
   Future<void> updateBodyStats({
     required double heightCm,
     required double weightKg,
-  })async{
-    if(currentUser == null) return;
-    final bmi = double.parse((weightKg / ((heightCm / 100) * (heightCm / 100))).toStringAsFixed(1));
+  }) async {
+    if (currentUser == null) return;
+    final bmi = double.parse(
+      (weightKg / ((heightCm / 100) * (heightCm / 100))).toStringAsFixed(1),
+    );
     String bmiCategory;
-    if (bmi < 18.5){
+    if (bmi < 18.5) {
       bmiCategory = 'Underweight';
-    }else if (bmi < 25) {
+    } else if (bmi < 25) {
       bmiCategory = 'Normal';
-    }else if (bmi < 30) {
+    } else if (bmi < 30) {
       bmiCategory = 'Overweight';
-    }else {
+    } else {
       bmiCategory = 'Obese';
     }
     final age = currentUser!.age;
     final genderInt = currentUser!.gender == 'Male' ? 1 : 2;
     final base = (10 * weightKg) + (6.25 * heightCm) - (5 * age);
-    final bmr = double.parse((genderInt == 1 ? base + 5 : base - 161).toStringAsFixed(1));
-    const workFactors = {'Sedentary' : 1.2, 'Moderately Active' : 1.35, 'Physically Active' : 1.55};
-    const activeFactors = {'Low' : 1.0, 'Moderate' : 1.1, 'High' : 1.2};
-    const fitFactors = {'Beginner' : 0.95, 'Intermediate' : 1.0, 'Advanced' : 1.05};
+    final bmr = double.parse(
+      (genderInt == 1 ? base + 5 : base - 161).toStringAsFixed(1),
+    );
+    const workFactors = {
+      'Sedentary': 1.2,
+      'Moderately Active': 1.35,
+      'Physically Active': 1.55,
+    };
+    const activeFactors = {'Low': 1.0, 'Moderate': 1.1, 'High': 1.2};
+    const fitFactors = {
+      'Beginner': 0.95,
+      'Intermediate': 1.0,
+      'Advanced': 1.05,
+    };
 
     final workF = workFactors[currentUser!.workType] ?? 1.2;
     final activeF = activeFactors[currentUser!.activityLevel] ?? 1.0;
     final fitF = fitFactors[currentUser!.fitType] ?? 0.95;
-    final tdee = double.parse((bmr * workF * activeF * fitF).toStringAsFixed(1));
+    final tdee = double.parse(
+      (bmr * workF * activeF * fitF).toStringAsFixed(1),
+    );
 
-    final profileTag = computeProfileTag(gender: currentUser!.gender, bmiCategory: bmiCategory, bmr: bmr, ageGroup: currentUser!.ageGroup, workType: currentUser!.workType, activityLevel: currentUser!.activityLevel, sleepPattern: currentUser!.sleepPattern, fitType: currentUser!.fitType, tdee: tdee);
+    final profileTag = computeProfileTag(
+      gender: currentUser!.gender,
+      bmiCategory: bmiCategory,
+      bmr: bmr,
+      ageGroup: currentUser!.ageGroup,
+      workType: currentUser!.workType,
+      activityLevel: currentUser!.activityLevel,
+      sleepPattern: currentUser!.sleepPattern,
+      fitType: currentUser!.fitType,
+      tdee: tdee,
+    );
 
     final fields = <String, dynamic>{
-      'height' : double.parse(heightCm.toStringAsFixed(1)),
-      'weight' : double.parse(weightKg.toStringAsFixed(1)),
-      'bmi' : bmi,
-      'bmiCategory' : bmiCategory,
-      'bmr' : bmr,
-      'tdee' : tdee,
-      'profileTag' : profileTag,
+      'height': double.parse(heightCm.toStringAsFixed(1)),
+      'weight': double.parse(weightKg.toStringAsFixed(1)),
+      'bmi': bmi,
+      'bmiCategory': bmiCategory,
+      'bmr': bmr,
+      'tdee': tdee,
+      'profileTag': profileTag,
     };
 
     final updatedMap = currentUser!.toMap()..addAll(fields);
     currentUser = UserData.fromMap(updatedMap);
     notifyListeners();
-    try{
-      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-    }catch(e){
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update(fields);
+    } catch (e) {
       debugPrint('updateBodyStats error: $e');
       rethrow;
     }
   }
 
-  Future<void> updateFitnessProfile({required String fitType, required String workType, required String activityLevel, required List<String> styleType, required String equipType, required String fundType, required String goalType, required String planType}) async{
-    if(currentUser == null) return;
+  Future<void> updateFitnessProfile({
+    required String fitType,
+    required String workType,
+    required String activityLevel,
+    required List<String> styleType,
+    required String equipType,
+    required String fundType,
+    required String goalType,
+    required String planType,
+  }) async {
+    if (currentUser == null) return;
 
-    const workFactors = {'Sedentary' : 1.2, 'Moderately Active' : 1.35, 'Physically Active' : 1.55};
-    const activeFactors = {'Low' : 1.0, 'Moderate' : 1.1, 'High' : 1.2};
-    const fitFactors = {'Beginner' : 0.95, 'Intermediate' : 1.0, 'Advanced' : 1.05};
+    const workFactors = {
+      'Sedentary': 1.2,
+      'Moderately Active': 1.35,
+      'Physically Active': 1.55,
+    };
+    const activeFactors = {'Low': 1.0, 'Moderate': 1.1, 'High': 1.2};
+    const fitFactors = {
+      'Beginner': 0.95,
+      'Intermediate': 1.0,
+      'Advanced': 1.05,
+    };
     final workF = workFactors[workType] ?? 1.2;
     final activeF = activeFactors[activityLevel] ?? 1.0;
     final fitF = fitFactors[fitType] ?? 0.95;
-    final tdee = double.parse((currentUser!.bmr * workF * activeF * fitF).toStringAsFixed(1));
-    final profileTag = computeProfileTag(gender: currentUser!.gender, bmiCategory: currentUser!.bmiCategory, bmr: currentUser!.bmr, ageGroup: currentUser!.ageGroup, workType: workType, activityLevel: activityLevel, sleepPattern: currentUser!.sleepPattern, fitType: fitType, tdee: tdee);
-
+    final tdee = double.parse(
+      (currentUser!.bmr * workF * activeF * fitF).toStringAsFixed(1),
+    );
+    final profileTag = computeProfileTag(
+      gender: currentUser!.gender,
+      bmiCategory: currentUser!.bmiCategory,
+      bmr: currentUser!.bmr,
+      ageGroup: currentUser!.ageGroup,
+      workType: workType,
+      activityLevel: activityLevel,
+      sleepPattern: currentUser!.sleepPattern,
+      fitType: fitType,
+      tdee: tdee,
+    );
 
     final fields = <String, dynamic>{
-      'fitness' : fitType,
-      'work' : workType,
-      'activity' : activityLevel,
-      'exercise' : styleType,
-      'equipment' : equipType,
-      'fundamental' : fundType,
-      'goal' : goalType,
-      'plan' : planType,
-      'tdee' : tdee,
-      'profileTag' : profileTag,
+      'fitness': fitType,
+      'work': workType,
+      'activity': activityLevel,
+      'exercise': styleType,
+      'equipment': equipType,
+      'fundamental': fundType,
+      'goal': goalType,
+      'plan': planType,
+      'tdee': tdee,
+      'profileTag': profileTag,
     };
 
     final updatedMap = currentUser!.toMap()..addAll(fields);
     currentUser = UserData.fromMap(updatedMap);
     notifyListeners();
-    try{
-      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-    }catch(e){
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update(fields);
+    } catch (e) {
       debugPrint('updateFitnessProfile error: $e');
       rethrow;
     }
   }
 
-  Future<void> updateDietPreference({String? newDiet, String? newMeals, List<String>? newRegions}) async{
-    if(currentUser == null) return;
+  Future<void> updateDietPreference({
+    String? newDiet,
+    String? newMeals,
+    List<String>? newRegions,
+  }) async {
+    if (currentUser == null) return;
 
     final fields = <String, dynamic>{};
-    if(newDiet != null){
+    if (newDiet != null) {
       fields['dietPref'] = newDiet;
       fields['intolerances'] = [];
       fields['dislikes'] = [];
     }
-    if(newMeals != null) fields['mealsPerDay'] = newMeals;
-    if(newRegions != null) fields['regions'] = newRegions;
-    if(fields.isEmpty) return;
+    if (newMeals != null) fields['mealsPerDay'] = newMeals;
+    if (newRegions != null) fields['regions'] = newRegions;
+    if (fields.isEmpty) return;
 
     final updatedMap = currentUser!.toMap()..addAll(fields);
     currentUser = UserData.fromMap(updatedMap);
     notifyListeners();
-    try{
-      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-    }catch(e){
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update(fields);
+    } catch (e) {
       debugPrint('updateDietPreference error: $e');
       rethrow;
     }
@@ -772,24 +853,27 @@ class DataProvider extends ChangeNotifier {
     String? dayType,
     List<String>? freeType,
     String? placeType,
-  }) async{
-    if(currentUser == null) return;
+  }) async {
+    if (currentUser == null) return;
     final fields = <String, dynamic>{};
-    if(sleepPattern != null) fields['sleepPattern'] = sleepPattern;
-    if(timeType != null) fields['time'] = timeType;
-    if(durationType != null) fields['duration'] = durationType;
-    if(dayType != null) fields['workoutDays'] = dayType;
-    if(freeType != null) fields['freeDays'] = freeType;
-    if(placeType != null) fields['place'] = placeType;
+    if (sleepPattern != null) fields['sleepPattern'] = sleepPattern;
+    if (timeType != null) fields['time'] = timeType;
+    if (durationType != null) fields['duration'] = durationType;
+    if (dayType != null) fields['workoutDays'] = dayType;
+    if (freeType != null) fields['freeDays'] = freeType;
+    if (placeType != null) fields['place'] = placeType;
 
-    if(fields.isEmpty) return;
+    if (fields.isEmpty) return;
 
     final updatedMap = currentUser!.toMap()..addAll(fields);
     currentUser = UserData.fromMap(updatedMap);
     notifyListeners();
-    try{
-      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-    }catch(e){
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update(fields);
+    } catch (e) {
       debugPrint('updateSchedule error: $e');
       rethrow;
     }
@@ -798,57 +882,56 @@ class DataProvider extends ChangeNotifier {
   Future<void> updateUsernameAndEmail({
     required String username,
     required String email,
-  })async{
-    if(currentUser == null) return;
-    final fields = <String, dynamic>{
-      'username' : username,
-      'email' : email,
-    };
+  }) async {
+    if (currentUser == null) return;
+    final fields = <String, dynamic>{'username': username, 'email': email};
 
     final updatedMap = currentUser!.toMap()..addAll(fields);
     currentUser = UserData.fromMap(updatedMap);
     notifyListeners();
-    try{
-      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-    }catch(e){
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update(fields);
+    } catch (e) {
       debugPrint('updateUsernameAndEmail error: $e');
       rethrow;
     }
   }
 
-  Future<void> updateGoogleLink(String? id, String? email) async{
-    if(currentUser == null) return;
+  Future<void> updateGoogleLink(String? id, String? email) async {
+    if (currentUser == null) return;
 
-    final fields = <String, dynamic>{
-      'googleId' : id,
-      'googleEmail' : email,
-    };
+    final fields = <String, dynamic>{'googleId': id, 'googleEmail': email};
 
     final updatedMap = currentUser!.toMap()..addAll(fields);
     currentUser = UserData.fromMap(updatedMap);
     notifyListeners();
-    try{
-      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-    }catch(e){
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update(fields);
+    } catch (e) {
       debugPrint('updatedProfileField error: $e');
       rethrow;
     }
   }
 
-  Future<void> updateAppleLink(String? id, String? email) async{
-    if(currentUser == null) return;
+  Future<void> updateAppleLink(String? id, String? email) async {
+    if (currentUser == null) return;
 
-    final fields = <String, dynamic>{
-      'appleId' : id,
-      'appleEmail' : email,
-    };
+    final fields = <String, dynamic>{'appleId': id, 'appleEmail': email};
     final updatedMap = currentUser!.toMap()..addAll(fields);
     currentUser = UserData.fromMap(updatedMap);
     notifyListeners();
-    try{
-      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update(fields);
-
-    }catch(e){
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update(fields);
+    } catch (e) {
       debugPrint('updatedProfileField error: $e');
       rethrow;
     }
@@ -890,29 +973,29 @@ class RuleResult {
 final List<Rule> rules = [
   Rule(
     condition: (d) =>
-    d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior',
+        d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Senior',
     result: RuleResult(code: 0, profile: 'Energy Depleted'),
   ),
   Rule(
     condition: (d) =>
-    d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Teen',
+        d.category == 'Underweight' && d.bmr! < 1400 && d.ageGroup == 'Teen',
     result: RuleResult(code: 0, profile: 'Undernourished'),
   ),
   Rule(
     condition: (d) =>
-    d.category == 'Underweight' &&
+        d.category == 'Underweight' &&
         d.bmr! < 1400 &&
         (d.ageGroup == 'Young Adult' || d.ageGroup == 'Adult'),
     result: RuleResult(code: 0, profile: 'Underfueled'),
   ),
   Rule(
     condition: (d) =>
-    d.category == 'Obese' && d.work == 0 && d.ageGroup == 'Adult',
+        d.category == 'Obese' && d.work == 0 && d.ageGroup == 'Adult',
     result: RuleResult(code: 3, profile: 'Obese Adult'),
   ),
   Rule(
     condition: (d) =>
-    d.category == 'Obese' && d.work == 0 && d.ageGroup == 'Young Adult',
+        d.category == 'Obese' && d.work == 0 && d.ageGroup == 'Young Adult',
     result: RuleResult(code: 3, profile: 'Overweight Starter'),
   ),
   Rule(
@@ -921,12 +1004,12 @@ final List<Rule> rules = [
   ),
   Rule(
     condition: (d) =>
-    d.sleep == 0 && d.tdee! > 2600 && d.ageGroup == 'Young Adult',
+        d.sleep == 0 && d.tdee! > 2600 && d.ageGroup == 'Young Adult',
     result: RuleResult(code: 0, profile: 'High Output'),
   ),
   Rule(
     condition: (d) =>
-    (d.category == 'Overweight' || d.category == 'Obese') &&
+        (d.category == 'Overweight' || d.category == 'Obese') &&
         d.active == 0 &&
         d.ageGroup == 'Senior',
     result: RuleResult(code: 2, profile: 'Stiff Retiree'),
@@ -937,12 +1020,12 @@ final List<Rule> rules = [
   ),
   Rule(
     condition: (d) =>
-    (d.fitness == 1 || d.fitness == 2) && d.ageGroup == 'Teen',
+        (d.fitness == 1 || d.fitness == 2) && d.ageGroup == 'Teen',
     result: RuleResult(code: 6, profile: 'Developing Athlete'),
   ),
   Rule(
     condition: (d) =>
-    d.gender == 1 &&
+        d.gender == 1 &&
         d.active == 2 &&
         d.ageGroup == 'Young Adult' &&
         d.fitness == 2,
@@ -950,12 +1033,12 @@ final List<Rule> rules = [
   ),
   Rule(
     condition: (d) =>
-    d.gender == 1 && d.active == 2 && d.ageGroup == 'Young Adult',
+        d.gender == 1 && d.active == 2 && d.ageGroup == 'Young Adult',
     result: RuleResult(code: 1, profile: 'Gym Goer'),
   ),
   Rule(
     condition: (d) =>
-    d.gender == 1 && d.work == 1 && d.ageGroup == 'Young Adult',
+        d.gender == 1 && d.work == 1 && d.ageGroup == 'Young Adult',
     result: RuleResult(code: 5, profile: 'Desk Bound'),
   ),
   Rule(
@@ -964,7 +1047,7 @@ final List<Rule> rules = [
   ),
   Rule(
     condition: (d) =>
-    d.category == 'Normal' &&
+        d.category == 'Normal' &&
         d.gender == 1 &&
         d.active == 2 &&
         d.ageGroup == 'Adult',
@@ -976,7 +1059,7 @@ final List<Rule> rules = [
   ),
   Rule(
     condition: (d) =>
-    d.category == 'Overweight' && d.gender == 2 && d.ageGroup == 'Adult',
+        d.category == 'Overweight' && d.gender == 2 && d.ageGroup == 'Adult',
     result: RuleResult(code: 4, profile: 'Metabolic Risk'),
   ),
   Rule(
@@ -989,14 +1072,14 @@ final List<Rule> rules = [
   ),
   Rule(
     condition: (d) =>
-    (d.fitness == 1 || d.fitness == 2) &&
+        (d.fitness == 1 || d.fitness == 2) &&
         d.active == 2 &&
         d.ageGroup == 'Senior',
     result: RuleResult(code: 1, profile: 'Active Elder'),
   ),
   Rule(
     condition: (d) =>
-    d.category == 'Normal' && d.active == 1 && d.ageGroup == 'Senior',
+        d.category == 'Normal' && d.active == 1 && d.ageGroup == 'Senior',
     result: RuleResult(code: 3, profile: 'Senior Mover'),
   ),
   Rule(

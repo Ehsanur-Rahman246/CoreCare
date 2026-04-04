@@ -17,7 +17,6 @@ enum BoxState { normal, today, notCompleted, completed, restDay, cancelled }
 
 class _FitScreenState extends State<FitScreen>
     with SingleTickerProviderStateMixin {
-
   late Status currentStatus;
   late IconData statusIcon;
 
@@ -81,7 +80,26 @@ class _FitScreenState extends State<FitScreen>
           ),
         ],
       ),
-      floatingActionButton: Column(mainAxisAlignment: MainAxisAlignment.end, children: [FloatingActionButton.small(heroTag: 'tutorial', onPressed: (){Navigator.pushNamed(context, '/tutorial');}, child: Icon(Symbols.play_lesson_rounded),), const SizedBox(height: 10,),FloatingActionButton.small(heroTag: 'schedule', onPressed: (){Navigator.pushNamed(context, '/schedule');}, child: Icon(Symbols.calendar_month_rounded),),]),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'tutorial',
+            onPressed: () {
+              Navigator.pushNamed(context, '/tutorial');
+            },
+            child: Icon(Symbols.play_lesson_rounded),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton.small(
+            heroTag: 'schedule',
+            onPressed: () {
+              Navigator.pushNamed(context, '/schedule');
+            },
+            child: Icon(Symbols.calendar_month_rounded),
+          ),
+        ],
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: Padding(
@@ -100,22 +118,33 @@ class _FitScreenState extends State<FitScreen>
               const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(7, (i){
+                children: List.generate(7, (i) {
                   final now = day.now;
-                  final firstDayOfWeek = now.subtract(Duration(days: now.weekday % 7));
+                  final firstDayOfWeek = now.subtract(
+                    Duration(days: now.weekday % 7),
+                  );
                   final date = firstDayOfWeek.add(Duration(days: i));
                   BoxState state;
-                  if(date.day == now.day && date.month == now.month && date.year == now.year){
+                  if (date.day == now.day &&
+                      date.month == now.month &&
+                      date.year == now.year) {
                     state = BoxState.today;
-                  }
-                  else{
+                  } else {
                     state = BoxState.normal;
                   }
-                  final dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7];
+                  final dayName = [
+                    'Sun',
+                    'Mon',
+                    'Tue',
+                    'Wed',
+                    'Thu',
+                    'Fri',
+                    'Sat',
+                  ][date.weekday % 7];
                   final text = "$dayName\n${date.day}";
 
                   return weekBox(text, state);
-                })
+                }),
               ),
               const SizedBox(height: 5),
               Container(
@@ -137,18 +166,27 @@ class _FitScreenState extends State<FitScreen>
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 15,
+                        ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text("Exercises:", style: Theme.of(context).textTheme.bodySmall,),
-                            Text("7 / 20 left", style: Theme.of(context).textTheme.labelMedium,),
+                            Text(
+                              "Exercises:",
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              "7 / 20 left",
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 15,),
+                  const SizedBox(width: 15),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
@@ -156,12 +194,21 @@ class _FitScreenState extends State<FitScreen>
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 15,
+                        ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text("Calories Burned:", style: Theme.of(context).textTheme.bodySmall,),
-                            Text("50 kcal", style: Theme.of(context).textTheme.labelMedium,),
+                            Text(
+                              "Calories Burned:",
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              "50 kcal",
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
                           ],
                         ),
                       ),
@@ -169,17 +216,29 @@ class _FitScreenState extends State<FitScreen>
                   ),
                 ],
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(height: 10),
               Container(
                 alignment: Alignment.centerLeft,
-                child: RichText(text: TextSpan(
-                  children: [
-                    TextSpan(text: 'Progress: ', style: Theme.of(context).textTheme.bodySmall),
-                    TextSpan(text: '60%',style: TextStyle(fontWeight: FontWeight.w400, fontFamily: 'Poppins', fontSize: 14)),
-                  ]
-                )),
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Progress: ',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      TextSpan(
+                        text: '60%',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 5,),
+              const SizedBox(height: 5),
               SizedBox(
                 height: 10,
                 child: LinearProgressIndicator(
@@ -278,9 +337,7 @@ class _FitScreenState extends State<FitScreen>
 
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-
-        },
+        onTap: () {},
         child: Container(
           height: isToday(state) ? 84 : 70,
           margin: const EdgeInsets.all(5),
@@ -337,9 +394,7 @@ class ExerciseScheduleScreen extends StatefulWidget {
 class _ExerciseScheduleScreenState extends State<ExerciseScheduleScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(),
-    );
+    return Scaffold(body: Container());
   }
 }
 
@@ -355,9 +410,7 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Your Exercise Tutorials'),
-        ),
+        appBar: AppBar(title: Text('Your Exercise Tutorials')),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child: Column(
@@ -367,7 +420,12 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => TutorialPlayer(playerNumber: 0,))),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TutorialPlayer(playerNumber: 0),
+                        ),
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
@@ -377,10 +435,15 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 20,),
+                  const SizedBox(width: 20),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => TutorialPlayer(playerNumber: 1,))),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TutorialPlayer(playerNumber: 1),
+                        ),
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
@@ -392,13 +455,18 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 25,),
+              const SizedBox(height: 25),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => TutorialPlayer(playerNumber: 2,))),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TutorialPlayer(playerNumber: 2),
+                        ),
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
@@ -408,10 +476,15 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 20,),
+                  const SizedBox(width: 20),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => TutorialPlayer(playerNumber: 3,))),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TutorialPlayer(playerNumber: 3),
+                        ),
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
@@ -433,6 +506,7 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
 
 class TutorialPlayer extends StatefulWidget {
   final int playerNumber;
+
   const TutorialPlayer({super.key, required this.playerNumber});
 
   @override
@@ -454,19 +528,20 @@ class _TutorialPlayerState extends State<TutorialPlayer> {
   void initState() {
     super.initState();
     selectedPlaylist = _playlists[widget.playerNumber];
-    controllers = selectedPlaylist.map((id){
-      return YoutubePlayerController.fromVideoId(videoId: id,
-      params: const YoutubePlayerParams(
+    controllers = selectedPlaylist.map((id) {
+      return YoutubePlayerController.fromVideoId(
+        videoId: id,
+        params: const YoutubePlayerParams(
           showControls: true,
-        showFullscreenButton: true,
-      )
+          showFullscreenButton: true,
+        ),
       );
     }).toList();
   }
 
   @override
   void dispose() {
-    for(final controller in controllers){
+    for (final controller in controllers) {
       controller.close();
     }
     super.dispose();
@@ -478,12 +553,17 @@ class _TutorialPlayerState extends State<TutorialPlayer> {
       child: Scaffold(
         appBar: AppBar(),
         body: ListView.builder(
-            itemCount: controllers.length,
-            itemBuilder: (context, index){
-              return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: YoutubePlayer(controller: controllers[index], aspectRatio: 16 / 9,));
-            }),
+          itemCount: controllers.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: YoutubePlayer(
+                controller: controllers[index],
+                aspectRatio: 16 / 9,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

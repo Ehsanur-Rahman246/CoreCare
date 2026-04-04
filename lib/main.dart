@@ -18,16 +18,20 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
-  await GoogleSignIn.instance.initialize(clientId: '951551089343-jgfn96g1e3drrm51hf5ohs85bs1b2k9k.apps.googleusercontent.com');
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => TimeProvider()),
-    ChangeNotifierProvider(create: (_) => DataProvider()),
-  ],
-  child: MyApp())
+  await GoogleSignIn.instance.initialize(
+    clientId:
+        '951551089343-jgfn96g1e3drrm51hf5ohs85bs1b2k9k.apps.googleusercontent.com',
+  );
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TimeProvider()),
+        ChangeNotifierProvider(create: (_) => DataProvider()),
+      ],
+      child: MyApp(),
+    ),
   );
 }
 
@@ -61,14 +65,14 @@ class _MyAppState extends State<MyApp> {
         '/shop': (context) => ShopScreen(),
         '/signup': (context) => SignupPage(),
         '/onboard': (context) => OnboardingScreen(),
-        '/auth' : (context) => AuthPage(),
-        '/schedule' : (context) => ExerciseScheduleScreen(),
-        '/tutorial' : (context) => ExerciseTutorialScreen(),
-        '/recipe' : (context) => RecipeScreen(),
-        '/meal' : (context) => AddMealScreen(),
-        '/fitH' : (context) => FitnessHistory(),
-        '/dietH' : (context) => DietHistory(),
-        '/cart' : (context) => CartScreen(),
+        '/auth': (context) => AuthPage(),
+        '/schedule': (context) => ExerciseScheduleScreen(),
+        '/tutorial': (context) => ExerciseTutorialScreen(),
+        '/recipe': (context) => RecipeScreen(),
+        '/meal': (context) => AddMealScreen(),
+        '/fitH': (context) => FitnessHistory(),
+        '/dietH': (context) => DietHistory(),
+        '/cart': (context) => CartScreen(),
       },
     );
   }
@@ -144,9 +148,7 @@ final ThemeData lightTheme = ThemeData(
     backgroundColor: Color(0xffe53935),
     alignment: Alignment.topRight,
   ),
-  chipTheme: ChipThemeData(
-    selectedColor: Color(0xff2a3f3f),
-  ),
+  chipTheme: ChipThemeData(selectedColor: Color(0xff2a3f3f)),
 );
 
 final ColorScheme darkMode = ColorScheme(
@@ -221,9 +223,7 @@ final ThemeData darkTheme = ThemeData(
     padding: const EdgeInsets.all(8),
     alignment: Alignment.topRight,
   ),
-  chipTheme: ChipThemeData(
-    selectedColor: Color(0xffd1e6e6),
-  ),
+  chipTheme: ChipThemeData(selectedColor: Color(0xffd1e6e6)),
 );
 
 TextTheme customTexts(ColorScheme scheme) {
@@ -392,10 +392,8 @@ class CustomColors {
   static Color black(BuildContext context) =>
       _isDark(context) ? const Color(0xff000000) : Color(0xff080808);
 
-  static Color primaryMuted(BuildContext context) => _isDark(context)
-      ? const Color(0xff2a3f3f)
-      : Color(0xffd1e6e6);
-
+  static Color primaryMuted(BuildContext context) =>
+      _isDark(context) ? const Color(0xff2a3f3f) : Color(0xffd1e6e6);
 }
 
 class ScreenState extends StatefulWidget {

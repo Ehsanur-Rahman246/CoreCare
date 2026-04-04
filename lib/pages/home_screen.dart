@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:core_care/decoration.dart';
 import 'package:core_care/main.dart';
 import 'package:core_care/pages/profile_page.dart';
@@ -105,59 +106,59 @@ class _HomeScreenState extends State<HomeScreen> {
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
-                                        value: _buttonA,
-                                        onChanged: (val) => update(() {
-                                          _buttonA = val;
-                                          if (val) _buttonB = false;
-                                          if(val) currentStatus = Status.active;
-                                        })
+                                      value: _buttonA,
+                                      onChanged: (val) => update(() {
+                                        _buttonA = val;
+                                        if (val) _buttonB = false;
+                                        if (val) currentStatus = Status.active;
+                                      }),
                                     ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 15,),
+                              const SizedBox(height: 15),
                               Container(
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.tertiary,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: ListTile(
-                                  leading: Icon(Symbols.directions_run_rounded),
+                                  leading: Icon(Symbols.bed_rounded),
                                   title: Text('Resting'),
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
-                                        value: _buttonB,
-                                        onChanged: (val) => update(() {
-                                          _buttonB = val;
-                                          if (val) _buttonA = false;
-                                          if(val) currentStatus = Status.rest;
-                                        })
+                                      value: _buttonB,
+                                      onChanged: (val) => update(() {
+                                        _buttonB = val;
+                                        if (val) _buttonA = false;
+                                        if (val) currentStatus = Status.rest;
+                                      }),
                                     ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 15,),
+                              const SizedBox(height: 15),
                               Container(
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.tertiary,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: ListTile(
-                                  leading: Icon(Symbols.directions_run_rounded),
+                                  leading: Icon(Symbols.sick_rounded),
                                   title: Text('Sick'),
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
-                                        value: _buttonC,
-                                        onChanged: (val) => update(() {
-                                          _buttonC = val;
-                                          if (val) {
-                                            _buttonB = true;
-                                            _buttonA = false;
-                                          }
-                                          if(val) currentStatus = Status.sick;
-                                        })
+                                      value: _buttonC,
+                                      onChanged: (val) => update(() {
+                                        _buttonC = val;
+                                        if (val) {
+                                          _buttonB = true;
+                                          _buttonA = false;
+                                        }
+                                        if (val) currentStatus = Status.sick;
+                                      }),
                                     ),
                                   ),
                                 ),
@@ -176,57 +177,61 @@ class _HomeScreenState extends State<HomeScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: ListTile(
-                                  leading: Icon(Symbols.directions_run_rounded),
+                                  leading: Icon(Symbols.travel_rounded),
                                   title: Text('Travelling'),
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
-                                        value: _buttonD,
-                                        onChanged: (val) => update(() {
-                                          _buttonD = val;
-                                          if(val) currentStatus = Status.travelling;
-                                        }),
+                                      value: _buttonD,
+                                      onChanged: (val) => update(() {
+                                        _buttonD = val;
+                                        if (val)
+                                          currentStatus = Status.travelling;
+                                      }),
                                     ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 15,),
+                              const SizedBox(height: 15),
                               Container(
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.tertiary,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: ListTile(
-                                  leading: Icon(Symbols.directions_run_rounded),
+                                  leading: Icon(
+                                    Symbols.hourglass_arrow_down_rounded,
+                                  ),
                                   title: Text('Fasting'),
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
-                                        value: _buttonE,
-                                        onChanged:
-                                            _buttonE ?
-                                            (val) => update(() => _buttonE = false) : null,
+                                      value: _buttonE,
+                                      onChanged: _buttonE
+                                          ? (val) =>
+                                                update(() => _buttonE = false)
+                                          : null,
                                     ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 15,),
+                              const SizedBox(height: 15),
                               Container(
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.tertiary,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: ListTile(
-                                  leading: Icon(Symbols.directions_run_rounded),
+                                  leading: Icon(Symbols.healing_rounded),
                                   title: Text('Injured'),
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
-                                        value: _buttonF,
-                                        onChanged: (val) => update(() {
-                                          _buttonA = val;
-                                          if (val) _buttonB = false;
-                                        })
+                                      value: _buttonF,
+                                      onChanged: (val) => update(() {
+                                        _buttonA = val;
+                                        if (val) _buttonB = false;
+                                      }),
                                     ),
                                   ),
                                 ),
@@ -251,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     waterBarCount = 19;
     fillCounter = 0;
-    currentStatus = Status.fasting;
+    currentStatus = Status.active;
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _loadProfileImage();
       final user = context.read<DataProvider>().currentUser;
@@ -379,7 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   builder: (_) => ProfilePage(),
                                 ),
                               ).then((_) {
-                                if(!mounted) return;
+                                if (!mounted) return;
                                 setState(() {});
                               });
                               break;
@@ -497,7 +502,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                Dashboard(),
+                if (currentStatus == Status.fasting)
+                  ArcTimer(startHour: 2, startMin: 7, endHour: 2, endMin: 10)
+                else
+                  Dashboard(),
                 const SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.only(left: 10),
@@ -738,15 +746,14 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DataProvider>();
     final unit = context.watch<DataProvider>().currentUser!.wantMetricUnit;
     String showUnit = 'g';
-    if(unit){
+    if (unit) {
       showUnit = 'g';
-    }else{
+    } else {
       showUnit = 'oz';
     }
 
@@ -835,7 +842,10 @@ class _DashboardState extends State<Dashboard> {
                             alignment: PlaceholderAlignment.middle,
                             child: provider.carbImage,
                           ),
-                          TextSpan(text: ' Carbs', style: Theme.of(context).textTheme.bodyMedium,),
+                          TextSpan(
+                            text: ' Carbs',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
                         ],
                       ),
                     ),
@@ -865,7 +875,10 @@ class _DashboardState extends State<Dashboard> {
                             alignment: PlaceholderAlignment.middle,
                             child: provider.proteinImage,
                           ),
-                          TextSpan(text: ' Protein', style: Theme.of(context).textTheme.bodyMedium,),
+                          TextSpan(
+                            text: ' Protein',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
                         ],
                       ),
                     ),
@@ -895,7 +908,10 @@ class _DashboardState extends State<Dashboard> {
                             alignment: PlaceholderAlignment.middle,
                             child: provider.fatImage,
                           ),
-                          TextSpan(text: ' Fats', style: Theme.of(context).textTheme.bodyMedium,),
+                          TextSpan(
+                            text: ' Fats',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
                         ],
                       ),
                     ),
@@ -924,7 +940,167 @@ class _DashboardState extends State<Dashboard> {
   }
 }
 
+class ArcTimer extends StatefulWidget {
+  final int startHour, startMin, endHour, endMin;
 
+  const ArcTimer({
+    super.key,
+    required this.startHour,
+    required this.startMin,
+    required this.endHour,
+    required this.endMin,
+  });
+
+  @override
+  State<ArcTimer> createState() => _ArcTimerState();
+}
+
+class _ArcTimerState extends State<ArcTimer> {
+  @override
+  Widget build(BuildContext context) {
+    final is24Hour =
+        context.watch<DataProvider>().currentUser?.is24Hour ?? true;
+    String formatHM(int hour, int minute) {
+      final min = minute.toString().padLeft(2, '0');
+      if (is24Hour) return '${hour.toString().padLeft(2, '0')}:$min';
+      final period = hour >= 12 ? 'PM' : 'AM';
+      int h = hour % 12;
+      if (h == 0) h = 12;
+      return '${h.toString().padLeft(2, '0')}:$min $period';
+    }
+
+    final now = context.watch<TimeProvider>().now;
+    final start = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      widget.startHour,
+      widget.startMin,
+    );
+    final end = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      widget.endHour,
+      widget.endMin,
+    );
+    final total = end.difference(start).inSeconds;
+    final elapsed = now.difference(start).inSeconds.clamp(0, total);
+    final remaining = (total - elapsed).clamp(0, total);
+    final progress = total > 0 ? elapsed / total : 0.0;
+
+    final h = remaining ~/ 3600;
+    final m = (remaining % 3600) ~/ 60;
+    final s = remaining % 60;
+    final countdown =
+        '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Fasting',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 130,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  CustomPaint(
+                    size: const Size(double.infinity, 130),
+                    painter: _ArcPainter(
+                      progress: progress,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Text(
+                      formatHM(widget.endHour, widget.endMin),
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: Text(
+                      formatHM(widget.startHour, widget.startMin),
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: countdown,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        TextSpan(
+                          text: '   Left',
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ArcPainter extends CustomPainter {
+  final double progress;
+  final Color color;
+
+  const _ArcPainter({required this.progress, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const stroke = 12.0;
+    final cx = size.width / 2;
+    final cy = size.height;
+    final r = min(size.width / 2, size.height) - stroke / 2 - 2;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: Offset(cx, cy), radius: r),
+      pi,
+      pi,
+      false,
+      Paint()
+        ..color = color.withValues(alpha: 0.15)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke
+        ..strokeCap = StrokeCap.round,
+    );
+    if (progress > 0) {
+      canvas.drawArc(
+        Rect.fromCircle(center: Offset(cx, cy), radius: r),
+        pi,
+        pi * progress,
+        false,
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = stroke
+          ..strokeCap = StrokeCap.round,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ArcPainter old) => old.progress != progress;
+}
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

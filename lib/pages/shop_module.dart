@@ -19,9 +19,14 @@ class _ShopScreenState extends State<ShopScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: SizedBox(
-            height: 50,
-            width: double.infinity,
-            child: FloatingActionButton.extended(onPressed: (){}, label: Text('Go To Cart'), icon: Icon(Icons.shopping_cart_rounded),)),
+          height: 50,
+          width: double.infinity,
+          child: FloatingActionButton.extended(
+            onPressed: () {},
+            label: Text('Go To Cart'),
+            icon: Icon(Icons.shopping_cart_rounded),
+          ),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
@@ -69,7 +74,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 20),
             const SizedBox(height: 20),
             Expanded(
               child: ListView(
@@ -123,4 +128,3 @@ class _CartScreenState extends State<CartScreen> {
     return const Placeholder();
   }
 }
-

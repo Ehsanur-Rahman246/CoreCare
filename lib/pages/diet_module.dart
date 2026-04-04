@@ -49,7 +49,7 @@ class _DietScreenState extends State<DietScreen> {
   @override
   Widget build(BuildContext context) {
     final day = context.watch<TimeProvider>();
-    
+
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Symbols.dinner_dining),
@@ -81,12 +81,46 @@ class _DietScreenState extends State<DietScreen> {
         ],
       ),
       floatingActionButton: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [FloatingActionButton.small(heroTag: 'recipe', onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => Recipe1()));}, child: Icon(Symbols.menu_book_rounded),), const SizedBox(height: 10,),FloatingActionButton.small(heroTag: 'add', onPressed: (){}, child: Center(
-            child: SizedBox(
-                height: 24, width: 24,
-                child: Stack(children: [Icon(Symbols.room_service_rounded), Positioned(right: 0, bottom: 0, child: Icon(Icons.add, size: 16, color: Theme.of(context).colorScheme.onSurface, weight: 10,))],)),
-          ),),]),
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'recipe',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => Recipe1()),
+              );
+            },
+            child: Icon(Symbols.menu_book_rounded),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton.small(
+            heroTag: 'add',
+            onPressed: () {},
+            child: Center(
+              child: SizedBox(
+                height: 24,
+                width: 24,
+                child: Stack(
+                  children: [
+                    Icon(Symbols.room_service_rounded),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Icon(
+                        Icons.add,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        weight: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: Padding(
@@ -104,23 +138,34 @@ class _DietScreenState extends State<DietScreen> {
               ),
               const SizedBox(height: 5),
               Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(7, (i){
-                    final now = day.now;
-                    final firstDayOfWeek = now.subtract(Duration(days: now.weekday % 7));
-                    final date = firstDayOfWeek.add(Duration(days: i));
-                    DietState state;
-                    if(date.day == now.day && date.month == now.month && date.year == now.year){
-                      state = DietState.today;
-                    }
-                    else{
-                      state = DietState.normal;
-                    }
-                    final dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7];
-                    final text = "$dayName\n${date.day}";
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(7, (i) {
+                  final now = day.now;
+                  final firstDayOfWeek = now.subtract(
+                    Duration(days: now.weekday % 7),
+                  );
+                  final date = firstDayOfWeek.add(Duration(days: i));
+                  DietState state;
+                  if (date.day == now.day &&
+                      date.month == now.month &&
+                      date.year == now.year) {
+                    state = DietState.today;
+                  } else {
+                    state = DietState.normal;
+                  }
+                  final dayName = [
+                    'Sun',
+                    'Mon',
+                    'Tue',
+                    'Wed',
+                    'Thu',
+                    'Fri',
+                    'Sat',
+                  ][date.weekday % 7];
+                  final text = "$dayName\n${date.day}";
 
-                    return weekBox(text, state);
-                  })
+                  return weekBox(text, state);
+                }),
               ),
               const SizedBox(height: 5),
               Container(
@@ -142,18 +187,27 @@ class _DietScreenState extends State<DietScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 15,
+                        ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text("Meals:", style: Theme.of(context).textTheme.bodySmall,),
-                            Text("7 / 20 left", style: Theme.of(context).textTheme.labelMedium,),
+                            Text(
+                              "Meals:",
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              "7 / 20 left",
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 15,),
+                  const SizedBox(width: 15),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
@@ -161,12 +215,21 @@ class _DietScreenState extends State<DietScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 15,
+                        ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text("Calories Taken:", style: Theme.of(context).textTheme.bodySmall,),
-                            Text("100 kcal", style: Theme.of(context).textTheme.labelMedium,),
+                            Text(
+                              "Calories Taken:",
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              "100 kcal",
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
                           ],
                         ),
                       ),
@@ -174,35 +237,80 @@ class _DietScreenState extends State<DietScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(height: 10),
               Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: MicroLineWidget(carbs: 0.4, protein: 0.5, fats: 0.1)
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: MicroLineWidget(carbs: 0.4, protein: 0.5, fats: 0.1),
               ),
-              const SizedBox(height: 5,),
+              const SizedBox(height: 5),
               Card(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    RichText(text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Carbs: ', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: CustomColors.yellowPrimary(context)),),
-                        TextSpan(text: '40%',style: TextStyle(fontWeight: FontWeight.w400, fontFamily: 'Poppins', fontSize: 12))
-                      ]
-                    )),
-                    RichText(text: TextSpan(
+                    RichText(
+                      text: TextSpan(
                         children: [
-                          TextSpan(text: 'Protein: ', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: CustomColors.bluePrimary(context)),),
-                          TextSpan(text: '50%',style: TextStyle(fontWeight: FontWeight.w400, fontFamily: 'Poppins', fontSize: 12))
-                        ]
-                    )),
-                    RichText(text: TextSpan(
+                          TextSpan(
+                            text: 'Carbs: ',
+                            style: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(
+                                  color: CustomColors.yellowPrimary(context),
+                                ),
+                          ),
+                          TextSpan(
+                            text: '40%',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
                         children: [
-                          TextSpan(text: 'Fats: ', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: CustomColors.orangePrimary(context)),),
-                          TextSpan(text: '10%',style: TextStyle(fontWeight: FontWeight.w400, fontFamily: 'Poppins', fontSize: 12))
-                        ]
-                    )),
+                          TextSpan(
+                            text: 'Protein: ',
+                            style: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(
+                                  color: CustomColors.bluePrimary(context),
+                                ),
+                          ),
+                          TextSpan(
+                            text: '50%',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Fats: ',
+                            style: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(
+                                  color: CustomColors.orangePrimary(context),
+                                ),
+                          ),
+                          TextSpan(
+                            text: '10%',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -280,8 +388,7 @@ class _DietScreenState extends State<DietScreen> {
 
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-        },
+        onTap: () {},
         child: Container(
           height: isToday(state) ? 84 : 70,
           margin: const EdgeInsets.all(5),
@@ -332,13 +439,18 @@ class _DietScreenState extends State<DietScreen> {
   }
 }
 
-class MicroLine extends CustomPainter{
+class MicroLine extends CustomPainter {
   final double carbs;
   final double protein;
   final double fats;
   final BuildContext context;
 
-  MicroLine({required this.carbs, required this.protein, required this.fats, required this.context});
+  MicroLine({
+    required this.carbs,
+    required this.protein,
+    required this.fats,
+    required this.context,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -348,20 +460,34 @@ class MicroLine extends CustomPainter{
     double startX = 0;
 
     paint.color = CustomColors.yellowOutline(context);
-    canvas.drawLine(Offset(startX, size.height / 2), Offset(startX + size.width * carbs, size.height / 2), paint);
+    canvas.drawLine(
+      Offset(startX, size.height / 2),
+      Offset(startX + size.width * carbs, size.height / 2),
+      paint,
+    );
     startX += size.width * carbs;
 
     paint.color = CustomColors.blueOutline(context);
-    canvas.drawLine(Offset(startX, size.height / 2), Offset(startX + size.width * protein, size.height / 2), paint);
+    canvas.drawLine(
+      Offset(startX, size.height / 2),
+      Offset(startX + size.width * protein, size.height / 2),
+      paint,
+    );
     startX += size.width * protein;
 
     paint.color = CustomColors.orangeOutline(context);
-    canvas.drawLine(Offset(startX, size.height / 2), Offset(startX + size.width * fats, size.height / 2), paint);
+    canvas.drawLine(
+      Offset(startX, size.height / 2),
+      Offset(startX + size.width * fats, size.height / 2),
+      paint,
+    );
   }
 
   @override
   bool shouldRepaint(covariant MicroLine oldDelegate) {
-    return oldDelegate.carbs != carbs || oldDelegate.protein != protein || oldDelegate.fats != fats;
+    return oldDelegate.carbs != carbs ||
+        oldDelegate.protein != protein ||
+        oldDelegate.fats != fats;
   }
 }
 
@@ -369,7 +495,13 @@ class MicroLineWidget extends StatefulWidget {
   final double carbs;
   final double protein;
   final double fats;
-  const MicroLineWidget({super.key, required this.carbs, required this.protein, required this.fats});
+
+  const MicroLineWidget({
+    super.key,
+    required this.carbs,
+    required this.protein,
+    required this.fats,
+  });
 
   @override
   State<MicroLineWidget> createState() => _MicroLineWidgetState();
@@ -380,7 +512,12 @@ class _MicroLineWidgetState extends State<MicroLineWidget> {
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size(double.infinity, 20),
-      painter: MicroLine(carbs: widget.carbs, protein: widget.protein, fats: widget.fats, context: context),
+      painter: MicroLine(
+        carbs: widget.carbs,
+        protein: widget.protein,
+        fats: widget.fats,
+        context: context,
+      ),
     );
   }
 }
@@ -442,127 +579,216 @@ class _Recipe1State extends State<Recipe1> {
     final data = context.watch<DataProvider>().currentUser!.wantMetricUnit;
     String unit1 = 'grams';
     String unit2 = 'g';
-    if(data){
+    if (data) {
       unit1 = 'grams';
-    }else{
+    } else {
       unit1 = 'ounces';
     }
-    if(data){
+    if (data) {
       unit2 = 'g';
-    }else{
+    } else {
       unit2 = 'oz';
     }
-    String val(double v){
+    String val(double v) {
       final value = data ? v * 28.35 : v;
       return value.toStringAsFixed(1);
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Egg & Oat Power Bowl'),
-      ),
+      appBar: AppBar(title: Text('Egg & Oat Power Bowl')),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsetsGeometry.symmetric(horizontal: 15, vertical: 20),
+          padding: const EdgeInsetsGeometry.symmetric(
+            horizontal: 15,
+            vertical: 20,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(child: Image.asset('assets/foods/r1.jpg', height: MediaQuery.of(context).size.height * 0.3, width: MediaQuery.of(context).size.width * 0.7,fit: BoxFit.cover,)),
-              const SizedBox(height: 15,),
+              Center(
+                child: Image.asset(
+                  'assets/foods/r1.jpg',
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 15),
               Expanded(
                 child: ListView(
                   children: [
                     Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [Icon(Symbols.grocery_rounded, size: 20,),const SizedBox(width: 10,),Text('INGREDIENTS')]),
-                    const SizedBox(height: 8,),
-                    Padding(padding: const EdgeInsets.only(left: 25),child: Text('3 eggs\n${val(2.9)} $unit1 rolled oats (dry)\n0.8 cups of milk\n0.8 cups of water (for oats)\n1 orange\n1 pinch salt\n1 tablespoon olive oil or butter', style: th.labelLarge,)),
-                    const SizedBox(height: 25,),
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [Icon(Symbols.cooking_rounded, size: 20,),const SizedBox(width: 10,),Text('STEPS')]),
-                    const SizedBox(height: 8,),
-                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CircleAvatar(
-                          radius: 12,
-                          child: Center(child: Text('1', style: th.labelLarge?.copyWith(color: ch.onPrimary),)),
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                            Text('Cook the oats: Combine ${val(2.9)} $unit1 rolled oats (dry) and 0.8 cups water (for oats) in a saucepan over medium heat. Stir constantly and cook for 4–5 minutes until thick and creamy. Pour in 0.8 cups halal milk and stir for another minute. Remove from heat.', style: th.bodySmall,),
-                              const SizedBox(height: 8,),
-                              RecipeTimer(seconds: 300),
-                          ],),
-                        ),
+                        Icon(Symbols.grocery_rounded, size: 20),
+                        const SizedBox(width: 10),
+                        Text('INGREDIENTS'),
                       ],
                     ),
-                    const SizedBox(height: 10,),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircleAvatar(
-                          radius: 12,
-                          child: Center(child: Text('2', style: th.labelLarge?.copyWith(color: ch.onPrimary),)),
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Scramble the eggs: Crack 3 eggs into a bowl, add a 1 pinch salt, and whisk well. Heat 1 teaspoons olive oil or butter in a non-stick pan over medium-low heat. Pour in eggs and gently fold with a spatula every few seconds until just set — don\'t overcook.', style: th.bodySmall,),
-                              const SizedBox(height: 8,),
-                            ],),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10,),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircleAvatar(
-                          radius: 12,
-                          child: Center(child: Text('3', style: th.labelLarge?.copyWith(color: ch.onPrimary),)),
-                        ),
-                        const SizedBox(width: 10,),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Assemble: Spoon oats into a bowl, top with scrambled eggs on the side. Peel and slice 1 orange and serve alongside. Eat immediately.', style: th.bodySmall,),
-                              const SizedBox(height: 8,),
-                            ],),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15,),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        child: RichText(text: TextSpan(
-                          children: [
-                            TextSpan(text: 'NOTES\n', style: th.bodyMedium),
-                            TextSpan(text: '~490kcal | ', style: th.labelMedium?.copyWith(color: CustomColors.redPrimary(context))),
-                            TextSpan(text: '${val(30)}$unit2 ', style: th.labelMedium?.copyWith(color: CustomColors.bluePrimary(context))),
-                            TextSpan(text: 'protein | ', style: th.labelMedium),
-                            TextSpan(text: '${val(52)}$unit2 ', style: th.labelMedium?.copyWith(color: CustomColors.yellowPrimary(context))),
-                            TextSpan(text: 'carbs | ', style: th.labelMedium),
-                            TextSpan(text: '${val(16)}$unit2 ', style: th.labelMedium?.copyWith(color: CustomColors.orangePrimary(context))),
-                            TextSpan(text: 'fat. Add a pinch of black pepper or chilli flakes to the eggs for extra flavour.', style: th.labelMedium),
-                          ]
-                        )),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 25),
+                      child: Text(
+                        '3 eggs\n${val(2.9)} $unit1 rolled oats (dry)\n0.8 cups of milk\n0.8 cups of water (for oats)\n1 orange\n1 pinch salt\n1 tablespoon olive oil or butter',
+                        style: th.labelLarge,
                       ),
                     ),
-                    const SizedBox(height: 30,),
+                    const SizedBox(height: 25),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Symbols.cooking_rounded, size: 20),
+                        const SizedBox(width: 10),
+                        Text('STEPS'),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          radius: 12,
+                          child: Center(
+                            child: Text(
+                              '1',
+                              style: th.labelLarge?.copyWith(
+                                color: ch.onPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Cook the oats: Combine ${val(2.9)} $unit1 rolled oats (dry) and 0.8 cups water (for oats) in a saucepan over medium heat. Stir constantly and cook for 4–5 minutes until thick and creamy. Pour in 0.8 cups halal milk and stir for another minute. Remove from heat.',
+                                style: th.bodySmall,
+                              ),
+                              const SizedBox(height: 8),
+                              RecipeTimer(seconds: 300),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          radius: 12,
+                          child: Center(
+                            child: Text(
+                              '2',
+                              style: th.labelLarge?.copyWith(
+                                color: ch.onPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Scramble the eggs: Crack 3 eggs into a bowl, add a 1 pinch salt, and whisk well. Heat 1 teaspoons olive oil or butter in a non-stick pan over medium-low heat. Pour in eggs and gently fold with a spatula every few seconds until just set — don\'t overcook.',
+                                style: th.bodySmall,
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          radius: 12,
+                          child: Center(
+                            child: Text(
+                              '3',
+                              style: th.labelLarge?.copyWith(
+                                color: ch.onPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Assemble: Spoon oats into a bowl, top with scrambled eggs on the side. Peel and slice 1 orange and serve alongside. Eat immediately.',
+                                style: th.bodySmall,
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 10,
+                        ),
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(text: 'NOTES\n', style: th.bodyMedium),
+                              TextSpan(
+                                text: '~490kcal | ',
+                                style: th.labelMedium?.copyWith(
+                                  color: CustomColors.redPrimary(context),
+                                ),
+                              ),
+                              TextSpan(
+                                text: '${val(30)}$unit2 ',
+                                style: th.labelMedium?.copyWith(
+                                  color: CustomColors.bluePrimary(context),
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'protein | ',
+                                style: th.labelMedium,
+                              ),
+                              TextSpan(
+                                text: '${val(52)}$unit2 ',
+                                style: th.labelMedium?.copyWith(
+                                  color: CustomColors.yellowPrimary(context),
+                                ),
+                              ),
+                              TextSpan(text: 'carbs | ', style: th.labelMedium),
+                              TextSpan(
+                                text: '${val(16)}$unit2 ',
+                                style: th.labelMedium?.copyWith(
+                                  color: CustomColors.orangePrimary(context),
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    'fat. Add a pinch of black pepper or chilli flakes to the eggs for extra flavour.',
+                                style: th.labelMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
@@ -730,6 +956,7 @@ class _Recipe12State extends State<Recipe12> {
 
 class RecipeTimer extends StatefulWidget {
   final int seconds;
+
   const RecipeTimer({super.key, required this.seconds});
 
   @override
@@ -744,15 +971,16 @@ class _RecipeTimerState extends State<RecipeTimer> {
   bool _isRunning = false;
 
   @override
-  void dispose() async{
+  void dispose() async {
     super.dispose();
     await _timer.dispose();
   }
-  void _toggle(){
-    if(_isRunning){
+
+  void _toggle() {
+    if (_isRunning) {
       _timer.onResetTimer();
       setState(() => _isRunning = false);
-    }else{
+    } else {
       _timer.onStartTimer();
       setState(() => _isRunning = true);
     }
@@ -767,19 +995,31 @@ class _RecipeTimerState extends State<RecipeTimer> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            StreamBuilder<int>(stream: _timer.rawTime,
-                initialData: _timer.rawTime.value,
-                builder: (context, snap) => Text(
-                  StopWatchTimer.getDisplayTime(snap.data!,hours: false, milliSecond: false),
-                  style: Theme.of(context).textTheme.bodyMedium,
+            StreamBuilder<int>(
+              stream: _timer.rawTime,
+              initialData: _timer.rawTime.value,
+              builder: (context, snap) => Text(
+                StopWatchTimer.getDisplayTime(
+                  snap.data!,
+                  hours: false,
+                  milliSecond: false,
                 ),
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
-            const SizedBox(width: 10,),
-            IconButton(onPressed: _toggle, icon: Icon(_isRunning ? Icons.refresh_rounded : Icons.play_circle_filled_rounded), iconSize: 16,),
+            const SizedBox(width: 10),
+            IconButton(
+              onPressed: _toggle,
+              icon: Icon(
+                _isRunning
+                    ? Icons.refresh_rounded
+                    : Icons.play_circle_filled_rounded,
+              ),
+              iconSize: 16,
+            ),
           ],
         ),
       ),
     );
   }
 }
-

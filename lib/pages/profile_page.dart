@@ -31,23 +31,25 @@ class _ProfilePageState extends State<ProfilePage> {
   StreamSubscription? _linkGoogleSub;
 
   Future<void> _linkGoogle() async {
-    if(kIsWeb) return;
+    if (kIsWeb) return;
     final provider = context.read<DataProvider>();
     try {
-    final googleUser = await GoogleSignIn.instance.authenticate();
-    final existing = await FirebaseFirestore.instance
-        .collection('users')
-        .where('googleId', isEqualTo: googleUser.id)
-        .limit(1)
-        .get();
-    if (existing.docs.isNotEmpty) {
-    await GoogleSignIn.instance.signOut();
-    Fluttertoast.showToast(msg: 'This Google account is already linked to another user');
-    return;
-    }
-    await provider.updateGoogleLink(googleUser.id, googleUser.email);
+      final googleUser = await GoogleSignIn.instance.authenticate();
+      final existing = await FirebaseFirestore.instance
+          .collection('users')
+          .where('googleId', isEqualTo: googleUser.id)
+          .limit(1)
+          .get();
+      if (existing.docs.isNotEmpty) {
+        await GoogleSignIn.instance.signOut();
+        Fluttertoast.showToast(
+          msg: 'This Google account is already linked to another user',
+        );
+        return;
+      }
+      await provider.updateGoogleLink(googleUser.id, googleUser.email);
     } catch (e) {
-    Fluttertoast.showToast(msg: 'Google sign-in failed: $e');
+      Fluttertoast.showToast(msg: 'Google sign-in failed: $e');
     }
   }
 
@@ -55,9 +57,11 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     if (kIsWeb) {
-      _linkGoogleSub = GoogleSignIn.instance.authenticationEvents.listen((event) async {
-        if(!mounted) return;
-        if(FirebaseAuth.instance.currentUser == null) return;
+      _linkGoogleSub = GoogleSignIn.instance.authenticationEvents.listen((
+        event,
+      ) async {
+        if (!mounted) return;
+        if (FirebaseAuth.instance.currentUser == null) return;
         final GoogleSignInAccount? user = switch (event) {
           GoogleSignInAuthenticationEventSignIn() => event.user,
           _ => null,
@@ -65,14 +69,16 @@ class _ProfilePageState extends State<ProfilePage> {
         if (user == null) return;
         final provider = context.read<DataProvider>();
         final currentUser = provider.currentUser;
-        if(currentUser == null || currentUser.googleId != null) return;
+        if (currentUser == null || currentUser.googleId != null) return;
         final existing = await FirebaseFirestore.instance
             .collection('users')
             .where('googleId', isEqualTo: user.id)
             .limit(1)
             .get();
         if (existing.docs.isNotEmpty) {
-          Fluttertoast.showToast(msg: 'This Google account is already linked to another user');
+          Fluttertoast.showToast(
+            msg: 'This Google account is already linked to another user',
+          );
           return;
         }
         await provider.updateGoogleLink(user.id, user.email);
@@ -107,10 +113,15 @@ class _ProfilePageState extends State<ProfilePage> {
           .get();
 
       if (existing.docs.isNotEmpty) {
-        Fluttertoast.showToast(msg: 'This Apple account is already linked to another user');
+        Fluttertoast.showToast(
+          msg: 'This Apple account is already linked to another user',
+        );
         return;
       }
-      await provider.updateAppleLink(appleCredential.userIdentifier, appleCredential.email);
+      await provider.updateAppleLink(
+        appleCredential.userIdentifier,
+        appleCredential.email,
+      );
     } catch (e) {
       Fluttertoast.showToast(msg: 'Apple sign-in failed: $e');
     }
@@ -125,29 +136,29 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<bool> _showUnlinkDialog(String provider) async {
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Unlink $provider'),
-        content: Text('This will remove your $provider connection.'),
-        actions: [
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Unlink $provider'),
+            content: Text('This will remove your $provider connection.'),
+            actions: [
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Unlink'),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Unlink'),
-          ),
-        ],
-      ),
-    ) ??
+        ) ??
         false;
   }
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<DataProvider>().currentUser;
-    if(user == null) return const SizedBox.shrink();
+    if (user == null) return const SizedBox.shrink();
     final isGoogleConnected = user.googleId != null;
     final isAppleConnected = user.appleId != null;
     return Scaffold(
@@ -157,15 +168,22 @@ class _ProfilePageState extends State<ProfilePage> {
             SliverPersistentHeader(
               pinned: true,
               floating: false,
-              delegate: ProfileHeader(maxHeight: MediaQuery.of(context).size.height * 0.3, minHeight: MediaQuery.of(context).size.height * 0.1),
+              delegate: ProfileHeader(
+                maxHeight: MediaQuery.of(context).size.height * 0.3,
+                minHeight: MediaQuery.of(context).size.height * 0.1,
+              ),
             ),
-            SliverPersistentHeader(delegate: SpacerDelegate(maxSpace: 200, minSpace: 20)),
+            SliverPersistentHeader(
+              delegate: SpacerDelegate(maxSpace: 200, minSpace: 20),
+            ),
             SliverPadding(
               padding: const EdgeInsetsGeometry.symmetric(horizontal: 15),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   ExpansionTile(
-                    collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
+                    collapsedBackgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.surface,
                     collapsedShape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                       side: BorderSide.none,
@@ -173,7 +191,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     leading: Container(
                       padding: const EdgeInsets.all(5),
@@ -184,27 +204,90 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Emoji.profile,
                     ),
                     title: Text('Personal Information'),
-                    subtitle: Text('Name & info', style: Theme.of(context).textTheme.labelSmall),
+                    subtitle: Text(
+                      'Name & info',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
                     children: [
                       Divider(height: 1, color: CustomColors.greyDark(context)),
                       Container(
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 20,
+                        ),
                         child: Column(
                           children: [
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Name', style: Theme.of(context).textTheme.labelLarge,), Text(user.name, style: Theme.of(context).textTheme.bodyMedium,)],),
-                            const SizedBox(height: 8,),
-                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 12,),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Age', style: Theme.of(context).textTheme.labelLarge,), Text('${user.age}yrs', style: Theme.of(context).textTheme.bodyMedium,)],),
-                            const SizedBox(height: 8,),
-                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 12,),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Gender', style: Theme.of(context).textTheme.labelLarge,), Text(user.gender, style: Theme.of(context).textTheme.bodyMedium,)],),
-                            const SizedBox(height: 8,),
-                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 12,),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Group', style: Theme.of(context).textTheme.labelLarge,), Text(user.ageGroup, style: Theme.of(context).textTheme.bodyMedium,)],),
-                            const SizedBox(height: 8,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Name',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  user.name,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(
+                              height: 0.5,
+                              color: CustomColors.greyDark(context),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Age',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  '${user.age}yrs',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(
+                              height: 0.5,
+                              color: CustomColors.greyDark(context),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Gender',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  user.gender,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(
+                              height: 0.5,
+                              color: CustomColors.greyDark(context),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Group',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  user.ageGroup,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
                           ],
                         ),
                       ),
@@ -235,7 +318,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ExpansionTile(
                     expandedAlignment: Alignment.centerLeft,
                     expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                    collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
+                    collapsedBackgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.surface,
                     collapsedShape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                       side: BorderSide.none,
@@ -243,7 +328,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     leading: Container(
                       padding: const EdgeInsets.all(5),
@@ -254,66 +341,94 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Emoji.diet,
                     ),
                     title: Text('Diet Profile'),
-                    subtitle: Text('Meal & Diet preferences', style: Theme.of(context).textTheme.labelSmall),
+                    subtitle: Text(
+                      'Meal & Diet preferences',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
                     children: [
                       Divider(height: 1, color: CustomColors.greyDark(context)),
                       Container(
                         alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 20,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [Text('Diet Type', style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .labelLarge,), Text(user.dietType, style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .bodyMedium,)
-                              ],),
-                            const SizedBox(height: 8,),
-                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 8,),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [Text('Meals/Day', style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .labelLarge,), Text(user.mealType, style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .bodyMedium,)
-                              ],),
-                            const SizedBox(height: 8,),
-                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 8,),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [Text('Calorie Goal', style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .labelLarge,), Text('~${user.tdee.round()} kcal', style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .bodyMedium,)
-                              ],),
-                            const SizedBox(height: 8,),
-                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 8,),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Regional Food', style: Theme
-                                    .of(context)
-                                    .textTheme
-                                    .labelLarge,),
                                 Text(
-                                  user.regionType.length > 1 ? '${user.regionType.first} & ${user
-                                      .regionType.length - 1} others' : user.regionType.first,
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .bodyMedium,)
-                              ],),
-                            const SizedBox(height: 8,),
+                                  'Diet Type',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  user.dietType,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(
+                              height: 0.5,
+                              color: CustomColors.greyDark(context),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Meals/Day',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  user.mealType,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(
+                              height: 0.5,
+                              color: CustomColors.greyDark(context),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Calorie Goal',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  '~${user.tdee.round()} kcal',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(
+                              height: 0.5,
+                              color: CustomColors.greyDark(context),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Regional Food',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  user.regionType.length > 1
+                                      ? '${user.regionType.first} & ${user.regionType.length - 1} others'
+                                      : user.regionType.first,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
                           ],
                         ),
                       ),
@@ -340,33 +455,33 @@ class _ProfilePageState extends State<ProfilePage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Symbols.allergies_rounded),
-                                const SizedBox(width: 10,),
+                                const SizedBox(width: 10),
                                 Text('Your Allergies'),
                               ],
                             ),
-                            const SizedBox(height: 10,),
+                            const SizedBox(height: 10),
                             ProfileAllergyChips(),
-                            const SizedBox(height: 12,),
+                            const SizedBox(height: 12),
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Symbols.gastroenterology_rounded),
-                                const SizedBox(width: 10,),
+                                const SizedBox(width: 10),
                                 Text('Your Intolerances'),
                               ],
                             ),
-                            const SizedBox(height: 10,),
+                            const SizedBox(height: 10),
                             ProfileIntoleranceChips(),
-                            const SizedBox(height: 12,),
+                            const SizedBox(height: 12),
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Symbols.sentiment_dissatisfied_rounded),
-                                const SizedBox(width: 10,),
+                                const SizedBox(width: 10),
                                 Text('Your Dislikes in food'),
                               ],
                             ),
-                            const SizedBox(height: 10,),
+                            const SizedBox(height: 10),
                             ProfileDislikeChips(),
                           ],
                         ),
@@ -377,7 +492,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ExpansionTile(
                     expandedAlignment: Alignment.centerLeft,
                     expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                    collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
+                    collapsedBackgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.surface,
                     collapsedShape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                       side: BorderSide.none,
@@ -385,7 +502,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     leading: Container(
                       padding: const EdgeInsets.all(5),
@@ -396,7 +515,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Emoji.med,
                     ),
                     title: Text('Health & Conditions'),
-                    subtitle: Text('Medical Conditions and injuries', style: Theme.of(context).textTheme.labelSmall),
+                    subtitle: Text(
+                      'Medical Conditions and injuries',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
                     children: [
                       Divider(height: 1, color: CustomColors.greyDark(context)),
                       Padding(
@@ -408,24 +530,25 @@ class _ProfilePageState extends State<ProfilePage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.medical_services_outlined),
-                                const SizedBox(width: 10,),
+                                const SizedBox(width: 10),
                                 Text('Medical Conditions'),
                               ],
                             ),
-                            const SizedBox(height: 10,),
+                            const SizedBox(height: 10),
                             ProfileMedChips(),
-                            const SizedBox(height: 12,),
+                            const SizedBox(height: 12),
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.personal_injury_outlined),
-                                const SizedBox(width: 10,),
+                                const SizedBox(width: 10),
                                 Text('Current Injuries'),
                               ],
                             ),
-                            const SizedBox(height: 10,),
+                            const SizedBox(height: 10),
                             ProfileInjuryChips(),
-                        ],),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -441,7 +564,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 10),
                   ExpansionTile(
-                    collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
+                    collapsedBackgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.surface,
                     collapsedShape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                       side: BorderSide.none,
@@ -449,7 +574,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     leading: Container(
                       padding: const EdgeInsets.all(5),
@@ -460,87 +587,263 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Emoji.id,
                     ),
                     title: Text('Account Settings'),
-                    subtitle: Text('User account information', style: Theme.of(context).textTheme.labelSmall),
+                    subtitle: Text(
+                      'User account information',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
                     children: [
                       Divider(height: 1, color: CustomColors.greyDark(context)),
                       Container(
-                        margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 20,
+                        ),
                         child: Column(
                           children: [
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Username', style: Theme.of(context).textTheme.labelLarge,), Text(user.username, style: Theme.of(context).textTheme.bodyMedium,)],),
-                            const SizedBox(height: 8,),
-                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 8,),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Email', style: Theme.of(context).textTheme.labelLarge,), Text(user.email, style: Theme.of(context).textTheme.bodyMedium,)],),
-                            const SizedBox(height: 8,),
-                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 8,),
-                            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [Text('Mobile no.', style: Theme.of(context).textTheme.labelLarge,), Text(user.phone ?? 'None', style: Theme.of(context).textTheme.bodyMedium,)],),
-                            const SizedBox(height: 8,),
-                            Divider(height: 0.5, color: CustomColors.greyDark(context),),
-                            const SizedBox(height: 15,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Username',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  user.username,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(
+                              height: 0.5,
+                              color: CustomColors.greyDark(context),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Email',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  user.email,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(
+                              height: 0.5,
+                              color: CustomColors.greyDark(context),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Mobile no.',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                Text(
+                                  user.phone ?? 'None',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Divider(
+                              height: 0.5,
+                              color: CustomColors.greyDark(context),
+                            ),
+                            const SizedBox(height: 15),
                             Wrap(
                               alignment: WrapAlignment.center,
                               spacing: 15,
                               runSpacing: 10,
                               children: [
-                                OutlinedButton(onPressed: () => EditSheets.userEdit(context), child: Padding(
-                                  padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [Icon(Icons.person), const SizedBox(width: 10,),Text('Edit username or email')]),
-                                )),
-                                const SizedBox(width: 20,),
-                                OutlinedButton(onPressed: () => EditSheets.phoneEdit(context), child: Padding(padding: const EdgeInsetsGeometry.symmetric(vertical: 15),child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [Icon(Icons.phone), const SizedBox(width: 10,),Text('Edit mobile no')]))),
                                 OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(
-                                        color: CustomColors.orangeOutline(context),
-                                      ),
-                                      foregroundColor: CustomColors.orangeOutline(context),
+                                  onPressed: () => EditSheets.userEdit(context),
+                                  child: Padding(
+                                    padding: const EdgeInsetsGeometry.symmetric(
+                                      vertical: 15,
                                     ),
-                                    onPressed: (){}, child: Padding(
-                                  padding: const EdgeInsetsGeometry.symmetric(vertical: 15),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [Icon(Icons.edit), const SizedBox(width: 10,), Text('Change Password')],),
-                                )),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.person),
+                                        const SizedBox(width: 10),
+                                        Text('Edit username or email'),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                OutlinedButton(
+                                  onPressed: () =>
+                                      EditSheets.phoneEdit(context),
+                                  child: Padding(
+                                    padding: const EdgeInsetsGeometry.symmetric(
+                                      vertical: 15,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.phone),
+                                        const SizedBox(width: 10),
+                                        Text('Edit mobile no'),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: CustomColors.orangeOutline(
+                                        context,
+                                      ),
+                                    ),
+                                    foregroundColor: CustomColors.orangeOutline(
+                                      context,
+                                    ),
+                                  ),
+                                  onPressed: () {},
+                                  child: Padding(
+                                    padding: const EdgeInsetsGeometry.symmetric(
+                                      vertical: 15,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.edit),
+                                        const SizedBox(width: 10),
+                                        Text('Change Password'),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
-                            const SizedBox(height: 20,),
+                            const SizedBox(height: 20),
                             Container(
                               decoration: BoxDecoration(
-                                border: Border.all(color: Theme.of(context).colorScheme.tertiary),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: ListTile(
                                 leading: Emoji.google,
                                 title: Text('Google ID'),
-                                subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [Text(isGoogleConnected ? 'connected' : 'not connected', style: TextStyle(color: isGoogleConnected ? CustomColors.greenOutline(context) : Theme.of(context).colorScheme.onSurface),), isGoogleConnected ? Text('Email: ${user.googleEmail}') : SizedBox()]),
-                                subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                                trailing: isGoogleConnected ? IconButton(onPressed: _unlinkGoogle, icon: Icon(Icons.link_off)) : kIsWeb ?
-                                    SizedBox(height: 40, width: 40, child: Stack(children: [
-                                      IconButton(onPressed: (){}, icon: Icon(Icons.sync),),Opacity(opacity: 0.005, child: SizedBox(height: 40, width: 40, child: web.renderButton(configuration: GSIButtonConfiguration(size: web.GSIButtonSize.large, shape: GSIButtonShape.pill, minimumWidth: 5000)),),)
-                                    ],),
-                                    ) : IconButton(onPressed: _linkGoogle, icon: Icon(Icons.sync)),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      isGoogleConnected
+                                          ? 'connected'
+                                          : 'not connected',
+                                      style: TextStyle(
+                                        color: isGoogleConnected
+                                            ? CustomColors.greenOutline(context)
+                                            : Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    isGoogleConnected
+                                        ? Text('Email: ${user.googleEmail}')
+                                        : SizedBox(),
+                                  ],
+                                ),
+                                subtitleTextStyle: Theme.of(
+                                  context,
+                                ).textTheme.labelMedium,
+                                trailing: isGoogleConnected
+                                    ? IconButton(
+                                        onPressed: _unlinkGoogle,
+                                        icon: Icon(Icons.link_off),
+                                      )
+                                    : kIsWeb
+                                    ? SizedBox(
+                                        height: 40,
+                                        width: 40,
+                                        child: Stack(
+                                          children: [
+                                            IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(Icons.sync),
+                                            ),
+                                            Opacity(
+                                              opacity: 0.005,
+                                              child: SizedBox(
+                                                height: 40,
+                                                width: 40,
+                                                child: web.renderButton(
+                                                  configuration:
+                                                      GSIButtonConfiguration(
+                                                        size: web
+                                                            .GSIButtonSize
+                                                            .large,
+                                                        shape:
+                                                            GSIButtonShape.pill,
+                                                        minimumWidth: 5000,
+                                                      ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : IconButton(
+                                        onPressed: _linkGoogle,
+                                        icon: Icon(Icons.sync),
+                                      ),
                               ),
                             ),
-                            const SizedBox(height: 15,),
+                            const SizedBox(height: 15),
                             Container(
                               decoration: BoxDecoration(
-                                border: Border.all(color: Theme.of(context).colorScheme.tertiary),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: ListTile(
                                 leading: Emoji.apple,
                                 title: Text('Apple ID'),
-                                subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [Text(isAppleConnected ? 'connected' : 'not connected', style: TextStyle(color: isAppleConnected ? CustomColors.greenOutline(context) : Theme.of(context).colorScheme.onSurface),), isAppleConnected ? Text('Email: ${user.appleEmail}') : SizedBox()]),
-                                subtitleTextStyle: Theme.of(context).textTheme.labelMedium,
-                                trailing: IconButton(onPressed: isAppleConnected ? _unlinkApple : _linkApple,
-                                    icon: Icon(isAppleConnected ? Icons.link_off : Icons.sync)),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      isAppleConnected
+                                          ? 'connected'
+                                          : 'not connected',
+                                      style: TextStyle(
+                                        color: isAppleConnected
+                                            ? CustomColors.greenOutline(context)
+                                            : Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    isAppleConnected
+                                        ? Text('Email: ${user.appleEmail}')
+                                        : SizedBox(),
+                                  ],
+                                ),
+                                subtitleTextStyle: Theme.of(
+                                  context,
+                                ).textTheme.labelMedium,
+                                trailing: IconButton(
+                                  onPressed: isAppleConnected
+                                      ? _unlinkApple
+                                      : _linkApple,
+                                  icon: Icon(
+                                    isAppleConnected
+                                        ? Icons.link_off
+                                        : Icons.sync,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -585,7 +888,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         context,
                                       ).pushNamedAndRemoveUntil(
                                         '/auth',
-                                            (route) => false,
+                                        (route) => false,
                                       );
                                       context.read<DataProvider>().clearUser();
                                     }
@@ -642,12 +945,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                 children: [
                                   Text(
                                     'Do you want to delete your account?',
-                                    style: Theme.of(context).textTheme.labelLarge,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.labelLarge,
                                   ),
-                                  const SizedBox(height: 8,),
+                                  const SizedBox(height: 8),
                                   Text(
                                     'All the data of your account will be deleted.',
-                                    style: Theme.of(context).textTheme.labelMedium,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.labelMedium,
                                   ),
                                 ],
                               ),
@@ -664,19 +971,31 @@ class _ProfilePageState extends State<ProfilePage> {
                                       context,
                                     ).colorScheme.error,
                                   ),
-                                  onPressed: () async{
-                                    try{
-                                      await context.read<DataProvider>().deleteUserAccount();
-                                      await FirebaseAuth.instance.currentUser?.delete();
+                                  onPressed: () async {
+                                    try {
+                                      await context
+                                          .read<DataProvider>()
+                                          .deleteUserAccount();
+                                      await FirebaseAuth.instance.currentUser
+                                          ?.delete();
                                       await FirebaseAuth.instance.signOut();
-                                      if(context.mounted){
-                                        Navigator.of(context).pushNamedAndRemoveUntil('/auth', (route) => false);
-                                        context.read<DataProvider>().clearUser();
+                                      if (context.mounted) {
+                                        Navigator.of(
+                                          context,
+                                        ).pushNamedAndRemoveUntil(
+                                          '/auth',
+                                          (route) => false,
+                                        );
+                                        context
+                                            .read<DataProvider>()
+                                            .clearUser();
                                       }
-                                    }catch(e){
-                                      if(context.mounted){
+                                    } catch (e) {
+                                      if (context.mounted) {
                                         Navigator.of(context).pop();
-                                        Fluttertoast.showToast(msg: 'Failed to delete account: $e');
+                                        Fluttertoast.showToast(
+                                          msg: 'Failed to delete account: $e',
+                                        );
                                       }
                                     }
                                   },
@@ -713,14 +1032,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget profileTile(
-      Image img,
-      String title,
-      String sub,
-      Widget list,
-      String edit,
-      Function(BuildContext) function,
-      BuildContext context,
-      ) {
+    Image img,
+    String title,
+    String sub,
+    Widget list,
+    String edit,
+    Function(BuildContext) function,
+    BuildContext context,
+  ) {
     return ExpansionTile(
       collapsedBackgroundColor: Theme.of(context).colorScheme.surface,
       collapsedShape: RoundedRectangleBorder(
@@ -772,21 +1091,17 @@ class ProfileHeader extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context,
-      double shrinkOffset,
-      bool overlapsContent,
-      ) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     final isCollapsed = shrinkOffset >= (maxExtent - minExtent);
     final progress = (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
 
     if (isCollapsed) {
-      return Opacity(
-          opacity: progress,
-          child: CollapsedProfileHeader());
+      return Opacity(opacity: progress, child: CollapsedProfileHeader());
     } else {
-      return Opacity(
-          opacity: 1 - progress,
-          child: ExpandedProfileHeader());
+      return Opacity(opacity: 1 - progress, child: ExpandedProfileHeader());
     }
   }
 
@@ -802,21 +1117,20 @@ class ProfileHeader extends SliverPersistentHeaderDelegate {
   }
 }
 
-class SpacerDelegate extends SliverPersistentHeaderDelegate{
+class SpacerDelegate extends SliverPersistentHeaderDelegate {
   final double maxSpace;
   final double minSpace;
 
-  SpacerDelegate({
-    required this.maxSpace,
-    required this.minSpace,
-  });
+  SpacerDelegate({required this.maxSpace, required this.minSpace});
+
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     final space = (maxExtent - shrinkOffset).clamp(minExtent, maxExtent);
-    return Container(
-      height: space,
-      color: Colors.transparent,
-    );
+    return Container(height: space, color: Colors.transparent);
   }
 
   @override
@@ -829,7 +1143,6 @@ class SpacerDelegate extends SliverPersistentHeaderDelegate{
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
     return false;
   }
-
 }
 
 class ExpandedProfileHeader extends StatefulWidget {
@@ -846,14 +1159,15 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadImageFromUrl();
       setState(() {});
     });
   }
-  void _loadImageFromUrl(){
+
+  void _loadImageFromUrl() {
     final base64 = context.read<DataProvider>().profileImageBase64;
-    if(base64 == null || base64.isEmpty) return;
+    if (base64 == null || base64.isEmpty) return;
     final bytes = base64Decode(base64);
     ExpandedProfileHeader.imageBytes = bytes;
     ExpandedProfileHeader.hasImage = true;
@@ -871,7 +1185,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
       final imageFile = await XFile(pickedImage.path).readAsBytes();
       ExpandedProfileHeader.imageBytes = imageFile;
       setState(() => ExpandedProfileHeader.hasImage = true);
-      if(mounted){
+      if (mounted) {
         await context.read<DataProvider>().uploadProfileImage(imageFile);
       }
     }
@@ -910,14 +1224,18 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
             ),
             Align(
               alignment: Alignment(0.6, -0.09),
-                child: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.close))),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.close),
+              ),
+            ),
           ],
         );
       },
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -929,9 +1247,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
           alignment: Alignment.topLeft,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(40),
-            ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(40)),
           ),
         ),
         Container(
@@ -940,7 +1256,9 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
             padding: EdgeInsets.symmetric(vertical: 15),
             child: Text(
               "Profile",
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
+              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
             ),
           ),
         ),
@@ -961,9 +1279,9 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                     user.email,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  Divider(color: Theme.of(context).colorScheme.tertiary,),
+                  Divider(color: Theme.of(context).colorScheme.tertiary),
                   ProfileTags(),
-                  Divider(color: Theme.of(context).colorScheme.tertiary,),
+                  Divider(color: Theme.of(context).colorScheme.tertiary),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -979,15 +1297,11 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                           const SizedBox(height: 8),
                           Text(
                             "Starter",
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                           Text(
                             "110 XP",
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelSmall,
+                            style: Theme.of(context).textTheme.labelSmall,
                           ),
                         ],
                       ),
@@ -1002,15 +1316,11 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                           const SizedBox(height: 8),
                           Text(
                             "3 day",
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                           Text(
                             "Streak",
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelSmall,
+                            style: Theme.of(context).textTheme.labelSmall,
                           ),
                         ],
                       ),
@@ -1025,15 +1335,11 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                           const SizedBox(height: 8),
                           Text(
                             "100 FC",
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                           Text(
                             "FitCoins",
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelSmall,
+                            style: Theme.of(context).textTheme.labelSmall,
                           ),
                         ],
                       ),
@@ -1054,7 +1360,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
           padding: const EdgeInsets.all(15),
           alignment: Alignment.topRight,
           child: InkWell(
-            onTap: (){
+            onTap: () {
               Navigator.pushNamed(context, '/settings');
             },
             child: Container(
@@ -1062,7 +1368,10 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                 color: CustomColors.greyDark(context),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Padding(padding: const EdgeInsetsGeometry.all(5),child: Emoji.settings),
+              child: Padding(
+                padding: const EdgeInsetsGeometry.all(5),
+                child: Emoji.settings,
+              ),
             ),
           ),
         ),
@@ -1097,9 +1406,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                     width: 24,
                     child: IconButton.filled(
                       style: IconButton.styleFrom(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.tertiary,
+                        backgroundColor: Theme.of(context).colorScheme.tertiary,
                       ),
                       padding: const EdgeInsets.all(0),
                       onPressed: () {
@@ -1157,27 +1464,35 @@ class _CollapsedProfileHeaderState extends State<CollapsedProfileHeader> {
           CircleAvatar(
             radius: 20,
             backgroundColor: Theme.of(context).colorScheme.surface,
-            child: ExpandedProfileHeader.hasImage ?
-            CircleAvatar(
-              radius: 18,
-              foregroundImage: MemoryImage(
-                ExpandedProfileHeader.imageBytes,
-              ),
-            ) :
-            CircleAvatar(
-              backgroundColor: CustomColors.greyDark(context),
-              radius: 18,
-              child: Icon(Icons.person, color: CustomColors.greyLight(context),),
-            ),
+            child: ExpandedProfileHeader.hasImage
+                ? CircleAvatar(
+                    radius: 18,
+                    foregroundImage: MemoryImage(
+                      ExpandedProfileHeader.imageBytes,
+                    ),
+                  )
+                : CircleAvatar(
+                    backgroundColor: CustomColors.greyDark(context),
+                    radius: 18,
+                    child: Icon(
+                      Icons.person,
+                      color: CustomColors.greyLight(context),
+                    ),
+                  ),
           ),
-          const SizedBox(width: 15,),
-          Text(user.name, style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600)),
+          const SizedBox(width: 15),
+          Text(
+            user.name,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600),
+          ),
           Spacer(),
           Container(
             padding: const EdgeInsets.all(15),
             alignment: Alignment.topRight,
             child: InkWell(
-              onTap: (){
+              onTap: () {
                 Navigator.pushNamed(context, '/settings');
               },
               child: Container(
@@ -1185,7 +1500,10 @@ class _CollapsedProfileHeaderState extends State<CollapsedProfileHeader> {
                   color: CustomColors.greyDark(context),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Padding(padding: const EdgeInsetsGeometry.all(5),child: Emoji.settings),
+                child: Padding(
+                  padding: const EdgeInsetsGeometry.all(5),
+                  child: Emoji.settings,
+                ),
               ),
             ),
           ),
