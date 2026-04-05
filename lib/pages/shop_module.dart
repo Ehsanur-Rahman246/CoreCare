@@ -68,13 +68,57 @@ class _ShopScreenState extends State<ShopScreen> {
                     foregroundColor: Theme.of(context).colorScheme.onSurface,
                     child: IconButton(
                       onPressed: () {},
-                      icon: Icon(Symbols.filter_list),
+                      icon: Icon(Symbols.sort_rounded),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(width: 10,),
+                CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    child: IconButton(onPressed: (){}, icon: Icon(Symbols.filter_list_rounded))),
+                const SizedBox(width: 10,),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ActionChip(
+
+                            label: Text('data'), onPressed: (){},
+                          ),
+                          const SizedBox(width: 10,),
+                          ActionChip(label: Text('data'), onPressed: (){},),
+                          const SizedBox(width: 10,),
+                          ActionChip(label: Text('data'), onPressed: (){},),
+                          const SizedBox(width: 10,),
+                          Chip(label: Text('data')),
+                          const SizedBox(width: 10,),
+                          Chip(label: Text('data')),
+                          const SizedBox(width: 10,),
+                          Chip(label: Text('data')),
+                          const SizedBox(width: 10,),
+                          Chip(label: Text('data')),
+                          const SizedBox(width: 10,),
+                          Chip(label: Text('data')),
+                          const SizedBox(width: 10,),
+                          Chip(label: Text('data')),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
             Expanded(
               child: ListView(
