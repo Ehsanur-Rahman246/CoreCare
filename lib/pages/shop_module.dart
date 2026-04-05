@@ -9,6 +9,14 @@ class ShopScreen extends StatefulWidget {
 }
 
 class _ShopScreenState extends State<ShopScreen> {
+  int filter = 0;
+  final List<String> filterLabels = [
+    'All', 'Equipment', 'Accessories', 'Fruits & Vegetables', 'Groceries', 'Kitchen & Cooking', 'Clothing & Footwear', 'Books & Learning', 'Travel & Outdoor'
+  ];
+  final List<IconData> filterIcons = [
+    Symbols.apps_rounded, Symbols.fitness_center_rounded, Symbols.fitness_tracker_rounded, Symbols.local_grocery_store_rounded, Symbols.grocery_rounded, Symbols.skillet_rounded, Symbols.checkroom_rounded, Symbols.book_2_rounded, Symbols.camping_rounded
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,28 +99,29 @@ class _ShopScreenState extends State<ShopScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ActionChip(
-
-                            label: Text('data'), onPressed: (){},
-                          ),
-                          const SizedBox(width: 10,),
-                          ActionChip(label: Text('data'), onPressed: (){},),
-                          const SizedBox(width: 10,),
-                          ActionChip(label: Text('data'), onPressed: (){},),
-                          const SizedBox(width: 10,),
-                          Chip(label: Text('data')),
-                          const SizedBox(width: 10,),
-                          Chip(label: Text('data')),
-                          const SizedBox(width: 10,),
-                          Chip(label: Text('data')),
-                          const SizedBox(width: 10,),
-                          Chip(label: Text('data')),
-                          const SizedBox(width: 10,),
-                          Chip(label: Text('data')),
-                          const SizedBox(width: 10,),
-                          Chip(label: Text('data')),
-                        ],
+                        children: List.generate(9, ((index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ChoiceChip(
+                              shape: StadiumBorder(
+                                side: BorderSide(color: filter == index ? Colors.transparent : Theme.of(context).colorScheme.primary),
+                              ),
+                              backgroundColor: Theme.of(context).colorScheme.surface,
+                              selectedColor: Theme.of(context).colorScheme.primary,
+                              showCheckmark: false,
+                              label: Text(filterLabels[index]), selected: filter == index,
+                            avatar: Icon(filterIcons[index]),
+                            onSelected: (select){
+                              setState(() {
+                                if(select){
+                                  filter = index;
+                                }
+                              });
+                            },
+                            ),
+                          );
+                        })
+                        ),
                       ),
                     ),
                   ),
