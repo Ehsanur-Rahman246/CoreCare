@@ -431,7 +431,14 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: Text('Player one'),
+                        child: RichText(text: TextSpan(
+                          children: [
+                            TextSpan(text: 'Warm up\n', style: Theme.of(context).textTheme.titleSmall,),
+                            TextSpan(text: 'exercises . 7 videos\n\n', style: Theme.of(context).textTheme.bodyMedium,),
+                            TextSpan(text: 'Play', style: Theme.of(context).textTheme.labelMedium,),
+                            WidgetSpan(child: Icon(Icons.play_circle_outline_rounded)),
+                          ]
+                        )),
                       ),
                     ),
                   ),

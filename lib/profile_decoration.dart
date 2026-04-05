@@ -2453,9 +2453,7 @@ class EditSheets {
                                       },
                                       decoration: InputDecoration(
                                         filled: true,
-                                        fillColor: CustomColors.greyLight(
-                                          context,
-                                        ),
+                                        fillColor: ch.tertiary,
                                         labelText: 'Height',
                                         prefixIcon: Icon(Icons.height_rounded),
                                         errorText: heightError,
@@ -2567,9 +2565,7 @@ class EditSheets {
                                     },
                                     decoration: InputDecoration(
                                       filled: true,
-                                      fillColor: CustomColors.greyLight(
-                                        context,
-                                      ),
+                                      fillColor: ch.tertiary,
                                       labelText: 'Weight',
                                       prefixIcon: Icon(Symbols.weight_rounded),
                                       errorText: weightError,
@@ -3516,8 +3512,9 @@ class EditSheets {
                                       const noPreference = 'No preference';
                                       if (region['label'] == noPreference) {
                                         sheetRegions.clear();
-                                        if (selected)
+                                        if (selected) {
                                           sheetRegions.add(noPreference);
+                                        }
                                       } else {
                                         selected
                                             ? sheetRegions.add(region['label'])
@@ -4105,7 +4102,7 @@ class EditSheets {
                               },
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: CustomColors.greyLight(context),
+                                fillColor: ch.tertiary,
                                 labelText: 'Username',
                                 prefixIcon: Icon(Icons.height_rounded),
                                 errorText: usernameError,
@@ -4125,7 +4122,7 @@ class EditSheets {
                               },
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: CustomColors.greyLight(context),
+                                fillColor: ch.tertiary,
                                 labelText: 'Email',
                                 prefixIcon: Icon(Symbols.weight_rounded),
                                 errorText: emailError,
@@ -4389,8 +4386,9 @@ class EditSheets {
                                                             selectedCode =
                                                                 newCode!;
                                                             if (phoneError !=
-                                                                null)
+                                                                null) {
                                                               phoneError = null;
+                                                            }
                                                           });
                                                         },
                                                     selectedItemBuilder:
@@ -4429,9 +4427,7 @@ class EditSheets {
                                       ],
                                       decoration: InputDecoration(
                                         filled: true,
-                                        fillColor: CustomColors.greyLight(
-                                          context,
-                                        ),
+                                        fillColor: ch.tertiary,
                                         prefixIcon: Icon(Icons.phone),
                                         labelText: 'Phone no',
                                         hintText: 'XXXXXXXXXX',
