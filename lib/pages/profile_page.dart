@@ -1367,7 +1367,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.chevron_left_rounded, size: 40),
+          icon: Icon(Icons.chevron_left_rounded, size: 40, color: Theme.of(context).colorScheme.onPrimary,),
         ),
         Container(
           padding: const EdgeInsets.all(15),
@@ -1472,7 +1472,7 @@ class _CollapsedProfileHeaderState extends State<CollapsedProfileHeader> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(Icons.chevron_left_rounded, size: 40),
+            icon: Icon(Icons.chevron_left_rounded, size: 40, color: Theme.of(context).colorScheme.onPrimary,),
           ),
           CircleAvatar(
             radius: 20,
