@@ -49,6 +49,8 @@ class _DietScreenState extends State<DietScreen> {
   @override
   Widget build(BuildContext context) {
     final day = context.watch<TimeProvider>();
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -107,7 +109,7 @@ class _DietScreenState extends State<DietScreen> {
                       child: Icon(
                         Icons.add,
                         size: 16,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: ch.onSurface,
                         weight: 10,
                       ),
                     ),
@@ -130,7 +132,7 @@ class _DietScreenState extends State<DietScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'This Week',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: th.bodyLarge,
                 ),
               ),
               const SizedBox(height: 5),
@@ -170,7 +172,7 @@ class _DietScreenState extends State<DietScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Today\'s meals',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: th.bodyLarge,
                 ),
               ),
               const SizedBox(height: 5),
@@ -180,7 +182,7 @@ class _DietScreenState extends State<DietScreen> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
+                        color: ch.surface,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Padding(
@@ -193,11 +195,11 @@ class _DietScreenState extends State<DietScreen> {
                           children: [
                             Text(
                               "Meals:",
-                              style: Theme.of(context).textTheme.bodySmall,
+                              style: th.bodySmall,
                             ),
                             Text(
                               "7 / 20 left",
-                              style: Theme.of(context).textTheme.labelMedium,
+                              style: th.labelMedium,
                             ),
                           ],
                         ),
@@ -208,7 +210,7 @@ class _DietScreenState extends State<DietScreen> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
+                        color: ch.surface,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Padding(
@@ -221,11 +223,11 @@ class _DietScreenState extends State<DietScreen> {
                           children: [
                             Text(
                               "Calories Taken:",
-                              style: Theme.of(context).textTheme.bodySmall,
+                              style: th.bodySmall,
                             ),
                             Text(
                               "100 kcal",
-                              style: Theme.of(context).textTheme.labelMedium,
+                              style: th.labelMedium,
                             ),
                           ],
                         ),
@@ -250,7 +252,7 @@ class _DietScreenState extends State<DietScreen> {
                         children: [
                           TextSpan(
                             text: 'Carbs: ',
-                            style: Theme.of(context).textTheme.labelMedium
+                            style: th.labelMedium
                                 ?.copyWith(
                                   color: CustomColors.yellowPrimary(context),
                                 ),
@@ -261,6 +263,7 @@ class _DietScreenState extends State<DietScreen> {
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Poppins',
                               fontSize: 12,
+                              color: ch.onSurface,
                             ),
                           ),
                         ],
@@ -271,7 +274,7 @@ class _DietScreenState extends State<DietScreen> {
                         children: [
                           TextSpan(
                             text: 'Protein: ',
-                            style: Theme.of(context).textTheme.labelMedium
+                            style: th.labelMedium
                                 ?.copyWith(
                                   color: CustomColors.bluePrimary(context),
                                 ),
@@ -282,6 +285,7 @@ class _DietScreenState extends State<DietScreen> {
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Poppins',
                               fontSize: 12,
+                              color: ch.onSurface,
                             ),
                           ),
                         ],
@@ -292,7 +296,7 @@ class _DietScreenState extends State<DietScreen> {
                         children: [
                           TextSpan(
                             text: 'Fats: ',
-                            style: Theme.of(context).textTheme.labelMedium
+                            style: th.labelMedium
                                 ?.copyWith(
                                   color: CustomColors.orangePrimary(context),
                                 ),
@@ -303,6 +307,7 @@ class _DietScreenState extends State<DietScreen> {
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Poppins',
                               fontSize: 12,
+                              color: ch.onSurface,
                             ),
                           ),
                         ],

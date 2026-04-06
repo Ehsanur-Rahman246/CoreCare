@@ -5,6 +5,8 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'home_screen.dart';
+import 'dart:ui_web' as ui;
+import 'package:web/web.dart' as web;
 
 class FitScreen extends StatefulWidget {
   const FitScreen({super.key});
@@ -427,18 +429,23 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
                         ),
                       ),
                       child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: RichText(text: TextSpan(
-                          children: [
-                            TextSpan(text: 'Warm up\n', style: Theme.of(context).textTheme.titleSmall,),
-                            TextSpan(text: 'exercises . 7 videos\n\n', style: Theme.of(context).textTheme.bodyMedium,),
-                            TextSpan(text: 'Play', style: Theme.of(context).textTheme.labelMedium,),
-                            WidgetSpan(child: Icon(Icons.play_circle_outline_rounded)),
-                          ]
-                        )),
+                        child: Center(
+                          child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                            children: [
+                              TextSpan(text: 'Warm up\n', style: Theme.of(context).textTheme.titleSmall,),
+                              TextSpan(text: 'exercises . 8 videos\n\n', style: Theme.of(context).textTheme.bodyMedium,),
+                              TextSpan(text: 'Play', style: Theme.of(context).textTheme.labelLarge,),
+                              WidgetSpan(child: Icon(Icons.play_circle_outline_rounded, size: 16,)),
+                            ]
+                          )),
+                        ),
                       ),
                     ),
                   ),
@@ -522,52 +529,60 @@ class TutorialPlayer extends StatefulWidget {
 
 class _TutorialPlayerState extends State<TutorialPlayer> {
   late List<String> selectedPlaylist;
-  late List<YoutubePlayerController> controllers;
+  late String showTitle;
+  //late List<String> selectedDescriptions;
 
   final List<List<String>> _playlists = [
-    ['ZgA51PiCNug', 'BQmUqC2M_1Q'],
+    ['X-CUlo4zf0Y', 'w8yCm_sFUo4', '35h5gdlm46w', 'QQMri8bsjy8', 'qkrJXGVj_OQ', 'LIVJZZyZ2qM', 'rmCOifHCDKE', '-CiWQ2IvY34'],
     ['5YlN0gdHjEg', 'JoHFxUFtXyY'],
     ['--Yp8u_h7Wo', 'sH0HpObnivg'],
     ['p2Umm_4VRGk', 'MZ_cL3PqzsQ'],
   ];
+  final List<String> _titles = [
+    'Warm-up exercises', 'play two', 'play three', 'play four',
+  ];
+
+  // final List<List<String>> descriptions = [
+  //
+  // ];
 
   @override
   void initState() {
     super.initState();
     selectedPlaylist = _playlists[widget.playerNumber];
-    controllers = selectedPlaylist.map((id) {
-      return YoutubePlayerController.fromVideoId(
-        videoId: id,
-        params: const YoutubePlayerParams(
-          showControls: true,
-          showFullscreenButton: true,
-        ),
-      );
-    }).toList();
-  }
-
-  @override
-  void dispose() {
-    for (final controller in controllers) {
-      controller.close();
+    showTitle = _titles[widget.playerNumber];
+    for(final videoId in selectedPlaylist){
+      final id = 'yt-player-$videoId';
+      ui.platformViewRegistry.registerViewFactory(id, (int i){
+        final iframe = web.document.createElement('iframe') as web.HTMLIFrameElement
+            ..src = 'https://www.youtube-nocookie.com/embed/$videoId'
+                '?rel=0&showinfo=0&enablejsapi=1&playsinline=1'
+            ..width = '100%'
+            ..height = '100%'
+            ..allowFullscreen = true
+            ..setAttribute('referrerpolicy', 'strict-origin-when-cross-origin')
+            ..setAttribute('allow', 'accelerometer; autoplay; clipboard-write; '
+                'encrypted-media; gyroscope; picture-in-picture; web-share',);
+        (iframe as web.HTMLElement).style.border = 'none';
+        return iframe;
+      });
     }
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text(showTitle),
+        ),
         body: ListView.builder(
-          itemCount: controllers.length,
+          itemCount: selectedPlaylist.length,
           itemBuilder: (context, index) {
+            final videoId = selectedPlaylist[index];
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: YoutubePlayer(
-                controller: controllers[index],
-                aspectRatio: 16 / 9,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+              child: AspectRatio(aspectRatio: 16 /7,child: HtmlElementView(viewType: 'yt-player-$videoId'),)
             );
           },
         ),
