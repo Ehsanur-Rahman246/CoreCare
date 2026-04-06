@@ -30,7 +30,7 @@ class _ShopScreenState extends State<ShopScreen> {
           height: 50,
           width: double.infinity,
           child: FloatingActionButton.extended(
-            onPressed: () {},
+            onPressed: () {Navigator.pushNamed(context, '/cart');},
             label: Text('Go To Cart'),
             icon: Icon(Icons.shopping_cart_rounded),
           ),
@@ -178,6 +178,29 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Your Cart'),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+        child: SizedBox(
+          height: 50,
+          width: double.infinity,
+          child: FloatingActionButton.extended(
+            onPressed: () {},
+            label: Text('Checkout'),
+            icon: Icon(Icons.shopping_cart_rounded),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      body: SafeArea(child: SingleChildScrollView(child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+
+        ],
+      ))),
+    );
   }
 }
