@@ -185,8 +185,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       value: _buttonD,
                                       onChanged: (val) => update(() {
                                         _buttonD = val;
-                                        if (val)
+                                        if (val) {
                                           currentStatus = Status.travelling;
+                                        }
                                       }),
                                     ),
                                   ),
@@ -229,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Switch(
                                       value: _buttonF,
                                       onChanged: (val) => update(() {
-                                        _buttonA = val;
+                                        _buttonF = val;
                                         if (val) _buttonB = false;
                                       }),
                                     ),
@@ -1188,7 +1189,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     child: Center(
                       child: Text(
                         "SETTINGS",
-                        style: Theme.of(context).textTheme.displayLarge,
+                        style: Theme.of(context).textTheme.displayLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
                   ),
@@ -1207,7 +1208,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      icon: Icon(Icons.chevron_left_rounded, size: 40),
+                      icon: Icon(Icons.chevron_left_rounded, size: 40, color: Theme.of(context).colorScheme.onPrimary,),
                     ),
                   ),
                 ],

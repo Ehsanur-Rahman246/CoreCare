@@ -55,6 +55,7 @@ dependencies:
   crypto: ^3.0.7
   youtube_player_iframe: ^5.2.2
   stop_watch_timer: ^3.2.2
+  web: ^1.1.1
 
 flutter_native_splash:
   android: true

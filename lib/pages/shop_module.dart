@@ -9,6 +9,14 @@ class ShopScreen extends StatefulWidget {
 }
 
 class _ShopScreenState extends State<ShopScreen> {
+  int filter = 0;
+  final List<String> filterLabels = [
+    'All', 'Equipment', 'Accessories', 'Fruits & Vegetables', 'Groceries', 'Kitchen & Cooking', 'Clothing & Footwear', 'Books & Learning', 'Travel & Outdoor'
+  ];
+  final List<IconData> filterIcons = [
+    Symbols.apps_rounded, Symbols.fitness_center_rounded, Symbols.fitness_tracker_rounded, Symbols.local_grocery_store_rounded, Symbols.grocery_rounded, Symbols.skillet_rounded, Symbols.checkroom_rounded, Symbols.book_2_rounded, Symbols.camping_rounded
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +30,7 @@ class _ShopScreenState extends State<ShopScreen> {
           height: 50,
           width: double.infinity,
           child: FloatingActionButton.extended(
-            onPressed: () {},
+            onPressed: () {Navigator.pushNamed(context, '/cart');},
             label: Text('Go To Cart'),
             icon: Icon(Icons.shopping_cart_rounded),
           ),
@@ -68,13 +76,58 @@ class _ShopScreenState extends State<ShopScreen> {
                     foregroundColor: Theme.of(context).colorScheme.onSurface,
                     child: IconButton(
                       onPressed: () {},
-                      icon: Icon(Symbols.filter_list),
+                      icon: Icon(Symbols.sort_rounded),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(width: 10,),
+                CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    child: IconButton(onPressed: (){}, icon: Icon(Symbols.filter_list_rounded))),
+                const SizedBox(width: 10,),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(9, ((index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ChoiceChip(
+                              shape: StadiumBorder(
+                                side: BorderSide(color: filter == index ? Colors.transparent : Theme.of(context).colorScheme.primary),
+                              ),
+                              backgroundColor: Theme.of(context).colorScheme.surface,
+                              selectedColor: Theme.of(context).colorScheme.primary,
+                              showCheckmark: false,
+                              label: Text(filterLabels[index]), selected: filter == index,
+                            avatar: Icon(filterIcons[index]),
+                            onSelected: (select){
+                              setState(() {
+                                if(select){
+                                  filter = index;
+                                }
+                              });
+                            },
+                            ),
+                          );
+                        })
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
             Expanded(
               child: ListView(
@@ -125,6 +178,29 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Your Cart'),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+        child: SizedBox(
+          height: 50,
+          width: double.infinity,
+          child: FloatingActionButton.extended(
+            onPressed: () {},
+            label: Text('Checkout'),
+            icon: Icon(Icons.shopping_cart_rounded),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      body: SafeArea(child: SingleChildScrollView(child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+
+        ],
+      ))),
+    );
   }
 }
