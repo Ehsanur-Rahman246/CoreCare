@@ -61,6 +61,7 @@ class _DietScreenState extends State<DietScreen> {
             onSelected: (value) async {
               switch (value) {
                 case 0:
+                  Navigator.pushNamed(context, '/dietH');
                   break;
               }
             },
@@ -890,7 +891,12 @@ class DietHistory extends StatefulWidget {
 class _DietHistoryState extends State<DietHistory> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Your Diet History'),
+      ),
+      body: SizedBox(),
+    );
   }
 }
 
