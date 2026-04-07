@@ -884,6 +884,10 @@ class DataProvider extends ChangeNotifier {
     required String email,
   }) async {
     if (currentUser == null) return;
+
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if(firebaseUser == null) return;
+    await firebaseUser.verifyBeforeUpdateEmail(email);
     final fields = <String, dynamic>{'username': username, 'email': email};
 
     final updatedMap = currentUser!.toMap()..addAll(fields);

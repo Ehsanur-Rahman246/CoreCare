@@ -29,6 +29,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   StreamSubscription? _linkGoogleSub;
+  static final injuryKey = GlobalKey();
 
   Future<void> _linkGoogle() async {
     if (kIsWeb) return;
@@ -153,6 +154,18 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ) ??
         false;
+  }
+
+  static void scrollToInjury() {
+    final ctx = injuryKey.currentContext;
+    if (ctx != null) {
+      Scrollable.ensureVisible(
+        ctx,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
+    }
   }
 
   @override
@@ -545,7 +558,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Text('Current Injuries'),
                               ],
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10, key: injuryKey,),
                             ProfileInjuryChips(),
                           ],
                         ),

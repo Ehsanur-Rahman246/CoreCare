@@ -185,8 +185,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       value: _buttonD,
                                       onChanged: (val) => update(() {
                                         _buttonD = val;
-                                        if (val)
+                                        if (val) {
                                           currentStatus = Status.travelling;
+                                        }
                                       }),
                                     ),
                                   ),
@@ -229,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Switch(
                                       value: _buttonF,
                                       onChanged: (val) => update(() {
-                                        _buttonA = val;
+                                        _buttonF = val;
                                         if (val) _buttonB = false;
                                       }),
                                     ),

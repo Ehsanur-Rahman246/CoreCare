@@ -3,8 +3,10 @@ import 'package:core_care/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 import 'home_screen.dart';
+import 'dart:ui_web' as ui;
+import 'package:web/web.dart' as web;
 
 class FitScreen extends StatefulWidget {
   const FitScreen({super.key});
@@ -19,6 +21,9 @@ class _FitScreenState extends State<FitScreen>
     with SingleTickerProviderStateMixin {
   late Status currentStatus;
   late IconData statusIcon;
+  bool warmupCompleted = false;
+  bool exerciseCompleted = false;
+  bool stretchesCompleted = false;
 
   @override
   void initState() {
@@ -59,6 +64,7 @@ class _FitScreenState extends State<FitScreen>
             onSelected: (value) async {
               switch (value) {
                 case 0:
+                  Navigator.pushNamed(context, '/fitH');
                   break;
               }
             },
@@ -252,16 +258,12 @@ class _FitScreenState extends State<FitScreen>
               Expanded(
                 child: ListView(
                   children: [
-                    exerciseCard("Push Up", "15 reps"),
-                    exerciseCard("Squat", "20 reps"),
-                    exerciseCard("Plank", "30 reps"),
-                    exerciseCard("Jumping Jack", "25 reps"),
-                    exerciseCard("Lunges", "15 reps"),
-                    exerciseCard("Sit Up", "20 reps"),
-                    exerciseCard("Burpees", "10 reps"),
-                    exerciseCard("Mountain Climber", "20 sec"),
-                    exerciseCard("High Knees", "30 sec"),
-                    exerciseCard("Stretching", "5 min"),
+                    // ExerciseList(time: '08:30 AM', title: 'Warm up', subtitle: Row(
+                    //   children: [
+                    //   ],
+                    // ), trailing: trailing, burn: burn, isCompleted: isCompleted, isPast: isPast, icon: icon),
+                    // ExerciseList(time: '08:37 AM', title: 'Main exercises', subtitle: subtitle, trailing: trailing, burn: burn, isCompleted: isCompleted, isPast: isPast, icon: icon),
+                    // ExerciseList(time: '09:05 AM', title: 'After exercise stretches', subtitle: subtitle, trailing: trailing, burn: burn, isCompleted: isCompleted, isPast: isPast, icon: icon),
                   ],
                 ),
               ),
@@ -358,31 +360,130 @@ class _FitScreenState extends State<FitScreen>
       ),
     );
   }
+}
 
-  Widget exerciseCard(String name, String rep) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          child: Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(name, style: Theme.of(context).textTheme.bodyLarge),
-                  Text(rep, style: Theme.of(context).textTheme.bodySmall),
-                ],
-              ),
-              Spacer(),
-              IconButton(onPressed: () {}, icon: Icon(Icons.chevron_right)),
-            ],
-          ),
+class ExerciseList extends StatefulWidget {
+  final String time;
+  final String title;
+  final Widget subtitle;
+  final Widget trailing;
+  final String burn;
+  final bool isFirst;
+  final bool isLast;
+  final bool isCompleted;
+  final bool isPast;
+  final IconData icon;
+  final bool prevIsPast;
+  final bool prevIsCompleted;
+  const ExerciseList({super.key, required this.time, required this.title, required this.subtitle, required this.trailing, required this.burn, this.isFirst = false, this.isLast = false, required this.isCompleted, required this.isPast, required this.icon, this.prevIsPast = false, this.prevIsCompleted = false});
+
+  @override
+  State<ExerciseList> createState() => _ExerciseListState();
+}
+
+class _ExerciseListState extends State<ExerciseList> {
+  @override
+  Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+
+    return TimelineTile(
+      alignment: TimelineAlign.manual,
+      lineXY: 0.2,
+      isFirst: widget.isFirst,
+      isLast: widget.isLast,
+
+      startChild: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Text(widget.time, textAlign: TextAlign.right, style: th.labelLarge,)
+      ),
+
+      endChild: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        decoration: BoxDecoration(
+          color: widget.isCompleted ? CustomColors.greenMuted(context) : ch.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: widget.isCompleted ? CustomColors.greenOutline(context) : Colors.transparent),
         ),
+        child: Row(
+          children: [
+            Icon(widget.icon),
+            const SizedBox(width: 10,),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.title, style: th.bodyLarge,),
+                const SizedBox(height: 10,),
+                widget.subtitle,
+              ],
+            ),
+            Spacer(),
+            widget.trailing,
+          ],
+        ),
+      ),
+
+      indicatorStyle: IndicatorStyle(
+        width: 12,
+        color: (widget.isPast && !widget.isCompleted) ? CustomColors.redOutline(context) : (widget.isPast && widget.isCompleted) ? CustomColors.greenOutline(context) : ch.primary,
+      ),
+
+      beforeLineStyle: LineStyle(
+        thickness: 2,
+        color: (widget.prevIsPast && !widget.prevIsCompleted) ? CustomColors.redOutline(context) : (widget.prevIsPast && widget.prevIsCompleted) ? CustomColors.greenOutline(context) : ch.primary,
+      ),
+      afterLineStyle: LineStyle(
+        thickness: 2,
+        color: (widget.isPast && !widget.isCompleted) ? CustomColors.redOutline(context) : (widget.isPast && widget.isCompleted) ? CustomColors.greenOutline(context) : ch.primary,
       ),
     );
   }
 }
+
+class WarmupScreen extends StatefulWidget {
+  const WarmupScreen({super.key});
+
+  @override
+  State<WarmupScreen> createState() => _WarmupScreenState();
+}
+
+class _WarmupScreenState extends State<WarmupScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+class MainWorkoutScreen extends StatefulWidget {
+  const MainWorkoutScreen({super.key});
+
+  @override
+  State<MainWorkoutScreen> createState() => _MainWorkoutScreenState();
+}
+
+class _MainWorkoutScreenState extends State<MainWorkoutScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+class StretchScreen extends StatefulWidget {
+  const StretchScreen({super.key});
+
+  @override
+  State<StretchScreen> createState() => _StretchScreenState();
+}
+
+class _StretchScreenState extends State<StretchScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+
 
 class ExerciseScheduleScreen extends StatefulWidget {
   const ExerciseScheduleScreen({super.key});
@@ -427,11 +528,23 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
                         ),
                       ),
                       child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: Text('Player one'),
+                        child: Center(
+                          child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                            children: [
+                              TextSpan(text: 'Warm up\n', style: Theme.of(context).textTheme.titleSmall,),
+                              TextSpan(text: 'exercises . 8 videos\n\n', style: Theme.of(context).textTheme.bodyMedium,),
+                              TextSpan(text: 'Play', style: Theme.of(context).textTheme.labelLarge,),
+                              WidgetSpan(child: Icon(Icons.play_circle_outline_rounded, size: 16,)),
+                            ]
+                          )),
+                        ),
                       ),
                     ),
                   ),
@@ -445,11 +558,23 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
                         ),
                       ),
                       child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: Text('Player two'),
+                        child: Center(
+                          child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                  children: [
+                                    TextSpan(text: 'Upper Body\n', style: Theme.of(context).textTheme.titleSmall,),
+                                    TextSpan(text: 'exercises . 5 videos\n\n', style: Theme.of(context).textTheme.bodyMedium,),
+                                    TextSpan(text: 'Play', style: Theme.of(context).textTheme.labelLarge,),
+                                    WidgetSpan(child: Icon(Icons.play_circle_outline_rounded, size: 16,)),
+                                  ]
+                              )),
+                        ),
                       ),
                     ),
                   ),
@@ -468,11 +593,23 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
                         ),
                       ),
                       child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: Text('Player three'),
+                        child: Center(
+                          child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                  children: [
+                                    TextSpan(text: 'Lower Body & Core\n', style: Theme.of(context).textTheme.titleSmall,),
+                                    TextSpan(text: 'exercises . 3 videos\n\n', style: Theme.of(context).textTheme.bodyMedium,),
+                                    TextSpan(text: 'Play', style: Theme.of(context).textTheme.labelLarge,),
+                                    WidgetSpan(child: Icon(Icons.play_circle_outline_rounded, size: 16,)),
+                                  ]
+                              )),
+                        ),
                       ),
                     ),
                   ),
@@ -486,11 +623,23 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
                         ),
                       ),
                       child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: Text('Player four'),
+                        child: Center(
+                          child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                  children: [
+                                    TextSpan(text: 'Stretches\n', style: Theme.of(context).textTheme.titleSmall,),
+                                    TextSpan(text: 'exercises . 5 videos\n\n', style: Theme.of(context).textTheme.bodyMedium,),
+                                    TextSpan(text: 'Play', style: Theme.of(context).textTheme.labelLarge,),
+                                    WidgetSpan(child: Icon(Icons.play_circle_outline_rounded, size: 16,)),
+                                  ]
+                              )),
+                        ),
                       ),
                     ),
                   ),
@@ -515,52 +664,108 @@ class TutorialPlayer extends StatefulWidget {
 
 class _TutorialPlayerState extends State<TutorialPlayer> {
   late List<String> selectedPlaylist;
-  late List<YoutubePlayerController> controllers;
+  late String showTitle;
+  late List<String> selectedDescriptions;
+  late IconData showIcon;
 
   final List<List<String>> _playlists = [
-    ['ZgA51PiCNug', 'BQmUqC2M_1Q'],
-    ['5YlN0gdHjEg', 'JoHFxUFtXyY'],
-    ['--Yp8u_h7Wo', 'sH0HpObnivg'],
-    ['p2Umm_4VRGk', 'MZ_cL3PqzsQ'],
+    ['X-CUlo4zf0Y', 'w8yCm_sFUo4', '35h5gdlm46w', 'QQMri8bsjy8', 'qkrJXGVj_OQ', 'LIVJZZyZ2qM', 'rmCOifHCDKE', '-CiWQ2IvY34'],
+    ['HsdRtg7Czv8', 'tWDGEyMWv10', 'MnDpmNYUjbc', 'H0TWk06p5s4', 'r6mv__re704',],
+    ['DdUKPepLsTw', '3QZlgJ40LfU', 'XLXGydU5DdU'],
+    ['PUVTGBARpoo', 'TOCcgbqzq5g', 'Zwtu9635kMQ', 'nMp3MlTz9fA', 'TeAhhVD2q1c'],
+  ];
+  final List<String> _titles = [
+    'Warm-up exercises', 'Upper body exercises', 'Lower body and core exercises', 'Stretches',
+  ];
+  final List<IconData> _appBarIcons = [
+    Symbols.arrow_warm_up_rounded, Symbols.body_system_rounded, Symbols.tibia_alt_rounded, Symbols.physical_therapy_rounded,
+  ];
+
+
+  final List<List<String>> _descriptions = [
+    [
+      "Neck rolls (gentle): Loosen neck muscles and improve cervical mobility.",
+      "Shoulder rolls: Activate and warm up shoulder joints.",
+      "Arm circles (forward + back): Prepare shoulders and arms for movement.",
+      "Torso rotation (standing): Increase thoracic spine mobility.",
+      "Hip circles: Loosen hip joints for better range of motion.",
+      "Cat-cow: Mobilize the spine and warm up back muscles.",
+      "Inchworm (slow): Activate core, shoulders, and hamstrings.",
+      "World's greatest stretch: Open hips, thoracic spine, and hamstrings."
+    ],
+
+    [
+      "Wall push-up: Strengthen chest, shoulders, and triceps.",
+      "Scapular wall slide: Improve shoulder mobility and posture.",
+      "Arm out band-less pull-apart: Strengthen upper back and rear delts.",
+      "Chin tuck: Improve neck posture and cervical stability.",
+      "Doorway chest stretch (hold): Open chest and anterior shoulders."
+    ],
+
+    [
+      "Dead bug: Strengthen core and stabilize lower back.",
+      "Plank (forearm): Build core stability and full-body tension.",
+      "Glute bridge: Activate glutes and strengthen posterior chain."
+    ],
+
+    [
+      "Seated forward fold: Stretch hamstrings and lower back.",
+      "Cross-body shoulder stretch: Release tension in posterior shoulders.",
+      "Neck side stretch: Loosen cervical muscles.",
+      "Child's pose: Stretch lats, hips, and lower back.",
+      "Supine spinal twist: Improve thoracic and lumbar rotation."
+    ]
   ];
 
   @override
   void initState() {
     super.initState();
     selectedPlaylist = _playlists[widget.playerNumber];
-    controllers = selectedPlaylist.map((id) {
-      return YoutubePlayerController.fromVideoId(
-        videoId: id,
-        params: const YoutubePlayerParams(
-          showControls: true,
-          showFullscreenButton: true,
-        ),
-      );
-    }).toList();
-  }
-
-  @override
-  void dispose() {
-    for (final controller in controllers) {
-      controller.close();
+    showTitle = _titles[widget.playerNumber];
+    showIcon = _appBarIcons[widget.playerNumber];
+    selectedDescriptions = _descriptions[widget.playerNumber];
+    for(final videoId in selectedPlaylist){
+      final id = 'yt-player-$videoId';
+      ui.platformViewRegistry.registerViewFactory(id, (int i){
+        final iframe = web.document.createElement('iframe') as web.HTMLIFrameElement
+            ..src = 'https://www.youtube-nocookie.com/embed/$videoId'
+                '?rel=0&showinfo=0&enablejsapi=1&playsinline=1'
+            ..width = '100%'
+            ..height = '100%'
+            ..allowFullscreen = true
+            ..setAttribute('referrerpolicy', 'strict-origin-when-cross-origin')
+            ..setAttribute('allow', 'accelerometer; autoplay; clipboard-write; '
+                'encrypted-media; gyroscope; picture-in-picture; web-share',);
+        (iframe as web.HTMLElement).style.border = 'none';
+        return iframe;
+      });
     }
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: RichText(text: TextSpan(
+            children: [
+              TextSpan(text: '$showTitle  ', style: Theme.of(context).textTheme.titleMedium),
+              WidgetSpan(child: Icon(showIcon)),
+            ]
+          )),
+        ),
         body: ListView.builder(
-          itemCount: controllers.length,
+          itemCount: selectedPlaylist.length,
           itemBuilder: (context, index) {
+            final videoId = selectedPlaylist[index];
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: YoutubePlayer(
-                controller: controllers[index],
-                aspectRatio: 16 / 9,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+              child: Column(
+                  children: [AspectRatio(aspectRatio: 16 /7,child: HtmlElementView(viewType: 'yt-player-$videoId'),),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 30),
+                        child: Text(selectedDescriptions[index], style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.left,)),
+              ])
             );
           },
         ),
@@ -579,6 +784,11 @@ class FitnessHistory extends StatefulWidget {
 class _FitnessHistoryState extends State<FitnessHistory> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Your Fitness History'),
+      ),
+      body: SizedBox(),
+    );
   }
 }
