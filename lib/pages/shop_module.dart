@@ -32,6 +32,25 @@ class _ShopScreenState extends State<ShopScreen> {
   final searchController = TextEditingController();
   String query = "";
 
+  final Map<String, List<String>> items1n = {
+    'equipN' : ['2kg Dumbbells',
+      'Resistance Bands Set',
+      'Basic Yoga Mat',
+      'Foam Roller 30cm',
+      'Jump Rope',
+      'Mini Stability Ball',
+      'Kettlebell 4kg',
+      'Hand Grip Strengthener',
+    ],
+    'equipP' : ["Adjustable Dumbbells 2-12 kg", 'Premium Yoga Mat (Eco Friendly)', 'Heavy-Duty Kettlebell 8kg', 'Vibrating Massage Gun', 'Professional Foam Roller', 'Smart Jump Rope', 'Large Stability Ball',],
+    'accN' : ['Water Bottle 500ml', 'Sweat Towel', 'Wristbands', 'Gym bag Small', 'Yoga Socks', 'Knee Support', 'Elbow Support'],
+    'accP' : ['Smart Water Bottle', 'Large Gym Bag', 'Sleep Mask Memory Foam', 'Meditation Cushion', 'Acupressure Mat', 'Hot/Cold Pack Gel', 'Fitness Tracker', 'Smartwatch'],
+    'vegN' : ['Apples', 'Bananas', 'Carrots', 'Tomatoes', 'Spinach', 'Broccoli', 'Cucumbers'],
+    'vegP' : ['Organic Berries  Mix', 'Organic Kale', 'Avocado', 'Exotic Mushrooms', 'Heirloom Tomatoes', 'Organic Bell Peppers', 'Organic Baby Spinach', 'Imported Citrus Mix'],
+    'groceryN': ['White Rice', 'Whole Wheat Pasta',]
+  };
+
+  int filter = 0;
   final List<String> filterLabels = [
     'All', 'Equipment', 'Accessories', 'Fruits & Vegetables', 'Groceries', 'Kitchen & Cooking', 'Clothing & Footwear', 'Books & Learning', 'Travel & Outdoor'
   ];
@@ -71,12 +90,16 @@ class _ShopScreenState extends State<ShopScreen> {
                 children: [
                   Expanded(
                     child: TextField(
-                      focusNode: focusNode,
-                      controller: searchController,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(10),
                         prefixIcon: Icon(Icons.search),
                         labelText: "Search",
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(60),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(60),
                           borderSide: BorderSide(
