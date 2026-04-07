@@ -8,8 +8,30 @@ class ShopScreen extends StatefulWidget {
   State<ShopScreen> createState() => _ShopScreenState();
 }
 
+class Item{
+  final String name;
+  final Image photo;
+  final String description;
+  final FilterType type;
+  final int price;
+  final int stock;
+  final int count;
+
+  Item({required this.name, required this.photo, required this.description, required this.type, required this.price, required this.stock, required this.count});
+}
+
+enum SortType {aToZ, zToA, priceLowToHigh, priceHighToLow}
+enum FilterType {all, standard, premium}
+enum SectionType {all, equip, access, fruits, groceries, cooking, clothing, books, travel}
+
 class _ShopScreenState extends State<ShopScreen> {
-  int filter = 0;
+  SectionType selectedSection = SectionType.all;
+  FilterType selectedFilter = FilterType.all;
+  SortType selectedSort = SortType.aToZ;
+  FocusNode focusNode = FocusNode();
+  final searchController = TextEditingController();
+  String query = "";
+
   final List<String> filterLabels = [
     'All', 'Equipment', 'Accessories', 'Fruits & Vegetables', 'Groceries', 'Kitchen & Cooking', 'Clothing & Footwear', 'Books & Learning', 'Travel & Outdoor'
   ];
@@ -19,6 +41,8 @@ class _ShopScreenState extends State<ShopScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.shopping_cart_rounded),
@@ -47,16 +71,12 @@ class _ShopScreenState extends State<ShopScreen> {
                 children: [
                   Expanded(
                     child: TextField(
+                      focusNode: focusNode,
+                      controller: searchController,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(10),
                         prefixIcon: Icon(Icons.search),
                         labelText: "Search",
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(60),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                        ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(60),
                           borderSide: BorderSide(
@@ -71,12 +91,103 @@ class _ShopScreenState extends State<ShopScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    foregroundColor: Theme.of(context).colorScheme.onSurface,
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Symbols.sort_rounded),
+                  PopupMenuButton(
+                    onSelected: (value) {
+                      switch (value) {
+                        case 0:
+                          setState(() {
+                            selectedSort = SortType.aToZ;
+                          });
+                          break;
+                        case 1:
+                          setState(() {
+                            selectedSort = SortType.zToA;
+                          });
+                          break;
+                        case 2:
+                          setState(() {
+                            selectedSort = SortType.priceLowToHigh;
+                          });
+                          break;
+                        case 3:
+                          setState(() {
+                            selectedSort = SortType.priceHighToLow;
+                          });
+                          break;
+                      }
+                    },
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem(
+                          value: 0,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text("Name", style: th.labelLarge,),
+                              const SizedBox(width: 8),
+                              Icon(Icons.sort_by_alpha_rounded, size: 18,),
+                              Icon(Icons.arrow_downward_rounded, size: 18,),
+                              if(selectedSort == SortType.aToZ) ...[
+                                const SizedBox(width: 15,),
+                                Icon(Icons.check, color: ch.primary, size: 18,),
+                              ],
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 1,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text("Name", style: th.labelLarge,),
+                              const SizedBox(width: 8),
+                              Icon(Icons.sort_by_alpha_rounded, size: 18,),
+                              Icon(Icons.arrow_upward_rounded, size: 18,),
+                              if(selectedSort == SortType.zToA) ...[
+                                const SizedBox(width: 15,),
+                                Icon(Icons.check, color: ch.primary, size: 18,),
+                              ],
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 2,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text("Price", style: th.labelLarge,),
+                              const SizedBox(width: 8),
+                              Icon(Icons.attach_money_rounded, size: 18,),
+                              Icon(Icons.arrow_downward_rounded, size: 18,),
+                              if(selectedSort == SortType.priceLowToHigh) ...[
+                                const SizedBox(width: 15,),
+                                Icon(Icons.check, color: ch.primary, size: 18,),
+                              ],
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 3,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text("Price", style: th.labelLarge,),
+                              const SizedBox(width: 8),
+                              Icon(Icons.attach_money_rounded, size: 18,),
+                              Icon(Icons.arrow_upward_rounded, size: 18,),
+                              if(selectedSort == SortType.priceHighToLow) ...[
+                                const SizedBox(width: 15,),
+                                Icon(Icons.check, color: ch.primary, size: 18,),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ];
+                    },
+                    icon: CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      foregroundColor: Theme.of(context).colorScheme.onSurface,
+                      child: Icon(Symbols.sort_rounded),
                     ),
                   ),
                 ],
@@ -87,10 +198,81 @@ class _ShopScreenState extends State<ShopScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(width: 10,),
-                CircleAvatar(
+                PopupMenuButton(
+                  onSelected: (value) {
+                    switch (value) {
+                      case 0:
+                        setState(() {
+                          selectedFilter = FilterType.all;
+                        });
+                        break;
+                      case 1:
+                        setState(() {
+                          selectedFilter = FilterType.standard;
+                        });
+                        break;
+                      case 2:
+                        setState(() {
+                          selectedFilter = FilterType.premium;
+                        });
+                        break;
+                    }
+                  },
+                  itemBuilder: (context) {
+                    return [
+                      PopupMenuItem(
+                        value: 0,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.all_inbox_rounded, size: 18,),
+                            const SizedBox(width: 8),
+                            Text("All", style: th.labelLarge,),
+                            if(selectedFilter == FilterType.all) ...[
+                              const SizedBox(width: 15,),
+                              Icon(Icons.check, color: ch.primary, size: 18,),
+                            ],
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 1,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.account_balance_wallet_rounded, size: 18,),
+                            const SizedBox(width: 8),
+                            Text("Standard", style: th.labelLarge,),
+                            if(selectedFilter == FilterType.standard) ...[
+                              const SizedBox(width: 15,),
+                              Icon(Icons.check, color: ch.primary, size: 18,),
+                            ],
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 2,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.workspace_premium_rounded, size: 18,),
+                            const SizedBox(width: 8),
+                            Text("Premium", style: th.labelLarge,),
+                            if(selectedFilter == FilterType.premium) ...[
+                              const SizedBox(width: 15,),
+                              Icon(Icons.check, color: ch.primary, size: 18,),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ];
+                  },
+                  icon: CircleAvatar(
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     foregroundColor: Theme.of(context).colorScheme.onSurface,
-                    child: IconButton(onPressed: (){}, icon: Icon(Symbols.filter_list_rounded))),
+                    child: Icon(Symbols.filter_list_rounded),
+                  ),
+                ),
                 const SizedBox(width: 10,),
                 Expanded(
                   child: SingleChildScrollView(
@@ -99,22 +281,24 @@ class _ShopScreenState extends State<ShopScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(9, ((index) {
+                        children: List.generate(SectionType.values.length, ((index) {
+                          final section = SectionType.values[index];
+
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: ChoiceChip(
                               shape: StadiumBorder(
-                                side: BorderSide(color: filter == index ? Colors.transparent : Theme.of(context).colorScheme.primary),
+                                side: BorderSide(color:  selectedSection == section ? Colors.transparent : Theme.of(context).colorScheme.primary),
                               ),
                               backgroundColor: Theme.of(context).colorScheme.surface,
                               selectedColor: Theme.of(context).colorScheme.primary,
                               showCheckmark: false,
-                              label: Text(filterLabels[index]), selected: filter == index,
+                              label: Text(filterLabels[index]), selected: selectedSection == section,
                             avatar: Icon(filterIcons[index]),
-                            onSelected: (select){
+                            onSelected: (selected){
                               setState(() {
-                                if(select){
-                                  filter = index;
+                                if(selected){
+                                  selectedSection = section;
                                 }
                               });
                             },
@@ -190,7 +374,7 @@ class _CartScreenState extends State<CartScreen> {
           child: FloatingActionButton.extended(
             onPressed: () {},
             label: Text('Checkout'),
-            icon: Icon(Icons.shopping_cart_rounded),
+            icon: Icon(Icons.shopping_cart_checkout_rounded),
           ),
         ),
       ),

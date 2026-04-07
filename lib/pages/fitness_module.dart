@@ -238,6 +238,7 @@ class _FitScreenState extends State<FitScreen>
                           fontWeight: FontWeight.w400,
                           fontFamily: 'Poppins',
                           fontSize: 14,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ],

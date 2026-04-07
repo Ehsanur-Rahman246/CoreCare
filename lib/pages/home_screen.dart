@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 child: ListTile(
                                   leading: Icon(Symbols.directions_run_rounded),
-                                  title: Text('Active'),
+                                  title: Text('Active', style: Theme.of(context).textTheme.bodySmall,),
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 child: ListTile(
                                   leading: Icon(Symbols.bed_rounded),
-                                  title: Text('Resting'),
+                                  title: Text('Resting', style: Theme.of(context).textTheme.bodySmall,),
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 child: ListTile(
                                   leading: Icon(Symbols.sick_rounded),
-                                  title: Text('Sick'),
+                                  title: Text('Sick', style: Theme.of(context).textTheme.bodySmall,),
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
@@ -178,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 child: ListTile(
                                   leading: Icon(Symbols.travel_rounded),
-                                  title: Text('Travelling'),
+                                  title: Text('Travelling', style: Theme.of(context).textTheme.bodySmall,),
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
@@ -203,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   leading: Icon(
                                     Symbols.hourglass_arrow_down_rounded,
                                   ),
-                                  title: Text('Fasting'),
+                                  title: Text('Fasting', style: Theme.of(context).textTheme.bodySmall,),
                                   trailing: Transform.scale(
                                     scale: 0.7,
                                     child: Switch(
@@ -224,9 +224,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 child: ListTile(
                                   leading: Icon(Symbols.healing_rounded),
-                                  title: Text('Injured'),
+                                  title: Text('Injured', style: Theme.of(context).textTheme.bodySmall,),
                                   trailing: Transform.scale(
-                                    scale: 0.7,
+                                    scale: 0.6,
                                     child: Switch(
                                       value: _buttonF,
                                       onChanged: (val) => update(() {
