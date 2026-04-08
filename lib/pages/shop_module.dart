@@ -15,8 +15,8 @@ class Item{
   final String description;
   final FilterType type;
   final int price;
-  final int stock;
-  final int count;
+  int stock;
+  int count;
 
   Item({required this.name, required this.photo, required this.description, required this.type, required this.price, required this.stock, required this.count});
 }
@@ -138,7 +138,7 @@ class _ShopScreenState extends State<ShopScreen> {
     "5-piece outdoor workout kit: resistance bands, jump rope, suspension anchor, gloves, and bag."
   ];
 
-  final Map<SectionType, List<Item>> shopItems = {
+  Map<SectionType, List<Item>> shopItems = {
     SectionType.equip : [
       Item(name: '2kg Dumbbells', photo: Image.asset('assets/items/1n1.png'), description: products[0], type: FilterType.standard, price: 650, stock: 20, count: 4),
       Item(name: 'Resistance Bands Set', photo: Image.asset('assets/items/1n2.png'), description: products[1], type: FilterType.standard, price: 480, stock: 25, count: 5),
@@ -178,7 +178,7 @@ class _ShopScreenState extends State<ShopScreen> {
   final Map<String, List<String>> items1n = {
     'vegN' : ['Apples', 'Bananas', 'Carrots', 'Tomatoes', 'Spinach', 'Broccoli', 'Cucumbers'],
     'vegP' : ['Organic Berries  Mix', 'Organic Kale', 'Avocado', 'Exotic Mushrooms', 'Heirloom Tomatoes', 'Organic Bell Peppers', 'Organic Baby Spinach', 'Imported Citrus Mix'],
-    'groceryN': ['White Rice', 'Whole Wheat Pasta',]
+    'groceryN': ['White Rice', 'Whole Wheat Pasta',],
   };
 
   final List<String> filterLabels = [
@@ -405,156 +405,163 @@ class _ShopScreenState extends State<ShopScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(width: 10,),
-                PopupMenuButton(
-                  tooltip: 'Filter By',
-                  onSelected: (value) {
-                    switch (value) {
-                      case 0:
-                        setState(() {
-                          selectedFilter = FilterType.all;
-                          refreshList();
-                        });
-                        break;
-                      case 1:
-                        setState(() {
-                          selectedFilter = FilterType.standard;
-                          refreshList();
-                        });
-                        break;
-                      case 2:
-                        setState(() {
-                          selectedFilter = FilterType.premium;
-                          refreshList();
-                        });
-                        break;
-                    }
-                  },
-                  itemBuilder: (context) {
-                    return [
-                      PopupMenuItem(
-                        value: 0,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.all_inbox_rounded, size: 18,),
-                            const SizedBox(width: 8),
-                            Text("All", style: th.labelLarge,),
-                            if(selectedFilter == FilterType.all) ...[
-                              const SizedBox(width: 15,),
-                              Icon(Icons.check, color: ch.primary, size: 18,),
-                            ],
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 1,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.account_balance_wallet_rounded, size: 18,),
-                            const SizedBox(width: 8),
-                            Text("Standard", style: th.labelLarge,),
-                            if(selectedFilter == FilterType.standard) ...[
-                              const SizedBox(width: 15,),
-                              Icon(Icons.check, color: ch.primary, size: 18,),
-                            ],
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 2,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.workspace_premium_rounded, size: 18,),
-                            const SizedBox(width: 8),
-                            Text("Premium", style: th.labelLarge,),
-                            if(selectedFilter == FilterType.premium) ...[
-                              const SizedBox(width: 15,),
-                              Icon(Icons.check, color: ch.primary, size: 18,),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ];
-                  },
-                  icon: CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    foregroundColor: Theme.of(context).colorScheme.onSurface,
-                    child: Icon(Symbols.filter_list_rounded),
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(SectionType.values.length, ((index) {
-                          final section = SectionType.values[index];
-
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: ChoiceChip(
-                              shape: StadiumBorder(
-                                side: BorderSide(color:  selectedSection == section ? Colors.transparent : Theme.of(context).colorScheme.primary),
-                              ),
-                              backgroundColor: Theme.of(context).colorScheme.surface,
-                              selectedColor: Theme.of(context).colorScheme.primary,
-                              showCheckmark: false,
-                              label: Text(filterLabels[index]), selected: selectedSection == section,
-                            avatar: Icon(filterIcons[index]),
-                            onSelected: (selected){
-                              setState(() {
-                                if(selected){
-                                  selectedSection = section;
-                                  refreshList();
-                                }
-                              });
-                            },
+            if(focusNode.hasFocus && searchController.text.isEmpty)
+              Text('data')
+            else ...[
+              if(displayedItems.isEmpty)
+                Center(child: Text('No Matches Found', style: th.titleSmall,),)
+              else
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 10,),
+                    PopupMenuButton(
+                      tooltip: 'Filter By',
+                      onSelected: (value) {
+                        switch (value) {
+                          case 0:
+                            setState(() {
+                              selectedFilter = FilterType.all;
+                              refreshList();
+                            });
+                            break;
+                          case 1:
+                            setState(() {
+                              selectedFilter = FilterType.standard;
+                              refreshList();
+                            });
+                            break;
+                          case 2:
+                            setState(() {
+                              selectedFilter = FilterType.premium;
+                              refreshList();
+                            });
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) {
+                        return [
+                          PopupMenuItem(
+                            value: 0,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.all_inbox_rounded, size: 18,),
+                                const SizedBox(width: 8),
+                                Text("All", style: th.labelLarge,),
+                                if(selectedFilter == FilterType.all) ...[
+                                  const SizedBox(width: 15,),
+                                  Icon(Icons.check, color: ch.primary, size: 18,),
+                                ],
+                              ],
                             ),
-                          );
-                        })
+                          ),
+                          PopupMenuItem(
+                            value: 1,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.account_balance_wallet_rounded, size: 18,),
+                                const SizedBox(width: 8),
+                                Text("Standard", style: th.labelLarge,),
+                                if(selectedFilter == FilterType.standard) ...[
+                                  const SizedBox(width: 15,),
+                                  Icon(Icons.check, color: ch.primary, size: 18,),
+                                ],
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 2,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.workspace_premium_rounded, size: 18,),
+                                const SizedBox(width: 8),
+                                Text("Premium", style: th.labelLarge,),
+                                if(selectedFilter == FilterType.premium) ...[
+                                  const SizedBox(width: 15,),
+                                  Icon(Icons.check, color: ch.primary, size: 18,),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ];
+                      },
+                      icon: CircleAvatar(
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        foregroundColor: Theme.of(context).colorScheme.onSurface,
+                        child: Icon(Symbols.filter_list_rounded),
+                      ),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(SectionType.values.length, ((index) {
+                              final section = SectionType.values[index];
+
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: ChoiceChip(
+                                  shape: StadiumBorder(
+                                    side: BorderSide(color:  selectedSection == section ? Colors.transparent : Theme.of(context).colorScheme.primary),
+                                  ),
+                                  backgroundColor: Theme.of(context).colorScheme.surface,
+                                  selectedColor: Theme.of(context).colorScheme.primary,
+                                  showCheckmark: false,
+                                  label: Text(filterLabels[index]), selected: selectedSection == section,
+                                  avatar: Icon(filterIcons[index]),
+                                  onSelected: (selected){
+                                    setState(() {
+                                      if(selected){
+                                        selectedSection = section;
+                                        refreshList();
+                                      }
+                                    });
+                                  },
+                                ),
+                              );
+                            })
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: ListView.builder(
-                    itemCount: displayedItems.length,
-                    itemBuilder: (context, index){
-                      final item = displayedItems[index];
-                      return Card(
-                        elevation: 0,
-                        child: ListTile(
-                          leading: SizedBox(
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: ListView.builder(
+                      itemCount: displayedItems.length,
+                      itemBuilder: (context, index){
+                        final item = displayedItems[index];
+                        return Card(
+                          elevation: 0,
+                          child: ListTile(
+                            leading: SizedBox(
                               height: 60,
                               width: 60,
                               child: item.photo,
+                            ),
+                            title: Text(item.name),
+                            titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                            subtitle: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [Text('৳${item.price}'), const SizedBox(width: 25,), item.stock != 0 ? Text('In stock: ${item.stock}') : Text('Out of stock')]),
+                            subtitleTextStyle: Theme.of(context).textTheme.labelLarge,
+                            trailing: IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: item,)));}, icon: Icon(Icons.shopping_bag_rounded)),
                           ),
-                          title: Text(item.name),
-                          titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                          subtitle: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [Text('৳${item.price}'), const SizedBox(width: 25,), item.stock != 0 ? Text('In stock: ${item.stock}') : Text('Out of stock')]),
-                          subtitleTextStyle: Theme.of(context).textTheme.labelLarge,
-                          trailing: IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: item,)));}, icon: Icon(Icons.shopping_bag_rounded)),
-                        ),
-                      );
-                    }
+                        );
+                      }
+                  ),
                 ),
               ),
-            ),
+            ]
           ],
         ),
       ),
@@ -571,13 +578,48 @@ class ItemScreen extends StatefulWidget {
 }
 
 class _ItemScreenState extends State<ItemScreen> {
+  int getItemMax = 1;
+  late List<Item> cartedItems = [];
+  
+  void cartDialog(){
+    showDialog(context: context, builder: (_){
+      return AlertDialog(
+        title: Text('Quantity of your order'),
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+                onPressed: getItemMax <= 1 ? null : () => setState(() => getItemMax--), icon: Icon(Icons.remove_circle_outline_rounded, size: 34,),
+              disabledColor: CustomColors.greyLight(context),
+            ),
+            Text('$getItemMax', style: Theme.of(context).textTheme.titleMedium,),
+            IconButton(
+              onPressed: (getItemMax >= widget.item.count  && getItemMax >= widget.item.stock ) ? null : () => setState(() => getItemMax++), icon: Icon(Icons.add_circle_outline_rounded, size: 34,),
+              disabledColor: CustomColors.greyLight(context),
+            ),
+          ],
+        ),
+        actions: [
+          OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text('Cancel')),
+          FilledButton(onPressed: (){
+            setState(() {
+              widget.item.count -= getItemMax;
+              Navigator.pop(context);
+            });
+          }, child: Text('Add')),
+        ],
+      );
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     final th = Theme.of(context).textTheme;
     final ch = Theme.of(context).colorScheme;
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(onPressed: (){}, label: Row(mainAxisSize: MainAxisSize.min, children: [widget.item.stock != 0 ? Icon(Icons.add_shopping_cart_rounded) : Icon(Icons.remove_shopping_cart_rounded), widget.item.stock != 0 ? Text('Add to cart') : Text('Out of Stock')],)),
+      floatingActionButton: FloatingActionButton.extended(onPressed: cartDialog, label: Row(mainAxisSize: MainAxisSize.min, children: [widget.item.stock != 0 ? Icon(Icons.add_shopping_cart_rounded) : Icon(Icons.remove_shopping_cart_rounded), widget.item.stock != 0 ? Text('Add to cart') : Text('Out of Stock')],)),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -602,13 +644,17 @@ class _ItemScreenState extends State<ItemScreen> {
                     Positioned(
                         left: 0,
                         top: 0,
-                        child: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.chevron_left_rounded, size: 40, color: CustomColors.black(context),))),
+                        child: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.chevron_left_rounded, size: 40, color: CustomColors.black(context),))
+                    ),
                   ],
                 ),
               ),
-              Text(widget.item.description, style: th.labelLarge,),
+              const SizedBox(height: 120,),
+              Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                  child: Text(widget.item.description, style: th.labelLarge,)),
               const SizedBox(height: 15,),
-              Text(widget.item.stock != 0 ? 'In stock: ${widget.item.stock}' : 'Out of stock'),
+              Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),child: Text(widget.item.stock != 0 ? 'In stock: ${widget.item.stock}' : 'Out of stock')),
             ],
           ),
         ),

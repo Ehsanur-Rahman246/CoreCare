@@ -259,12 +259,7 @@ class _FitScreenState extends State<FitScreen>
               Expanded(
                 child: ListView(
                   children: [
-                    // ExerciseList(time: '08:30 AM', title: 'Warm up', subtitle: Row(
-                    //   children: [
-                    //   ],
-                    // ), trailing: trailing, burn: burn, isCompleted: isCompleted, isPast: isPast, icon: icon),
-                    // ExerciseList(time: '08:37 AM', title: 'Main exercises', subtitle: subtitle, trailing: trailing, burn: burn, isCompleted: isCompleted, isPast: isPast, icon: icon),
-                    // ExerciseList(time: '09:05 AM', title: 'After exercise stretches', subtitle: subtitle, trailing: trailing, burn: burn, isCompleted: isCompleted, isPast: isPast, icon: icon),
+                    ExerciseList(time: '08:30AM', title: "Warm Ups", subtitle: Text("jhghhuid"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp, isFirst: true,),
                   ],
                 ),
               ),
