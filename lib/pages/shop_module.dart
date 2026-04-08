@@ -33,6 +33,8 @@ class _ShopScreenState extends State<ShopScreen> {
   final searchController = TextEditingController();
   String query = "";
   List<Item> displayedItems = [];
+  final int recentMaxSize = 6;
+  List<Item> recentList = [];
 
   void refreshList(){
     setState(() {
@@ -223,6 +225,13 @@ class _ShopScreenState extends State<ShopScreen> {
     }
 
     return result;
+  }
+
+  void addRecentItem(Item item){
+    if(recentList.length >= recentMaxSize){
+      recentList.removeAt(0);
+    }
+    recentList.add(item);
   }
 
   @override
