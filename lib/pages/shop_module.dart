@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:core_care/main.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -25,6 +27,15 @@ enum SortType {aToZ, zToA, priceLowToHigh, priceHighToLow}
 enum FilterType {all, standard, premium}
 enum SectionType {all, equip, access, fruits, groceries, cooking, clothing, books, travel}
 
+class CartItem{
+  final Item item;
+  int quantity;
+
+  CartItem({required this.item, required this.quantity});
+}
+
+final List<CartItem> cartedItems = [];
+
 class _ShopScreenState extends State<ShopScreen> {
   SectionType selectedSection = SectionType.all;
   FilterType selectedFilter = FilterType.all;
@@ -35,6 +46,8 @@ class _ShopScreenState extends State<ShopScreen> {
   List<Item> displayedItems = [];
   final int recentMaxSize = 6;
   List<Item> recentList = [];
+  List<Item> suggestionList = [];
+
 
   void refreshList(){
     setState(() {
@@ -140,7 +153,7 @@ class _ShopScreenState extends State<ShopScreen> {
     "5-piece outdoor workout kit: resistance bands, jump rope, suspension anchor, gloves, and bag."
   ];
 
-  Map<SectionType, List<Item>> shopItems = {
+  static final Map<SectionType, List<Item>> shopItems = {
     SectionType.equip : [
       Item(name: '2kg Dumbbells', photo: Image.asset('assets/items/1n1.png'), description: products[0], type: FilterType.standard, price: 650, stock: 20, count: 4),
       Item(name: 'Resistance Bands Set', photo: Image.asset('assets/items/1n2.png'), description: products[1], type: FilterType.standard, price: 480, stock: 25, count: 5),
@@ -170,15 +183,34 @@ class _ShopScreenState extends State<ShopScreen> {
       Item(name: 'Large Gym Bag', photo: Image.asset('assets/items/2p2.png'), description: products[23], type: FilterType.premium, price: 3200, stock: 6, count: 2),
       Item(name: 'Sleep Mask Memory Foam', photo: Image.asset('assets/items/2p3.png'), description: products[24], type: FilterType.premium, price: 1100, stock: 9, count: 3),
       Item(name: 'Meditation Cushion', photo: Image.asset('assets/items/2p4.png'), description: products[25], type: FilterType.premium, price: 1800, stock: 6, count: 2),
-      Item(name: 'Acupressure Mat', photo: Image.asset('assets/items/2p5.png'), description: products[26], type: FilterType.premium, price: 2500, stock: 265, count: 2),
+      Item(name: 'Acupressure Mat', photo: Image.asset('assets/items/2p5.png'), description: products[26], type: FilterType.premium, price: 2500, stock: 6, count: 2),
       Item(name: 'Hot/Cold Pack Gel', photo: Image.asset('assets/items/2p6.png'), description: products[27], type: FilterType.premium, price: 900, stock: 12, count: 4),
       Item(name: 'Fitness Tracker', photo: Image.asset('assets/items/2p7.png'), description: products[28], type: FilterType.premium, price: 3500, stock: 6, count: 2),
       Item(name: 'Smartwatch', photo: Image.asset('assets/items/2p8.png'), description: products[29], type: FilterType.premium, price: 12000, stock: 3, count: 1),
     ],
+    SectionType.fruits : [
+      Item(name: 'Apples', photo: Image.asset('assets/items/3n1.png'), description: products[30], type: FilterType.standard, price: 180, stock: 25, count: 5),
+    ],
+    SectionType.groceries : [
+      Item(name: 'White Rice', photo: Image.asset('assets/items/4n1.png'), description: products[40], type: FilterType.standard, price: 90, stock: 50, count: 10),
+    ],
+    SectionType.cooking : [
+      Item(name: 'Blender', photo: Image.asset('assets/items/5n1.png'), description: products[55], type: FilterType.standard, price: 1800, stock: 10, count: 2),
+    ],
+    SectionType.clothing : [
+      Item(name: 'Cotton T-Shirt', photo: Image.asset('assets/items/6n1.png'), description: products[63], type: FilterType.standard, price: 350, stock: 25, count: 5),
+    ],
+    SectionType.books : [
+      Item(name: 'Beginner Fitness Guide', photo: Image.asset('assets/items/7n1.png'), description: products[71], type: FilterType.standard, price: 450, stock: 15, count: 3),
+    ],
+    SectionType.travel : [
+      Item(name: 'Foldable Yoga Mat', photo: Image.asset('assets/items/8n1.png'), description: products[77], type: FilterType.standard, price: 680, stock: 15, count: 3)
+    ],
+
   };
 
   final Map<String, List<String>> items1n = {
-    'vegN' : ['Apples', 'Bananas', 'Carrots', 'Tomatoes', 'Spinach', 'Broccoli', 'Cucumbers'],
+    'vegN' : ['Bananas', 'Carrots', 'Tomatoes', 'Spinach', 'Broccoli', 'Cucumbers'],
     'vegP' : ['Organic Berries  Mix', 'Organic Kale', 'Avocado', 'Exotic Mushrooms', 'Heirloom Tomatoes', 'Organic Bell Peppers', 'Organic Baby Spinach', 'Imported Citrus Mix'],
     'groceryN': ['White Rice', 'Whole Wheat Pasta',],
   };
@@ -189,6 +221,16 @@ class _ShopScreenState extends State<ShopScreen> {
   final List<IconData> filterIcons = [
     Symbols.apps_rounded, Symbols.fitness_center_rounded, Symbols.fitness_tracker_rounded, Symbols.local_grocery_store_rounded, Symbols.grocery_rounded, Symbols.skillet_rounded, Symbols.checkroom_rounded, Symbols.book_2_rounded, Symbols.camping_rounded
   ];
+
+
+
+  List<Item> getSuggestionForYou({required Map<SectionType , List<Item>> data}){
+    List<Item> init = data.values.expand((list) => list).toList();
+    init.shuffle(Random());
+    List<Item> result = init.take(6).toList();
+
+    return result;
+  }
 
   List<Item> getSelectedItems({required Map<SectionType , List<Item>> data, required SectionType section, required FilterType filter, required SortType sort, String searchQuery = "",}){
     List<Item> result = section == SectionType.all ? data.values.expand((list) => list).toList() : data[section] ?? [];
@@ -229,22 +271,36 @@ class _ShopScreenState extends State<ShopScreen> {
 
   void addRecentItem(Item item){
     if(recentList.length >= recentMaxSize){
-      recentList.removeAt(0);
+      recentList.removeLast();
     }
-    recentList.add(item);
+    recentList.insert(0, item);
   }
 
   @override
   void initState() {
     super.initState();
     focusNode.addListener((){
-      setState(() {});
+      if(focusNode.hasFocus){
+        setState(() {});
+      }else{
+        Future.delayed(Duration(milliseconds: 200), (){
+          if (mounted) setState(() {});
+        });
+      }
     });
+    suggestionList = getSuggestionForYou(data: shopItems);
 
     searchController.addListener((){
       setState(() {});
     });
     displayedItems = getSelectedItems(data: shopItems, section: selectedSection, filter: selectedFilter, sort: selectedSort, searchQuery: query);
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -262,7 +318,7 @@ class _ShopScreenState extends State<ShopScreen> {
           height: 50,
           width: double.infinity,
           child: FloatingActionButton.extended(
-            onPressed: () {Navigator.pushNamed(context, '/cart');},
+            onPressed: () {Navigator.pushNamed(context, '/cart').then((_) {if(mounted) setState(() {});});},
             label: Text('Go To Cart'),
             icon: Icon(Icons.shopping_cart_rounded),
           ),
@@ -431,6 +487,8 @@ class _ShopScreenState extends State<ShopScreen> {
                       child: GestureDetector(
                         onTap: (){
                           Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: recent)));
+                          recentList.remove(recent);
+                          addRecentItem(recent);
                         },
                         child: CircleAvatar(
                           radius: 20,
@@ -446,6 +504,39 @@ class _ShopScreenState extends State<ShopScreen> {
               Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Text('For You', style: th.titleSmall,)),
+              const SizedBox(height: 10,),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: suggestionList.length,
+                    itemBuilder: (context, index){
+                    final suggest = suggestionList[index];
+                
+                    return GestureDetector(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: suggest)));
+                        if(recentList.contains(suggest)){
+                          recentList.remove(suggest);
+                          addRecentItem(suggest);
+                        }else{
+                          addRecentItem(suggest);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            radius: 35,
+                            backgroundImage: suggest.photo.image,
+                          ),
+                          title: Text(suggest.name),
+                          titleTextStyle: th.bodyLarge,
+                          trailing: Icon(Icons.chevron_right_rounded),
+                        ),
+                      ),
+                    );
+                }),
+              ),
+              const SizedBox(height: 70,),
             ]
             else ...[
               if(displayedItems.isEmpty)
@@ -581,6 +672,7 @@ class _ShopScreenState extends State<ShopScreen> {
                       itemBuilder: (context, index){
                         final item = displayedItems[index];
                         return Card(
+                          color: item.type == FilterType.premium ? CustomColors.gold(context) : ch.surface,
                           elevation: 0,
                           child: ListTile(
                             leading: SizedBox(
@@ -594,13 +686,14 @@ class _ShopScreenState extends State<ShopScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [Text('৳${item.price}'), const SizedBox(width: 25,), item.stock != 0 ? Text('In stock: ${item.stock}') : Text('Out of stock')]),
                             subtitleTextStyle: Theme.of(context).textTheme.labelLarge,
-                            trailing: IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: item,))); addRecentItem(item);}, icon: Icon(Icons.shopping_bag_rounded)),
+                            trailing: IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: item,))).then((_) => setState(() {})); addRecentItem(item);}, icon: Icon(Icons.shopping_bag_rounded)),
                           ),
                         );
                       }
                   ),
                 ),
               ),
+              const SizedBox(height: 70,),
             ]
           ],
         ),
@@ -619,43 +712,50 @@ class ItemScreen extends StatefulWidget {
 
 class _ItemScreenState extends State<ItemScreen> {
   int getItemMax = 1;
-  late List<Item> cartedItems = [];
   
   void cartDialog(){
+    if(widget.item.stock == 0) return;
+
+    final maxItems = widget.item.count < widget.item.stock ? widget.item.count : widget.item.stock;
+    if(maxItems <= 0) return;
+
+    getItemMax = 1;
     showDialog(context: context, builder: (_){
-      return AlertDialog(
-        title: Text('Quantity of your order'),
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-                onPressed: getItemMax <= 1 ? null : () => setState(() => getItemMax--), icon: Icon(Icons.remove_circle_outline_rounded, size: 34,),
-              disabledColor: CustomColors.greyLight(context),
-            ),
-            Text('$getItemMax', style: Theme.of(context).textTheme.titleMedium,),
-            IconButton(
-              onPressed: (getItemMax >= widget.item.count  && getItemMax >= widget.item.stock ) ? null : () => setState(() => getItemMax++), icon: Icon(Icons.add_circle_outline_rounded, size: 34,),
-              disabledColor: CustomColors.greyLight(context),
-            ),
-          ],
-        ),
-        actions: [
-          OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text('Cancel')),
-          FilledButton(onPressed: (){
-            setState(() {
-              widget.item.count -= getItemMax;
+      return StatefulBuilder(builder: (context, setDialog){
+        return AlertDialog(
+          title: Text('Quantity of your order'),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                onPressed: getItemMax <= 1 ? null : () => setDialog(() => getItemMax--), icon: Icon(Icons.remove_circle_outline_rounded, size: 34,),
+                disabledColor: CustomColors.greyLight(context),
+              ),
+              Text('$getItemMax', style: Theme.of(context).textTheme.titleMedium,),
+              IconButton(
+                onPressed: getItemMax >= maxItems ? null : () => setDialog(() => getItemMax++), icon: Icon(Icons.add_circle_outline_rounded, size: 34,),
+                disabledColor: CustomColors.greyLight(context),
+              ),
+            ],
+          ),
+          actions: [
+            OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text('Cancel')),
+            FilledButton(onPressed: (){
+              setState(() {
+                widget.item.stock -= getItemMax;
+                cartedItems.add(CartItem(item: widget.item, quantity: getItemMax));
+              });
               Navigator.pop(context);
-            });
-          }, child: Text('Add')),
-        ],
-      );
+            }, child: Text('Add')),
+          ],
+        );
+      });
     });
   }
   
   @override
   Widget build(BuildContext context) {
     final th = Theme.of(context).textTheme;
-    final ch = Theme.of(context).colorScheme;
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(onPressed: cartDialog, label: Row(mainAxisSize: MainAxisSize.min, children: [widget.item.stock != 0 ? Icon(Icons.add_shopping_cart_rounded) : Icon(Icons.remove_shopping_cart_rounded), widget.item.stock != 0 ? Text('Add to cart') : Text('Out of Stock')],)),
@@ -690,6 +790,7 @@ class _ItemScreenState extends State<ItemScreen> {
                 ),
               ),
               const SizedBox(height: 120,),
+              Padding(padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),child: Text(widget.item.name, style: th.bodyLarge,)),
               Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                   child: Text(widget.item.description, style: th.labelLarge,)),
@@ -703,7 +804,6 @@ class _ItemScreenState extends State<ItemScreen> {
   }
 }
 
-
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
@@ -716,9 +816,57 @@ class _CartScreenState extends State<CartScreen> {
   void showPaymentDialog (){
     showDialog(context: context, builder: (_){
       return AlertDialog(
-
+        title: Text('Your total Bill is'),
+        content: Text('৳${totalBill()}', style: Theme.of(context).textTheme.titleMedium, textAlign: TextAlign.center,),
+        actions: [
+          OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text('Cancel')),
+          FilledButton(onPressed: (){
+            setState(() {
+              cartedItems.clear();
+            });
+            Navigator.pop(context);
+          }, child: Text('Pay')),
+        ],
       );
     });
+  }
+
+  void showEmpty(){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Add to cart First')));
+  }
+
+  void removeItem(CartItem cart){
+    setState(() {
+      cart.item.stock += cart.quantity;
+      cartedItems.remove(cart);
+    });
+  }
+  void reduceItem(CartItem cart){
+    if(cart.quantity <= 1) return;
+    setState(() {
+      cart.item.stock += 1;
+      cart.quantity -= 1;
+    });
+  }
+
+  void increaseItem(CartItem cart){
+    if(cart.item.stock == 0) return;
+    setState(() {
+      cart.item.stock -= 1;
+      cart.quantity += 1;
+    });
+  }
+
+  String showItemPrice(CartItem cart){
+    return '${cart.quantity * cart.item.price}';
+  }
+
+  int totalBill(){
+    int bill = 0;
+    for(var item in cartedItems){
+      bill += item.quantity * item.item.price;
+    }
+    return bill;
   }
 
   @override
@@ -733,19 +881,40 @@ class _CartScreenState extends State<CartScreen> {
           height: 50,
           width: double.infinity,
           child: FloatingActionButton.extended(
-            onPressed: () {},
+            onPressed: cartedItems.isNotEmpty ? () => showPaymentDialog() : showEmpty,
             label: Text('Checkout'),
             icon: Icon(Icons.shopping_cart_checkout_rounded),
           ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: SafeArea(child: SingleChildScrollView(child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-
-        ],
-      ))),
+      body: SafeArea(child:
+      cartedItems.isEmpty ?
+          Center(child: Text('Your cart is empty')) :
+          Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                    itemCount: cartedItems.length,
+                    itemBuilder: (context, index){
+                      final items = cartedItems[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        child: Card(
+                          child: ListTile(
+                            leading: SizedBox(height:60, width: 60, child: items.item.photo),
+                            title: Text(items.item.name),
+                            subtitle: Row(children: [IconButton(onPressed: items.quantity <= 1 ? null : () => reduceItem(items), icon: Icon(Icons.remove_circle_outline_rounded)), Text('${items.quantity}'), IconButton(onPressed: (items.quantity >= items.item.count || items.item.stock == 0) ? null : () => increaseItem(items) , icon: Icon(Icons.add_circle_outline_rounded)), const SizedBox(width: 15,), Text('Total: ৳${showItemPrice(items)}')]),
+                            trailing: IconButton(onPressed: () => removeItem(items), icon: Icon(Icons.remove_shopping_cart_rounded)),
+                          ),
+                        ),
+                      );
+                    }),
+              ),
+              const  SizedBox(height: 70,),
+            ],
+          ),
+      ),
     );
   }
 }

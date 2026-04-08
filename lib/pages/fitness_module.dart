@@ -19,16 +19,15 @@ enum BoxState { normal, today, notCompleted, completed, restDay, cancelled }
 
 class _FitScreenState extends State<FitScreen>
     with SingleTickerProviderStateMixin {
-  late Status currentStatus;
   late IconData statusIcon;
   bool warmupCompleted = false;
   bool exerciseCompleted = false;
   bool stretchesCompleted = false;
 
   @override
-  void initState() {
-    super.initState();
-    currentStatus = Status.active;
+  Widget build(BuildContext context) {
+    final day = context.watch<TimeProvider>();
+    final currentStatus = context.watch<StatusProvider>().status;
     switch (currentStatus) {
       case Status.fasting:
         statusIcon = Symbols.hourglass_arrow_down_rounded;
@@ -49,11 +48,6 @@ class _FitScreenState extends State<FitScreen>
         statusIcon = Symbols.bed_rounded;
         break;
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final day = context.watch<TimeProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -162,107 +156,27 @@ class _FitScreenState extends State<FitScreen>
                 ),
               ),
               const SizedBox(height: 5),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 15,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Exercises:",
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            Text(
-                              "7 / 20 left",
-                              style: Theme.of(context).textTheme.labelMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 15,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Calories Burned:",
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            Text(
-                              "50 kcal",
-                              style: Theme.of(context).textTheme.labelMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+              if(currentStatus == Status.injured)
+                Center(child: Text("You're Injured!!\nNo exercises for you today\nHeal up soon", textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall,),)
+              else if(currentStatus == Status.sick)
+                Center(child: Text("You're Sick!\nNo exercises for you today\nHeal up soon", textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall,),)
+              else if(currentStatus == Status.rest)
+                  Center(child: Text("It's your rest day\nNo exercise today\nRemember to take a walk", textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall,),)
+              else ...[
+                if(currentStatus == Status.travelling) ...[
+                  Center(child: Text("Safe Travelling\nIf you get time do your regular exercises", textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelMedium,),),
+                  const SizedBox(height: 5,),
                 ],
-              ),
-              const SizedBox(height: 10),
-              Container(
-                alignment: Alignment.centerLeft,
-                child: RichText(
-                  text: TextSpan(
+                Expanded(
+                  child: ListView(
                     children: [
-                      TextSpan(
-                        text: 'Progress: ',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      TextSpan(
-                        text: '60%',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
+                      ExerciseList(time: '08:30AM', title: "Warm Ups", subtitle: Text("jhghhuid"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp, isFirst: true,),
+                      ExerciseList(time: '08:30AM', title: "Main Workouts", subtitle: Text("jhghhuid"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp,),
+                      ExerciseList(time: '08:30AM', title: "Stretches", subtitle: Text("jhghhuid"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp, isLast: true,),
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 5),
-              SizedBox(
-                height: 10,
-                child: LinearProgressIndicator(
-                  value: 0.6,
-                  backgroundColor: Theme.of(context).colorScheme.tertiary,
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              const SizedBox(height: 5),
-              Expanded(
-                child: ListView(
-                  children: [
-                    ExerciseList(time: '08:30AM', title: "Warm Ups", subtitle: Text("jhghhuid"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp, isFirst: true,),
-                  ],
-                ),
-              ),
+              ]
             ],
           ),
         ),
@@ -335,7 +249,7 @@ class _FitScreenState extends State<FitScreen>
 
     return Expanded(
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {Navigator.push(context, MaterialPageRoute(builder: (_) => DayScreen()));},
         child: Container(
           height: isToday(state) ? 84 : 70,
           margin: const EdgeInsets.all(5),
@@ -385,7 +299,7 @@ class _ExerciseListState extends State<ExerciseList> {
 
     return TimelineTile(
       alignment: TimelineAlign.manual,
-      lineXY: 0.2,
+      lineXY: 0.15,
       isFirst: widget.isFirst,
       isLast: widget.isLast,
 
@@ -437,6 +351,253 @@ class _ExerciseListState extends State<ExerciseList> {
   }
 }
 
+class DayScreen extends StatefulWidget {
+  const DayScreen({super.key});
+
+  @override
+  State<DayScreen> createState() => _DayScreenState();
+}
+
+class _DayScreenState extends State<DayScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+    final time = context.watch<TimeProvider>();
+    final status = context.watch<StatusProvider>().status;
+    final fit = context.watch<FitnessProvider>();
+    fit.loadExercises();
+    String currStat = '';
+    IconData? avatar;
+
+    switch (status) {
+      case Status.fasting:
+        currStat = 'Fasting';
+        avatar = Symbols.hourglass_arrow_down_rounded;
+        break;
+      case Status.travelling:
+        currStat = 'Travelling';
+        avatar = Symbols.travel_rounded;
+        break;
+      case Status.injured:
+        currStat = 'Injured';
+        avatar = Symbols.healing_rounded;
+        break;
+      case Status.sick:
+        currStat = 'Sick';
+        avatar = Symbols.sick_rounded;
+        break;
+      case Status.active:
+        currStat = 'Active';
+        avatar = Symbols.directions_run_rounded;
+        break;
+      case Status.rest:
+        currStat = 'On Rest';
+        avatar = Symbols.bed_rounded;
+        break;
+    }
+    
+    return Scaffold(
+      appBar: AppBar(title: Text('Today'),),
+      body: SafeArea(child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: ch.surface,
+              ),
+              child: Column(
+                children: [
+                  Text(time.formatDate, style: th.headlineSmall,),
+                  const SizedBox(height: 10,),
+                  RichText(text: TextSpan(
+                    children: [
+                      TextSpan(text: "$currStat  ", style: th.titleMedium,),
+                      WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: Icon(avatar, size: 34, color: ch.onSurface,)
+                      ),
+                    ]
+                  )),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 15,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Exercises:",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          Text(
+                            "${fit.done} / ${fit.totalExe} left",
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 15,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Calories Burned:",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          Text(
+                            "${fit.burnedCal} kcal",
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Container(
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Progress: ',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    TextSpan(
+                      text: '${fit.progress *100}%',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Poppins',
+                        fontSize: 18,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 5),
+            SizedBox(
+              height: 10,
+              child: LinearProgressIndicator(
+                value: 0.6,
+                backgroundColor: Theme.of(context).colorScheme.tertiary,
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            const SizedBox(height: 5),
+          ],
+        ),
+      )
+      ),
+    );
+  }
+}
+
+
+
+class FitnessModel{
+  String? title;
+  String? name;
+  int? burn;
+  int? sets;
+  int? reps;
+  int? duration;
+  int? rest;
+  String? instructions;
+
+  FitnessModel({required this.title, required this.name, this.sets, this.reps, this.duration, this.rest, required this.instructions, required this.burn});
+}
+
+class FitnessProvider extends ChangeNotifier{
+  double progress = 0;
+  int done = 0;
+  int totalExe = 0;
+  int totalCal = 0;
+  int burnedCal = 0;
+
+  final List<FitnessModel> exercises = [
+    FitnessModel(title: "Warm-up", name: 'Neck rolls (gentle)', instructions: '1. Stand tall\n2. Drop chin to chest\n3. Slowly roll head in a circle\n4. Switch direction', burn: 3, duration: 30, sets: 1),
+    FitnessModel(title: "Warm-up", name: 'Shoulder rolls', instructions: '1. Stand relaxed\n2. Lift shoulders up\n3. Roll back and down\n4. Repeat forward and backward', burn: 3, duration: 30, sets: 1),
+    FitnessModel(title: "Warm-up", name: 'Neck rolls (gentle)', instructions: '1. Extend arms sideways\n2. Make small circles\n3. Increase size gradually\n4. Reverse direction', burn: 4, duration: 60, sets: 1),
+    FitnessModel(title: "Warm-up", name: 'Torso rotation (standing)', instructions: '1. Stand with feet shoulder-width\n2. Keep hips forward\n3. Rotate upper body side to side', burn: 3, duration: 30, sets: 1),
+    FitnessModel(title: "Warm-up", name: 'Hip circles', instructions: '1. Hands on hips\n2. Move hips in a circle\n3. Keep chest still\n4. Switch direction', burn: 3, duration: 60, sets: 1),
+    FitnessModel(title: "Warm-up", name: 'Cat-cow', instructions: '1. On hands and knees\n2. Inhale drop belly lift chest\n3. Exhale round spine tuck chin', burn: 4, reps: 10, sets: 1),
+    FitnessModel(title: "Warm-up", name: 'Inchworm (slow)', instructions: '1. Stand tall\n2. Bend forward touch floor\n3. Walk hands to plank\n4. Walk feet toward hands', burn: 6, reps: 4, sets: 1),
+    FitnessModel(title: "Warm-up", name: 'World\'s greatest stretch', instructions: '1. Step into deep lunge\n2. Place one hand on floor\n3. Rotate chest upward\n4. Switch sides', burn: 5, reps: 4, sets: 1),
+    FitnessModel(title: 'Main Workout', name: 'Wall push-up', instructions: '1. Stand facing wall\n2. Hands on wall at chest height\n3. Bend elbows bring chest closer\n4. Push back', burn: 18, sets: 3, reps: 12, duration: 45, rest: 60),
+    FitnessModel(title: 'Main Workout', name: 'Scapular wall slide', instructions: '1. Back against wall\n2. Arms in goalpost position\n3. Slide arms up\n4. Slide down slowly', burn: 10, sets: 3, reps: 10, duration: 40, rest: 45),
+    FitnessModel(title: 'Main Workout', name: 'Arm out band-less pull-apart', instructions: '1. Extend arms forward\n2. Pull arms to sides\n3. Squeeze shoulder blades\n4. Return slowly', burn: 8, sets: 3, reps: 15, duration: 40, rest: 45),
+    FitnessModel(title: 'Main Workout', name: 'Chin tuck', instructions: '1. Sit or stand straight\n2. Pull chin straight back\n3. Hold 2 seconds\n4. Relax', burn: 4, sets: 3, reps: 12, duration: 30, rest: 30),
+    FitnessModel(title: 'Main Workout', name: 'Dead bug', instructions: '1. Lie on back\n2. Arms and legs up\n3. Extend opposite arm and leg\n4. Return and switch', burn: 14, sets: 3, reps: 12, duration: 50, rest: 60),
+    FitnessModel(title: 'Main Workout', name: 'Plank (forearm)', instructions: '1. Forearms on floor\n2. Body straight line\n3. Tighten core\n4. Hold', burn: 12, sets: 3, duration: 20, rest: 45),
+    FitnessModel(title: 'Main Workout', name: 'Glute bridge', instructions: '1. Lie on back knees bent\n2. Push through heels\n3. Lift hips up\n4. Squeeze and lower', burn: 16, sets: 3, reps: 15, duration: 45, rest: 45),
+    FitnessModel(title: 'Main Workout', name: 'Doorway chest stretch (hold)', instructions: '1. Place hands on door frame\n2. Step forward slightly\n3. Feel chest stretch\n4. Hold', burn: 4, sets: 2, duration: 20, rest: 60),
+    FitnessModel(title: "Stretches", name: 'Seated forward fold', instructions: '1. Sit with legs straight\n2. Reach toward toes\n3. Keep back long\n4. Hold', burn: 0, duration: 45),
+    FitnessModel(title: "Stretches", name: 'Cross-body shoulder stretch', instructions: '1. Bring arm across chest\n2. Hold with other arm\n3. Keep shoulder relaxed', burn: 0, duration: 40),
+    FitnessModel(title: "Stretches", name: 'Neck side stretch', instructions: '1. Sit tall\n2. Tilt head to one side\n3. Gently hold', burn: 0, duration: 40),
+    FitnessModel(title: "Stretches", name: 'Child\'s pose', instructions: '1. Kneel on floor\n2. Sit back on heels\n3. Reach arms forward\n4. Relax', burn: 0, duration: 45),
+    FitnessModel(title: "Stretches", name: 'Supine spinal twist', instructions: '1. Lie on back\n2. Drop knees to one side\n3. Keep shoulders down\n4. Switch sides', burn: 0, duration: 60),
+  ];
+
+  void loadExercises(){
+    int sum = 0;
+    for(var e in exercises){
+      if(e.burn == null) continue;
+      sum += e.burn!;
+    }
+    totalCal = sum;
+    totalExe = exercises.length;
+  }
+
+  List<FitnessModel> getExercise(String type){
+    return exercises.where((e) => e.title == type).toList();
+  }
+
+  void logExercise(FitnessModel fit){
+    progress += exercises.length / 100;
+    done++;
+    if(fit.burn != null){
+      burnedCal += fit.burn!;
+    }
+    notifyListeners();
+  }
+}
+
 class WarmupScreen extends StatefulWidget {
   const WarmupScreen({super.key});
 
@@ -447,7 +608,26 @@ class WarmupScreen extends StatefulWidget {
 class _WarmupScreenState extends State<WarmupScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final ex = context.read<FitnessProvider>().getExercise("Warm-up");
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Warm-ups'),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: ListView.builder(
+            itemCount: ex.length,
+            itemBuilder: (context, index){
+              final exercises = ex[index];
+              return Card(
+                child: ListTile(
+                  title: Text(exercises.name!),
+                  trailing: OutlinedButton(onPressed: (){}, child: Text('Start')),
+                ),
+              );
+        }),
+      ),
+    );
   }
 }
 
@@ -478,8 +658,6 @@ class _StretchScreenState extends State<StretchScreen> {
     return const Placeholder();
   }
 }
-
-
 
 class ExerciseScheduleScreen extends StatefulWidget {
   const ExerciseScheduleScreen({super.key});

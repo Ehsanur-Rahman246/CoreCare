@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:core_care/decoration.dart';
 import 'package:core_care/main.dart';
+import 'package:core_care/pages/diet_module.dart';
 import 'package:core_care/pages/profile_page.dart';
 import 'package:core_care/data_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,8 +11,17 @@ import 'package:flutter/scheduler.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'dart:typed_data';
+import 'fitness_module.dart';
 
 enum Status { sick, injured, travelling, active, rest, fasting }
+
+class StatusProvider extends ChangeNotifier{
+  Status status = Status.active;
+  void updateStatus(Status s){
+    status = s;
+    notifyListeners();
+  }
+}
 
 class HomeScreen extends StatefulWidget {
   final Function(int) onNavigate;
@@ -46,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) {
         final ch = Theme.of(context).colorScheme;
+        final st = context.watch<StatusProvider>();
         return StatefulBuilder(
           builder: (context, setSheet) {
             void update(VoidCallback fn) {
@@ -110,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onChanged: (val) => update(() {
                                         _buttonA = val;
                                         if (val) _buttonB = false;
-                                        if (val) currentStatus = Status.active;
+                                        if (val) st.updateStatus(Status.active);
                                       }),
                                     ),
                                   ),
@@ -132,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onChanged: (val) => update(() {
                                         _buttonB = val;
                                         if (val) _buttonA = false;
-                                        if (val) currentStatus = Status.rest;
+                                        if (val) st.updateStatus(Status.rest);
                                       }),
                                     ),
                                   ),
@@ -157,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           _buttonB = true;
                                           _buttonA = false;
                                         }
-                                        if (val) currentStatus = Status.sick;
+                                        if (val) st.updateStatus(Status.sick);
                                       }),
                                     ),
                                   ),
@@ -186,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onChanged: (val) => update(() {
                                         _buttonD = val;
                                         if (val) {
-                                          currentStatus = Status.travelling;
+                                          st.updateStatus(Status.travelling);
                                         }
                                       }),
                                     ),
@@ -209,9 +220,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Switch(
                                       value: _buttonE,
                                       onChanged: _buttonE
-                                          ? (val) =>
-                                                update(() => _buttonE = false)
-                                          : null,
+                                          ? (val) {
+                                        update(() => _buttonE = false);
+                                        st.updateStatus(Status.fasting);
+                                      }
+                                      : null,
                                     ),
                                   ),
                                 ),
@@ -232,6 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onChanged: (val) => update(() {
                                         _buttonF = val;
                                         if (val) _buttonB = false;
+                                        if(val) st.updateStatus(Status.injured);
                                       }),
                                     ),
                                   ),
@@ -255,7 +269,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    waterBarCount = 19;
     fillCounter = 0;
     currentStatus = Status.active;
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -281,6 +294,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final time = context.watch<TimeProvider>();
     final provider = context.watch<DataProvider>();
+    final fit = context.watch<FitnessProvider>();
+    final meal = context.watch<MealProvider>();
+    waterBarCount = meal.waterGlass;
+    fit.loadExercises();
     if (provider.profileImageBase64 != _cachedBase64) {
       _cachedBase64 = provider.profileImageBase64;
       _profileImageBytes = provider.profileImageBase64 != null
@@ -292,21 +309,27 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (currentStatus) {
       case Status.fasting:
         statusIcon = Symbols.hourglass_arrow_down_rounded;
+        _buttonE = true;
         break;
       case Status.travelling:
         statusIcon = Symbols.travel_rounded;
+        _buttonD = true;
         break;
       case Status.injured:
         statusIcon = Symbols.healing_rounded;
+        _buttonF = true;
         break;
       case Status.sick:
         statusIcon = Symbols.sick_rounded;
+        _buttonC = true;
         break;
       case Status.active:
         statusIcon = Symbols.directions_run_rounded;
+        _buttonA = true;
         break;
       case Status.rest:
         statusIcon = Symbols.bed_rounded;
+        _buttonB = true;
         break;
     }
 
@@ -539,7 +562,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text("Exercises:"),
-                                    Text("7 / 20 left"),
+                                    Text("${fit.done} / ${fit.totalExe} left"),
                                   ],
                                 ),
                                 const Spacer(),

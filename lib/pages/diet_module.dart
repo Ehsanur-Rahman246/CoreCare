@@ -21,9 +21,11 @@ class _DietScreenState extends State<DietScreen> {
   late IconData statusIcon;
 
   @override
-  void initState() {
-    super.initState();
-    currentStatus = Status.active;
+  Widget build(BuildContext context) {
+    final day = context.watch<TimeProvider>();
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+    final currentStatus = context.watch<StatusProvider>().status;
     switch (currentStatus) {
       case Status.fasting:
         statusIcon = Symbols.hourglass_arrow_down_rounded;
@@ -44,13 +46,6 @@ class _DietScreenState extends State<DietScreen> {
         statusIcon = Symbols.bed_rounded;
         break;
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final day = context.watch<TimeProvider>();
-    final th = Theme.of(context).textTheme;
-    final ch = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -321,10 +316,7 @@ class _DietScreenState extends State<DietScreen> {
               Expanded(
                 child: ListView(
                   children: [
-                    mealCard("Breakfast", "Egg", "Bread", "Banana"),
-                    mealCard("Lunch", "Chicken", "Rice", "Salad"),
-                    mealCard("Snacks", "Nuts", "Juice", "Apple"),
-                    mealCard("Dinner", "Roti", "Vegetable", "Milk"),
+
                   ],
                 ),
               ),
@@ -412,34 +404,6 @@ class _DietScreenState extends State<DietScreen> {
       ),
     );
   }
-
-  Widget mealCard(String title, String item1, String item2, String item3) {
-    return Card(
-      margin: const EdgeInsets.all(8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleMedium),
-            Divider(thickness: 5),
-            itemRow(item1),
-            Divider(),
-            itemRow(item2),
-            Divider(),
-            itemRow(item3),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget itemRow(String name) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-      child: Row(children: [Text(name), Spacer(), Icon(Icons.chevron_right)]),
-    );
-  }
 }
 
 class MicroLine extends CustomPainter {
@@ -522,6 +486,129 @@ class _MicroLineWidgetState extends State<MicroLineWidget> {
         context: context,
       ),
     );
+  }
+}
+
+class MealBoxes extends StatefulWidget {
+  final IconData icon;
+  final String title;
+  final String name;
+  const MealBoxes({super.key, required this.title, required this.name, required this.icon});
+
+  @override
+  State<MealBoxes> createState() => _MealBoxesState();
+}
+
+class _MealBoxesState extends State<MealBoxes> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      child: ExpansionTile(
+        title: Text(widget.title),
+        leading: Icon(widget.icon),
+      ),
+    );
+  }
+}
+
+class SwapMealScreen extends StatefulWidget {
+  const SwapMealScreen({super.key});
+
+  @override
+  State<SwapMealScreen> createState() => _SwapMealScreenState();
+}
+
+class _SwapMealScreenState extends State<SwapMealScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+class AddMealScreen extends StatefulWidget {
+  const AddMealScreen({super.key});
+
+  @override
+  State<AddMealScreen> createState() => _AddMealScreenState();
+}
+
+class _AddMealScreenState extends State<AddMealScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+class MealModel{
+  String? meal;
+  String? name;
+  int? cal;
+  int? carb;
+  int? protein;
+  int? fat;
+  List<String>? tags;
+  String? description;
+  int? serving;
+  Image? photo;
+
+  MealModel({required this.meal, required  this.name, required this.cal, required this.carb, required this.protein, required this.fat, required this.tags, required this.description, required this.serving, required this.photo});
+}
+
+class MealProvider extends ChangeNotifier{
+  int waterGlass = 12;
+  int totalCalories = 0;
+  int calorieTaken = 0;
+  int carbTaken = 0;
+  int proteinTaken = 0;
+  int fatTaken = 0;
+  int takenMeal = 0;
+
+  late MealModel selectedBreakfast;
+  late MealModel selectedLunch;
+  late MealModel selectedDinner;
+
+  final List<MealModel> meals = [
+    MealModel(meal: 'Breakfast', name: "Egg & oat power bowl", cal: 490, carb: 52, protein: 30, fat: 16, tags: ['VIT-D', 'B12', 'B1', 'VIT-C', 'CA', 'MG', 'FE'], description: '3 eggs scrambled + 80g oats (cooked, water) + 200ml milk + 1 orange', serving: 1, photo: Image.asset('assets/meals/b1.png'),),
+    MealModel(meal: 'Breakfast', name: "Oat banana milk bowl", cal: 510, carb: 72, protein: 18, fat: 20, tags: ['B1', 'CA', 'VIT-D', 'MG', 'K', 'VIT-E', 'FIBER-S'], description: '100g oats + 250ml milk + 1 banana + 30g almond butter', serving: 1, photo: Image.asset('assets/meals/b2.png'),),
+    MealModel(meal: 'Breakfast', name: "Shakshuka & toast", cal: 560, carb: 40, protein: 28, fat: 18, tags: ['B12', 'VIT-C', 'VIT-K', 'FE', 'B6'], description: '4 eggs poached in tomato-onion sauce + 2 WW toast + herbs', serving: 1, photo: Image.asset('assets/meals/b3.png'),),
+    MealModel(meal: 'Breakfast', name: "Masala omelette & chapati", cal: 480, carb: 40, protein: 24, fat: 20, tags: ['B12', 'B6', 'VIT-C', 'VIT-K', 'FE'], description: '3 eggs + onion + tomato + green chili + 1 chapati + 1 tsp oil', serving: 1, photo: Image.asset('assets/meals/b4.png'),),
+    MealModel(meal: 'Lunch', name: "Chicken quinoa bowl", cal: 580, carb: 54, protein: 46, fat: 12, tags: ['B3', 'B6', 'VIT-C', 'VIT-K', 'MG', 'B9', 'FIBER-I'], description: '180g chicken breast (grilled) + 185g quinoa + 100g spinach + 100g broccoli + 1 tsp olive oil', serving: 1, photo: Image.asset('assets/meals/l1.png'),),
+    MealModel(meal: 'Lunch', name: "Beef rice bowl", cal: 610, carb: 60, protein: 44, fat: 16, tags: ['B12', 'ZN', 'FE', 'VIT-C', 'MG', 'FIBER-I'], description: '150g lean halal beef mince + 200g brown rice + 150g broccoli + 1 tsp oil', serving: 1, photo: Image.asset('assets/meals/l2.png'),),
+    MealModel(meal: 'Lunch', name: "Lentil dal + rice", cal: 580, carb: 96, protein: 22, fat: 8, tags: ['B9', 'FE', 'MG', 'K', 'VIT-K', 'FIBER-S'], description: '200g toor dal + 200g basmati rice + 100g spinach + 1 tsp ghee', serving: 1, photo: Image.asset('assets/meals/l3.png'),),
+    MealModel(meal: 'Lunch', name: "Chicken curry + rice", cal: 620, carb: 66, protein: 44, fat: 14, tags: ['B3', 'B6', 'VIT-A', 'VIT-C', 'MG'], description: '180g chicken + 200g basmati + curry base + spinach + 1 tsp oil', serving: 1, photo: Image.asset('assets/meals/l4.png'),),
+    MealModel(meal: 'Dinner', name: "Lamb & sweet potato", cal: 490, carb: 58, protein: 38, fat: 16, tags: ['B12', 'FE', 'ZN', 'VIT-A', 'VIT-K', 'MG', 'ANTI-I'], description: '150g lamb mince (lean) + 200g sweet potato (baked) + 100g kale + 1 tsp olive oil', serving: 1, photo: Image.asset('assets/meals/d1.png'),),
+    MealModel(meal: 'Dinner', name: "Beef stir-fry & brown rice", cal: 490, carb: 68, protein: 40, fat: 14, tags: ['B12', 'ZN', 'FE', 'MG', 'K', 'VIT-C'], description: '150g lean beef + 200g brown rice + 150g mixed veg + soy', serving: 1, photo: Image.asset('assets/meals/d2.png'),),
+    MealModel(meal: 'Dinner', name: "Beef & vegetable bowl", cal: 490, carb: 52, protein: 44, fat: 16, tags: ['B12', 'ZN', 'FE', 'VIT-C', 'MG', 'B9'], description: '150g lean beef + 185g quinoa + 150g roasted veg + 1 tsp oil', serving: 1, photo: Image.asset('assets/meals/d3.png'),),
+    MealModel(meal: 'Dinner', name: "Grilled fish & chapati", cal: 490, carb: 54, protein: 38, fat: 18, tags: ['OMEGA3', 'D', 'B12', 'CA', 'SE', 'MG'], description: '180g pomfret/rohu + 2 chapati + 100g vegetables + 1 tsp oil', serving: 1, photo: Image.asset('assets/meals/d4.png'),),
+  ];
+
+  MealProvider(){
+    selectedBreakfast = getMeal('Breakfast').first;
+    selectedLunch = getMeal('Lunch').first;
+    selectedDinner = getMeal('Dinner').first;
+  }
+
+  void selectMeal(MealModel meal){
+    switch(meal.meal){
+      case 'Breakfast' : selectedBreakfast = meal; break;
+      case 'Lunch' : selectedLunch = meal; break;
+      case 'Dinner' : selectedDinner = meal; break;
+    }
+    notifyListeners();
+  }
+
+  void logMeal(MealModel meal){
+    takenMeal++;
+    calorieTaken += meal.cal!;
+    carbTaken += meal.carb!;
+    proteinTaken += meal.protein!;
+    fatTaken += meal.fat!;
+    notifyListeners();
+  }
+
+  List<MealModel> getMeal(String type){
+    return meals.where((m) => m.meal == type).toList();
   }
 }
 
@@ -864,20 +951,6 @@ class _RecipeScreenState extends State<RecipeScreen> {
         ),
       ),
     );
-  }
-}
-
-class AddMealScreen extends StatefulWidget {
-  const AddMealScreen({super.key});
-
-  @override
-  State<AddMealScreen> createState() => _AddMealScreenState();
-}
-
-class _AddMealScreenState extends State<AddMealScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 
