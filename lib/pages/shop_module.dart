@@ -271,6 +271,7 @@ class _ShopScreenState extends State<ShopScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 15),
             Padding(
@@ -414,8 +415,38 @@ class _ShopScreenState extends State<ShopScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            if(focusNode.hasFocus && searchController.text.isEmpty)
-              Text('data')
+            if(focusNode.hasFocus && searchController.text.isEmpty) ...[
+              if(recentList.isNotEmpty) ...[
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text('Recent', style: th.labelLarge,)),
+                const SizedBox(height: 10,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: List.generate(recentList.length, ((index) {
+                    final recent = recentList[index];
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: recent)));
+                        },
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundImage: recent.photo.image,
+                        ),
+                      ),
+                    );
+                  })
+                  ),
+                ),
+              ],
+              const SizedBox(height: 25,),
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text('For You', style: th.titleSmall,)),
+            ]
             else ...[
               if(displayedItems.isEmpty)
                 Center(child: Text('No Matches Found', style: th.titleSmall,),)
@@ -563,7 +594,7 @@ class _ShopScreenState extends State<ShopScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [Text('৳${item.price}'), const SizedBox(width: 25,), item.stock != 0 ? Text('In stock: ${item.stock}') : Text('Out of stock')]),
                             subtitleTextStyle: Theme.of(context).textTheme.labelLarge,
-                            trailing: IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: item,)));}, icon: Icon(Icons.shopping_bag_rounded)),
+                            trailing: IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: item,))); addRecentItem(item);}, icon: Icon(Icons.shopping_bag_rounded)),
                           ),
                         );
                       }
@@ -628,7 +659,7 @@ class _ItemScreenState extends State<ItemScreen> {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(onPressed: cartDialog, label: Row(mainAxisSize: MainAxisSize.min, children: [widget.item.stock != 0 ? Icon(Icons.add_shopping_cart_rounded) : Icon(Icons.remove_shopping_cart_rounded), widget.item.stock != 0 ? Text('Add to cart') : Text('Out of Stock')],)),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
