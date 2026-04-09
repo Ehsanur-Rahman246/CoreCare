@@ -3,6 +3,7 @@ import 'package:core_care/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'home_screen.dart';
 import 'dart:ui_web' as ui;
@@ -170,9 +171,9 @@ class _FitScreenState extends State<FitScreen>
                 Expanded(
                   child: ListView(
                     children: [
-                      ExerciseList(time: '08:30AM', title: "Warm Ups", subtitle: Text("jhghhuid"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp, isFirst: true,),
-                      ExerciseList(time: '08:30AM', title: "Main Workouts", subtitle: Text("jhghhuid"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp,),
-                      ExerciseList(time: '08:30AM', title: "Stretches", subtitle: Text("jhghhuid"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp, isLast: true,),
+                      ExerciseList(time: '08:30AM', title: "Warm Ups", subtitle: Text("50kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => WarmupScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp, isFirst: true,),
+                      ExerciseList(time: '08:30AM', title: "Main Workouts", subtitle: Text("380kcal"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp,),
+                      ExerciseList(time: '08:30AM', title: "Stretches", subtitle: Text("10kcal"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp, isLast: true,),
                     ],
                   ),
                 ),
@@ -513,7 +514,7 @@ class _DayScreenState extends State<DayScreen> {
             SizedBox(
               height: 10,
               child: LinearProgressIndicator(
-                value: 0.6,
+                value: fit.progress,
                 backgroundColor: Theme.of(context).colorScheme.tertiary,
                 color: Theme.of(context).colorScheme.primary,
                 borderRadius: BorderRadius.circular(10),
@@ -527,8 +528,6 @@ class _DayScreenState extends State<DayScreen> {
     );
   }
 }
-
-
 
 class FitnessModel{
   String? title;
@@ -622,7 +621,7 @@ class _WarmupScreenState extends State<WarmupScreen> {
               return Card(
                 child: ListTile(
                   title: Text(exercises.name!),
-                  trailing: OutlinedButton(onPressed: (){}, child: Text('Start')),
+                  trailing: OutlinedButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => DemoScreen()));}, child: Text('Start')),
                 ),
               );
         }),
@@ -630,6 +629,41 @@ class _WarmupScreenState extends State<WarmupScreen> {
     );
   }
 }
+
+class DemoScreen extends StatefulWidget {
+  const DemoScreen({super.key});
+
+  @override
+  State<DemoScreen> createState() => _DemoScreenState();
+}
+
+class _DemoScreenState extends State<DemoScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final exe = context.watch<FitnessProvider>();
+    return Scaffold(
+      appBar: AppBar(title: Text('Warm-up demo'),),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 5,),
+              Center(child: SetRepTimer(seconds: 300,)),
+              const SizedBox(height: 15,),
+              ExpansionTile(title: Text('Instructions'),
+              children: [
+                Text(exe.exercises[0].instructions!,),
+              ],
+              ),
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 class MainWorkoutScreen extends StatefulWidget {
   const MainWorkoutScreen({super.key});
@@ -966,3 +1000,73 @@ class _FitnessHistoryState extends State<FitnessHistory> {
     );
   }
 }
+
+class SetRepTimer extends StatefulWidget {
+  final int seconds;
+  const SetRepTimer({super.key, required this.seconds});
+
+  @override
+  State<SetRepTimer> createState() => _SetRepTimerState();
+}
+
+class _SetRepTimerState extends State<SetRepTimer> {
+  late final StopWatchTimer _timer = StopWatchTimer(
+    mode: StopWatchMode.countDown,
+    presetMillisecond: StopWatchTimer.getMilliSecFromSecond(widget.seconds),
+  );
+  bool _isRunning = false;
+
+  @override
+  void dispose() async {
+    super.dispose();
+    await _timer.dispose();
+  }
+
+  void _toggle() {
+    if (_isRunning) {
+      _timer.onResetTimer();
+      setState(() => _isRunning = false);
+    } else {
+      _timer.onStartTimer();
+      setState(() => _isRunning = true);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 5),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StreamBuilder<int>(
+              stream: _timer.rawTime,
+              initialData: _timer.rawTime.value,
+              builder: (context, snap) => Text(
+                StopWatchTimer.getDisplayTime(
+                  snap.data!,
+                  hours: false,
+                  milliSecond: false,
+                ),
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            const SizedBox(width: 10),
+            IconButton(
+              onPressed: _toggle,
+              icon: Icon(
+                _isRunning
+                    ? Icons.refresh_rounded
+                    : Icons.play_circle_filled_rounded,
+              ),
+              iconSize: 26,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

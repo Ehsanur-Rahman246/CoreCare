@@ -316,7 +316,7 @@ class _DietScreenState extends State<DietScreen> {
               Expanded(
                 child: ListView(
                   children: [
-
+                    MealBoxes(title: 'Breakfast', name: 'Food', icon: Symbols.breakfast_dining_rounded, onTap: () {Navigator.push(context, MaterialPageRoute(builder: (_) => MealDemo()));}, trail: IconButton(onPressed: (){}, icon: Icon(Symbols.hand_meal_rounded)),),
                   ],
                 ),
               ),
@@ -493,7 +493,9 @@ class MealBoxes extends StatefulWidget {
   final IconData icon;
   final String title;
   final String name;
-  const MealBoxes({super.key, required this.title, required this.name, required this.icon});
+  final VoidCallback onTap;
+  final Widget trail;
+  const MealBoxes({super.key, required this.title, required this.name, required this.icon, required this.onTap, required this.trail});
 
   @override
   State<MealBoxes> createState() => _MealBoxesState();
@@ -504,9 +506,12 @@ class _MealBoxesState extends State<MealBoxes> {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      child: ExpansionTile(
+      child: ListTile(
         title: Text(widget.title),
         leading: Icon(widget.icon),
+        subtitle: Text(widget.name),
+        trailing: widget.trail,
+        onTap: widget.onTap,
       ),
     );
   }
@@ -611,6 +616,21 @@ class MealProvider extends ChangeNotifier{
     return meals.where((m) => m.meal == type).toList();
   }
 }
+
+class MealDemo extends StatefulWidget {
+  const MealDemo({super.key});
+
+  @override
+  State<MealDemo> createState() => _MealDemoState();
+}
+
+class _MealDemoState extends State<MealDemo> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
 
 class RecipeScreen extends StatefulWidget {
   const RecipeScreen({super.key});

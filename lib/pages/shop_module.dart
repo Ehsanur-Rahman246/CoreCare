@@ -281,7 +281,7 @@ class _ShopScreenState extends State<ShopScreen> {
     super.initState();
     focusNode.addListener((){
       if(focusNode.hasFocus){
-        setState(() {});
+        if(mounted) setState(() {});
       }else{
         Future.delayed(Duration(milliseconds: 200), (){
           if (mounted) setState(() {});
@@ -712,7 +712,11 @@ class ItemScreen extends StatefulWidget {
 
 class _ItemScreenState extends State<ItemScreen> {
   int getItemMax = 1;
-  
+
+  void showStockEmpty(){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Item out of stock')));
+  }
+
   void cartDialog(){
     if(widget.item.stock == 0) return;
 
@@ -758,7 +762,7 @@ class _ItemScreenState extends State<ItemScreen> {
     final th = Theme.of(context).textTheme;
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(onPressed: cartDialog, label: Row(mainAxisSize: MainAxisSize.min, children: [widget.item.stock != 0 ? Icon(Icons.add_shopping_cart_rounded) : Icon(Icons.remove_shopping_cart_rounded), widget.item.stock != 0 ? Text('Add to cart') : Text('Out of Stock')],)),
+      floatingActionButton: FloatingActionButton.extended(onPressed: widget.item.stock != 0 ? cartDialog : showStockEmpty, label: Row(mainAxisSize: MainAxisSize.min, children: [widget.item.stock != 0 ? Icon(Icons.add_shopping_cart_rounded) : Icon(Icons.remove_shopping_cart_rounded), widget.item.stock != 0 ? Text('Add to cart') : Text('Out of Stock')],)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: SingleChildScrollView(
