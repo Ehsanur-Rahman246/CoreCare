@@ -29,6 +29,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => TimeProvider()),
         ChangeNotifierProvider(create: (_) => DataProvider()),
+        ChangeNotifierProvider(create: (_) => MealProvider()),
+        ChangeNotifierProvider(create: (_) => FitnessProvider()),
+        ChangeNotifierProvider(create: (_) => StatusProvider()),
       ],
       child: MyApp(),
     ),
@@ -394,6 +397,9 @@ class CustomColors {
 
   static Color primaryMuted(BuildContext context) =>
       _isDark(context) ? const Color(0xff2a3f3f) : Color(0xffd1e6e6);
+
+  static Color gold(BuildContext context) =>
+      _isDark(context) ? const Color(0xff332f26) : Color(0xfff5efe0);
 }
 
 class ScreenState extends StatefulWidget {
