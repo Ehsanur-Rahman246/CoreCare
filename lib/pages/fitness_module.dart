@@ -300,13 +300,13 @@ class _ExerciseListState extends State<ExerciseList> {
 
     return TimelineTile(
       alignment: TimelineAlign.manual,
-      lineXY: 0.15,
+      lineXY: 0.20,
       isFirst: widget.isFirst,
       isLast: widget.isLast,
 
       startChild: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(widget.time, textAlign: TextAlign.right, style: th.labelLarge,)
+          child: Text(widget.time, textAlign: TextAlign.right, style: th.labelMedium,)
       ),
 
       endChild: Container(
