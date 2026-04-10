@@ -92,27 +92,7 @@ class _DietScreenState extends State<DietScreen> {
           FloatingActionButton.small(
             heroTag: 'add',
             onPressed: () {},
-            child: Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: Stack(
-                  children: [
-                    Icon(Symbols.room_service_rounded),
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Icon(
-                        Icons.add,
-                        size: 16,
-                        color: ch.onSurface,
-                        weight: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [Icon(Symbols.room_service_rounded), Icon(Icons.add, size: 14,)]),
           ),
         ],
       ),

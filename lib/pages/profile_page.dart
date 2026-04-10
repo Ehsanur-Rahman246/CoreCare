@@ -156,18 +156,6 @@ class _ProfilePageState extends State<ProfilePage> {
         false;
   }
 
-  static void scrollToInjury() {
-    final ctx = injuryKey.currentContext;
-    if (ctx != null) {
-      Scrollable.ensureVisible(
-        ctx,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        alignment: 0.2,
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = context.watch<DataProvider>().currentUser;

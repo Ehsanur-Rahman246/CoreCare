@@ -40,7 +40,7 @@ class _ShopScreenState extends State<ShopScreen> {
   SectionType selectedSection = SectionType.all;
   FilterType selectedFilter = FilterType.all;
   SortType selectedSort = SortType.aToZ;
-  FocusNode focusNode = FocusNode();
+  bool showSearchPanel = false;
   final searchController = TextEditingController();
   String query = "";
   List<Item> displayedItems = [];
@@ -190,29 +190,68 @@ class _ShopScreenState extends State<ShopScreen> {
     ],
     SectionType.fruits : [
       Item(name: 'Apples', photo: Image.asset('assets/items/3n1.png'), description: products[30], type: FilterType.standard, price: 180, stock: 25, count: 5),
+      Item(name: 'Bananas', photo: Image.asset('assets/items/3n2.png'), description: products[31], type: FilterType.standard, price: 80, stock: 25, count: 5),
+      Item(name: 'Carrots', photo: Image.asset('assets/items/3n3.png'), description: products[32], type: FilterType.standard, price: 60, stock: 30, count: 6),
+      Item(name: 'Tomatoes', photo: Image.asset('assets/items/3n4.png'), description: products[33], type: FilterType.standard, price: 80, stock: 25, count: 5),
+      Item(name: 'Spinach', photo: Image.asset('assets/items/3n5.png'), description: products[34], type: FilterType.standard, price: 70, stock: 25, count: 5),
+      Item(name: 'Organic Berries Mix', photo: Image.asset('assets/items/3p1.png'), description: products[35], type: FilterType.premium, price: 650, stock: 15, count: 3),
+      Item(name: 'Organic Kale', photo: Image.asset('assets/items/3p2.png'), description: products[36], type: FilterType.premium, price: 320, stock: 15, count: 3),
+      Item(name: 'Avocado', photo: Image.asset('assets/items/3p3.png'), description: products[37], type: FilterType.premium, price: 420, stock: 30, count: 6),
+      Item(name: 'Exotic Mushrooms', photo: Image.asset('assets/items/3p4.png'), description: products[38], type: FilterType.premium, price: 380, stock: 15, count: 3),
+      Item(name: 'Heirloom Tomatoes', photo: Image.asset('assets/items/3p5.png'), description: products[39], type: FilterType.premium, price: 350, stock: 15, count: 3),
     ],
     SectionType.groceries : [
       Item(name: 'White Rice', photo: Image.asset('assets/items/4n1.png'), description: products[40], type: FilterType.standard, price: 90, stock: 50, count: 10),
+      Item(name: 'Rolled Oats', photo: Image.asset('assets/items/4n2.png'), description: products[41], type: FilterType.standard, price: 220, stock: 30, count: 6),
+      Item(name: 'Lentils', photo: Image.asset('assets/items/4n3.png'), description: products[42], type: FilterType.standard, price: 110, stock: 40, count: 8),
+      Item(name: 'Chickpeas', photo: Image.asset('assets/items/4n4.png'), description: products[43], type: FilterType.standard, price: 130, stock: 40, count: 8),
+      Item(name: 'Almonds', photo: Image.asset('assets/items/4n5.png'), description: products[44], type: FilterType.standard, price: 480, stock: 25, count: 5),
+      Item(name: 'Chicken Breast', photo: Image.asset('assets/items/4n6.png'), description: products[45], type: FilterType.standard, price: 320, stock: 25, count: 5),
+      Item(name: 'Eggs', photo: Image.asset('assets/items/4n7.png'), description: products[46], type: FilterType.standard, price: 160, stock: 25, count: 5),
+      Item(name: 'Salmon (fresh)', photo: Image.asset('assets/items/4n8.png'), description: products[47], type: FilterType.standard, price: 680, stock: 15, count: 3),
+      Item(name: 'Green Tea', photo: Image.asset('assets/items/4n9.png'), description: products[48], type: FilterType.standard, price: 160, stock: 25, count: 5),
+      Item(name: 'Multivitamins', photo: Image.asset('assets/items/4n10.png'), description: products[49], type: FilterType.standard, price: 480, stock: 15, count: 3),
+      Item(name: 'Quinoa', photo: Image.asset('assets/items/4p1.png'), description: products[50], type: FilterType.premium, price: 650, stock: 25, count: 5),
+      Item(name: 'Organic Chia Seeds', photo: Image.asset('assets/items/4p2.png'), description: products[51], type: FilterType.premium, price: 580, stock: 20, count: 4),
+      Item(name: 'Grass-Fed Beef', photo: Image.asset('assets/items/4p3.png'), description: products[52], type: FilterType.premium, price: 1200, stock: 15, count: 3),
+      Item(name: 'Organic Energy Bars', photo: Image.asset('assets/items/4p4.png'), description: products[53], type: FilterType.premium, price: 680, stock: 20, count: 4),
+      Item(name: 'Collagen Powder', photo: Image.asset('assets/items/4p5.png'), description: products[54], type: FilterType.premium, price: 2800, stock: 10, count: 2),
     ],
     SectionType.cooking : [
       Item(name: 'Blender', photo: Image.asset('assets/items/5n1.png'), description: products[55], type: FilterType.standard, price: 1800, stock: 10, count: 2),
+      Item(name: 'Juicer', photo: Image.asset('assets/items/5n2.png'), description: products[56], type: FilterType.standard, price: 2200, stock: 10, count: 2),
+      Item(name: 'Non-Stick Pan', photo: Image.asset('assets/items/5n3.png'), description: products[57], type: FilterType.standard, price: 950, stock: 15, count: 3),
+      Item(name: 'Meal Prep Containers', photo: Image.asset('assets/items/5n4.png'), description: products[58], type: FilterType.standard, price: 750, stock: 15, count: 3),
+      Item(name: 'Air Fryer', photo: Image.asset('assets/items/5p1.png'), description: products[59], type: FilterType.premium, price: 6500, stock: 5, count: 1),
+      Item(name: 'Food Processor', photo: Image.asset('assets/items/5p2.png'), description: products[60], type: FilterType.premium, price: 5800, stock: 5, count: 1),
+      Item(name: 'Premium Knife Set', photo: Image.asset('assets/items/5p3.png'), description: products[61], type: FilterType.premium, price: 5200, stock: 5, count: 1),
+      Item(name: 'Silicone Baking Mats', photo: Image.asset('assets/items/5p4.png'), description: products[62], type: FilterType.premium, price: 1200, stock: 15, count: 3),
     ],
     SectionType.clothing : [
       Item(name: 'Cotton T-Shirt', photo: Image.asset('assets/items/6n1.png'), description: products[63], type: FilterType.standard, price: 350, stock: 25, count: 5),
+      Item(name: 'premium', photo: Image.asset('assets/items/6n2.png'), description: products[64], type: FilterType.standard, price: 420, stock: 20, count: 4),
+      Item(name: 'Basic Leggings', photo: Image.asset('assets/items/6n3.png'), description: products[65], type: FilterType.standard, price: 680, stock: 15, count: 3),
+      Item(name: 'Running Shoes', photo: Image.asset('assets/items/6n4.png'), description: products[66], type: FilterType.standard, price: 2500, stock: 10, count: 2),
+      Item(name: 'Training Shoes', photo: Image.asset('assets/items/6n5.png'), description: products[67], type: FilterType.standard, price: 2200, stock: 10, count: 2),
+      Item(name: 'Designer Hoodie', photo: Image.asset('assets/items/6p1.png'), description: products[68], type: FilterType.premium, price: 3800, stock: 10, count: 2),
+      Item(name: 'Orthopedic Sneakers', photo: Image.asset('assets/items/6p2.png'), description: products[69], type: FilterType.premium, price: 7200, stock: 10, count: 2),
+      Item(name: 'Lightweight Performance Shoes', photo: Image.asset('assets/items/6p3.png'), description: products[70], type: FilterType.premium, price: 9800, stock: 5, count: 1),
     ],
     SectionType.books : [
       Item(name: 'Beginner Fitness Guide', photo: Image.asset('assets/items/7n1.png'), description: products[71], type: FilterType.standard, price: 450, stock: 15, count: 3),
+      Item(name: 'Healthy Recipes Book', photo: Image.asset('assets/items/7n2.png'), description: products[72], type: FilterType.standard, price: 520, stock: 15, count: 3),
+      Item(name: 'Exercise Poster', photo: Image.asset('assets/items/7n3.png'), description: products[73], type: FilterType.standard, price: 180, stock: 25, count: 5),
+      Item(name: 'Premium Illustrated Yoga Guide', photo: Image.asset('assets/items/7p1.png'), description: products[74], type: FilterType.premium, price: 2200, stock: 10, count: 2),
+      Item(name: 'High-Performance Athlete Nutrition', photo: Image.asset('assets/items/7p2.png'), description: products[75], type: FilterType.premium, price: 1500, stock: 10, count: 2),
+      Item(name: 'Digital Fitness Tracker Journal', photo: Image.asset('assets/items/7p3.png'), description: products[76], type: FilterType.premium, price: 1400, stock: 10, count: 2),
     ],
     SectionType.travel : [
-      Item(name: 'Foldable Yoga Mat', photo: Image.asset('assets/items/8n1.png'), description: products[77], type: FilterType.standard, price: 680, stock: 15, count: 3)
+      Item(name: 'Foldable Yoga Mat', photo: Image.asset('assets/items/8n1.png'), description: products[77], type: FilterType.standard, price: 680, stock: 15, count: 3),
+      Item(name: 'Travel Water Bottle', photo: Image.asset('assets/items/8n2.png'), description: products[78], type: FilterType.standard, price: 350, stock: 20, count: 4),
+      Item(name: 'Portable Resistance Band', photo: Image.asset('assets/items/8n3.png'), description: products[79], type: FilterType.standard, price: 180, stock: 25, count: 5),
+      Item(name: 'Premium Travel Snack Pack', photo: Image.asset('assets/items/8p1.png'), description: products[80], type: FilterType.premium, price: 980, stock: 15, count: 3),
+      Item(name: 'Outdoor Fitness Kit', photo: Image.asset('assets/items/8p2.png'), description: products[81], type: FilterType.premium, price: 4500, stock: 15, count: 3),
     ],
-
-  };
-
-  final Map<String, List<String>> items1n = {
-    'vegN' : ['Bananas', 'Carrots', 'Tomatoes', 'Spinach', 'Broccoli', 'Cucumbers'],
-    'vegP' : ['Organic Berries  Mix', 'Organic Kale', 'Avocado', 'Exotic Mushrooms', 'Heirloom Tomatoes', 'Organic Bell Peppers', 'Organic Baby Spinach', 'Imported Citrus Mix'],
-    'groceryN': ['White Rice', 'Whole Wheat Pasta',],
   };
 
   final List<String> filterLabels = [
@@ -279,15 +318,6 @@ class _ShopScreenState extends State<ShopScreen> {
   @override
   void initState() {
     super.initState();
-    focusNode.addListener((){
-      if(focusNode.hasFocus){
-        if(mounted) setState(() {});
-      }else{
-        Future.delayed(Duration(milliseconds: 200), (){
-          if (mounted) setState(() {});
-        });
-      }
-    });
     suggestionList = getSuggestionForYou(data: shopItems);
 
     searchController.addListener((){
@@ -298,7 +328,6 @@ class _ShopScreenState extends State<ShopScreen> {
 
   @override
   void dispose() {
-    focusNode.dispose();
     searchController.dispose();
     super.dispose();
   }
@@ -325,246 +354,77 @@ class _ShopScreenState extends State<ShopScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: searchController,
-                      focusNode: focusNode,
-                      onChanged: (val){
-                        setState(() {
-                          query = val;
-                          refreshList();
-                        });
-                      },
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(10),
-                        prefixIcon: Icon(Icons.search),
-                        labelText: "Search",
-                        suffixIcon: (focusNode.hasFocus && searchController.text.isNotEmpty) ? IconButton(onPressed: (){searchController.clear(); query = ""; refreshList();}, icon: Icon(Icons.clear),) : SizedBox.shrink(),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(60),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(60),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  PopupMenuButton(
-                    tooltip: 'Sort By',
-                    onSelected: (value) {
-                      switch (value) {
-                        case 0:
-                          setState(() {
-                            selectedSort = SortType.aToZ;
-                            refreshList();
-                          });
-                          break;
-                        case 1:
-                          setState(() {
-                            selectedSort = SortType.zToA;
-                            refreshList();
-                          });
-                          break;
-                        case 2:
-                          setState(() {
-                            selectedSort = SortType.priceLowToHigh;
-                            refreshList();
-                          });
-                          break;
-                        case 3:
-                          setState(() {
-                            selectedSort = SortType.priceHighToLow;
-                            refreshList();
-                          });
-                          break;
-                      }
-                    },
-                    itemBuilder: (context) {
-                      return [
-                        PopupMenuItem(
-                          value: 0,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text("Name", style: th.labelLarge,),
-                              const SizedBox(width: 8),
-                              Icon(Icons.sort_by_alpha_rounded, size: 18,),
-                              Icon(Icons.arrow_downward_rounded, size: 18,),
-                              if(selectedSort == SortType.aToZ) ...[
-                                const SizedBox(width: 15,),
-                                Icon(Icons.check, color: ch.primary, size: 18,),
-                              ],
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 1,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text("Name", style: th.labelLarge,),
-                              const SizedBox(width: 8),
-                              Icon(Icons.sort_by_alpha_rounded, size: 18,),
-                              Icon(Icons.arrow_upward_rounded, size: 18,),
-                              if(selectedSort == SortType.zToA) ...[
-                                const SizedBox(width: 15,),
-                                Icon(Icons.check, color: ch.primary, size: 18,),
-                              ],
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 2,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text("Price", style: th.labelLarge,),
-                              const SizedBox(width: 8),
-                              Icon(Icons.attach_money_rounded, size: 18,),
-                              Icon(Icons.arrow_downward_rounded, size: 18,),
-                              if(selectedSort == SortType.priceLowToHigh) ...[
-                                const SizedBox(width: 15,),
-                                Icon(Icons.check, color: ch.primary, size: 18,),
-                              ],
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 3,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text("Price", style: th.labelLarge,),
-                              const SizedBox(width: 8),
-                              Icon(Icons.attach_money_rounded, size: 18,),
-                              Icon(Icons.arrow_upward_rounded, size: 18,),
-                              if(selectedSort == SortType.priceHighToLow) ...[
-                                const SizedBox(width: 15,),
-                                Icon(Icons.check, color: ch.primary, size: 18,),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ];
-                    },
-                    icon: CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      foregroundColor: Theme.of(context).colorScheme.onSurface,
-                      child: Icon(Symbols.sort_rounded),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            if(focusNode.hasFocus && searchController.text.isEmpty) ...[
-              if(recentList.isNotEmpty) ...[
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text('Recent', style: th.labelLarge,)),
-                const SizedBox(height: 10,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: List.generate(recentList.length, ((index) {
-                    final recent = recentList[index];
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: GestureDetector(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: recent)));
-                          recentList.remove(recent);
-                          addRecentItem(recent);
-                        },
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundImage: recent.photo.image,
-                        ),
-                      ),
-                    );
-                  })
-                  ),
-                ),
-              ],
-              const SizedBox(height: 25,),
+      body: GestureDetector(
+        onTap: (){
+          if(showSearchPanel){
+            setState(() => showSearchPanel = false);
+          }
+        },
+        behavior: HitTestBehavior.translucent,
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 15),
               Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Text('For You', style: th.titleSmall,)),
-              const SizedBox(height: 10,),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: suggestionList.length,
-                    itemBuilder: (context, index){
-                    final suggest = suggestionList[index];
-                
-                    return GestureDetector(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: suggest)));
-                        if(recentList.contains(suggest)){
-                          recentList.remove(suggest);
-                          addRecentItem(suggest);
-                        }else{
-                          addRecentItem(suggest);
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 35,
-                            backgroundImage: suggest.photo.image,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (val){
+                          setState(() {
+                            query = val;
+                            showSearchPanel = val.isEmpty;
+                            refreshList();
+                          });
+                        },
+                        onTap: (){setState(() => showSearchPanel = true);},
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(10),
+                          prefixIcon: Icon(Icons.search),
+                          labelText: "Search",
+                          suffixIcon: (showSearchPanel && searchController.text.isNotEmpty) ? IconButton(onPressed: (){searchController.clear(); query = ""; showSearchPanel = true; refreshList();}, icon: Icon(Icons.clear),) : SizedBox.shrink(),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(60),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           ),
-                          title: Text(suggest.name),
-                          titleTextStyle: th.bodyLarge,
-                          trailing: Icon(Icons.chevron_right_rounded),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(60),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
-                    );
-                }),
-              ),
-              const SizedBox(height: 70,),
-            ]
-            else ...[
-              if(displayedItems.isEmpty)
-                Center(child: Text('No Matches Found', style: th.titleSmall,),)
-              else
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(width: 10,),
+                    ),
+                    const SizedBox(width: 10),
                     PopupMenuButton(
-                      tooltip: 'Filter By',
+                      tooltip: 'Sort By',
                       onSelected: (value) {
                         switch (value) {
                           case 0:
                             setState(() {
-                              selectedFilter = FilterType.all;
+                              selectedSort = SortType.aToZ;
                               refreshList();
                             });
                             break;
                           case 1:
                             setState(() {
-                              selectedFilter = FilterType.standard;
+                              selectedSort = SortType.zToA;
                               refreshList();
                             });
                             break;
                           case 2:
                             setState(() {
-                              selectedFilter = FilterType.premium;
+                              selectedSort = SortType.priceLowToHigh;
+                              refreshList();
+                            });
+                            break;
+                          case 3:
+                            setState(() {
+                              selectedSort = SortType.priceHighToLow;
                               refreshList();
                             });
                             break;
@@ -577,10 +437,11 @@ class _ShopScreenState extends State<ShopScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.all_inbox_rounded, size: 18,),
+                                Text("Name", style: th.labelLarge,),
                                 const SizedBox(width: 8),
-                                Text("All", style: th.labelLarge,),
-                                if(selectedFilter == FilterType.all) ...[
+                                Icon(Icons.sort_by_alpha_rounded, size: 18,),
+                                Icon(Icons.arrow_downward_rounded, size: 18,),
+                                if(selectedSort == SortType.aToZ) ...[
                                   const SizedBox(width: 15,),
                                   Icon(Icons.check, color: ch.primary, size: 18,),
                                 ],
@@ -592,10 +453,11 @@ class _ShopScreenState extends State<ShopScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.account_balance_wallet_rounded, size: 18,),
+                                Text("Name", style: th.labelLarge,),
                                 const SizedBox(width: 8),
-                                Text("Standard", style: th.labelLarge,),
-                                if(selectedFilter == FilterType.standard) ...[
+                                Icon(Icons.sort_by_alpha_rounded, size: 18,),
+                                Icon(Icons.arrow_upward_rounded, size: 18,),
+                                if(selectedSort == SortType.zToA) ...[
                                   const SizedBox(width: 15,),
                                   Icon(Icons.check, color: ch.primary, size: 18,),
                                 ],
@@ -607,10 +469,27 @@ class _ShopScreenState extends State<ShopScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.workspace_premium_rounded, size: 18,),
+                                Text("Price", style: th.labelLarge,),
                                 const SizedBox(width: 8),
-                                Text("Premium", style: th.labelLarge,),
-                                if(selectedFilter == FilterType.premium) ...[
+                                Icon(Icons.attach_money_rounded, size: 18,),
+                                Icon(Icons.arrow_downward_rounded, size: 18,),
+                                if(selectedSort == SortType.priceLowToHigh) ...[
+                                  const SizedBox(width: 15,),
+                                  Icon(Icons.check, color: ch.primary, size: 18,),
+                                ],
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 3,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("Price", style: th.labelLarge,),
+                                const SizedBox(width: 8),
+                                Icon(Icons.attach_money_rounded, size: 18,),
+                                Icon(Icons.arrow_upward_rounded, size: 18,),
+                                if(selectedSort == SortType.priceHighToLow) ...[
                                   const SizedBox(width: 15,),
                                   Icon(Icons.check, color: ch.primary, size: 18,),
                                 ],
@@ -622,80 +501,239 @@ class _ShopScreenState extends State<ShopScreen> {
                       icon: CircleAvatar(
                         backgroundColor: Theme.of(context).colorScheme.surface,
                         foregroundColor: Theme.of(context).colorScheme.onSurface,
-                        child: Icon(Symbols.filter_list_rounded),
-                      ),
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: List.generate(SectionType.values.length, ((index) {
-                              final section = SectionType.values[index];
-
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: ChoiceChip(
-                                  shape: StadiumBorder(
-                                    side: BorderSide(color:  selectedSection == section ? Colors.transparent : Theme.of(context).colorScheme.primary),
-                                  ),
-                                  backgroundColor: Theme.of(context).colorScheme.surface,
-                                  selectedColor: Theme.of(context).colorScheme.primary,
-                                  showCheckmark: false,
-                                  label: Text(filterLabels[index]), selected: selectedSection == section,
-                                  avatar: Icon(filterIcons[index]),
-                                  onSelected: (selected){
-                                    setState(() {
-                                      if(selected){
-                                        selectedSection = section;
-                                        refreshList();
-                                      }
-                                    });
-                                  },
-                                ),
-                              );
-                            })
-                            ),
-                          ),
-                        ),
+                        child: Icon(Symbols.sort_rounded),
                       ),
                     ),
                   ],
                 ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: ListView.builder(
-                      itemCount: displayedItems.length,
-                      itemBuilder: (context, index){
-                        final item = displayedItems[index];
-                        return Card(
-                          color: item.type == FilterType.premium ? CustomColors.gold(context) : ch.surface,
-                          elevation: 0,
-                          child: ListTile(
-                            leading: SizedBox(
-                              height: 60,
-                              width: 60,
-                              child: item.photo,
-                            ),
-                            title: Text(item.name),
-                            titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                            subtitle: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [Text('৳${item.price}'), const SizedBox(width: 25,), item.stock != 0 ? Text('In stock: ${item.stock}') : Text('Out of stock')]),
-                            subtitleTextStyle: Theme.of(context).textTheme.labelLarge,
-                            trailing: IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: item,))).then((_) => setState(() {})); addRecentItem(item);}, icon: Icon(Icons.shopping_bag_rounded)),
+              ),
+              const SizedBox(height: 10),
+              if(showSearchPanel && searchController.text.isEmpty) ...[
+                if(recentList.isNotEmpty) ...[
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Text('Recent', style: th.labelLarge,)),
+                  const SizedBox(height: 10,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List.generate(recentList.length, ((index) {
+                      final recent = recentList[index];
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: GestureDetector(
+                          onTap: (){
+                            setState(() => showSearchPanel = false);
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: recent)));
+                            recentList.remove(recent);
+                            addRecentItem(recent);
+                          },
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundImage: recent.photo.image,
                           ),
-                        );
-                      }
+                        ),
+                      );
+                    })
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 25,),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text('For You', style: th.titleSmall,)),
+                const SizedBox(height: 10,),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: suggestionList.length,
+                      itemBuilder: (context, index){
+                      final suggest = suggestionList[index];
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: ListTile(
+                          onTap: (){
+                            setState(() => showSearchPanel = false);
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: suggest)));
+                            if(recentList.contains(suggest)){
+                              recentList.remove(suggest);
+                              addRecentItem(suggest);
+                            }else{
+                              addRecentItem(suggest);
+                            }
+                          },
+                          leading: CircleAvatar(
+                            radius: 35,
+                            backgroundImage: suggest.photo.image,
+                          ),
+                          title: Text(suggest.name),
+                          titleTextStyle: th.bodyLarge,
+                          trailing: Icon(Icons.chevron_right_rounded),
+                        ),
+                      );
+                  }),
+                ),
+                const SizedBox(height: 70,),
+              ]
+              else ...[
+                if(displayedItems.isEmpty)
+                  Center(child: Text('No Matches Found', style: th.titleSmall,),)
+                else
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(width: 10,),
+                      PopupMenuButton(
+                        tooltip: 'Filter By',
+                        onSelected: (value) {
+                          switch (value) {
+                            case 0:
+                              setState(() {
+                                selectedFilter = FilterType.all;
+                                refreshList();
+                              });
+                              break;
+                            case 1:
+                              setState(() {
+                                selectedFilter = FilterType.standard;
+                                refreshList();
+                              });
+                              break;
+                            case 2:
+                              setState(() {
+                                selectedFilter = FilterType.premium;
+                                refreshList();
+                              });
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                              value: 0,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.all_inbox_rounded, size: 18,),
+                                  const SizedBox(width: 8),
+                                  Text("All", style: th.labelLarge,),
+                                  if(selectedFilter == FilterType.all) ...[
+                                    const SizedBox(width: 15,),
+                                    Icon(Icons.check, color: ch.primary, size: 18,),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 1,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.account_balance_wallet_rounded, size: 18,),
+                                  const SizedBox(width: 8),
+                                  Text("Standard", style: th.labelLarge,),
+                                  if(selectedFilter == FilterType.standard) ...[
+                                    const SizedBox(width: 15,),
+                                    Icon(Icons.check, color: ch.primary, size: 18,),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 2,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.workspace_premium_rounded, size: 18,),
+                                  const SizedBox(width: 8),
+                                  Text("Premium", style: th.labelLarge,),
+                                  if(selectedFilter == FilterType.premium) ...[
+                                    const SizedBox(width: 15,),
+                                    Icon(Icons.check, color: ch.primary, size: 18,),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ];
+                        },
+                        icon: CircleAvatar(
+                          backgroundColor: Theme.of(context).colorScheme.surface,
+                          foregroundColor: Theme.of(context).colorScheme.onSurface,
+                          child: Icon(Symbols.filter_list_rounded),
+                        ),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: List.generate(SectionType.values.length, ((index) {
+                                final section = SectionType.values[index];
+
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  child: ChoiceChip(
+                                    shape: StadiumBorder(
+                                      side: BorderSide(color:  selectedSection == section ? Colors.transparent : Theme.of(context).colorScheme.primary),
+                                    ),
+                                    backgroundColor: Theme.of(context).colorScheme.surface,
+                                    selectedColor: Theme.of(context).colorScheme.primary,
+                                    showCheckmark: false,
+                                    label: Text(filterLabels[index]), selected: selectedSection == section,
+                                    avatar: Icon(filterIcons[index]),
+                                    onSelected: (selected){
+                                      setState(() {
+                                        if(selected){
+                                          selectedSection = section;
+                                          refreshList();
+                                        }
+                                      });
+                                    },
+                                  ),
+                                );
+                              })
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: ListView.builder(
+                        itemCount: displayedItems.length,
+                        itemBuilder: (context, index){
+                          final item = displayedItems[index];
+                          return Card(
+                            color: item.type == FilterType.premium ? CustomColors.gold(context) : ch.surface,
+                            elevation: 0,
+                            child: ListTile(
+                              leading: SizedBox(
+                                height: 60,
+                                width: 60,
+                                child: item.photo,
+                              ),
+                              title: Text(item.name),
+                              titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                              subtitle: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [Text('৳${item.price}'), const SizedBox(width: 25,), item.stock != 0 ? Text('In stock: ${item.stock}') : Text('Out of stock')]),
+                              subtitleTextStyle: Theme.of(context).textTheme.labelLarge,
+                              trailing: IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => ItemScreen(item: item,))).then((_) {if(mounted) setState(() {});}); addRecentItem(item);}, icon: Icon(Icons.shopping_bag_rounded)),
+                            ),
+                          );
+                        }
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 70,),
-            ]
-          ],
+                const SizedBox(height: 70,),
+              ]
+            ],
+          ),
         ),
       ),
     );
@@ -735,7 +773,12 @@ class _ItemScreenState extends State<ItemScreen> {
                 onPressed: getItemMax <= 1 ? null : () => setDialog(() => getItemMax--), icon: Icon(Icons.remove_circle_outline_rounded, size: 34,),
                 disabledColor: CustomColors.greyLight(context),
               ),
-              Text('$getItemMax', style: Theme.of(context).textTheme.titleMedium,),
+              RichText(text: TextSpan(
+                children: [
+                  TextSpan(text: '$getItemMax ', style: Theme.of(context).textTheme.titleMedium,),
+                  TextSpan(text: getItemMax == 1 ? 'unit' : 'units', style: Theme.of(context).textTheme.titleMedium,),
+                ]
+              )),
               IconButton(
                 onPressed: getItemMax >= maxItems ? null : () => setDialog(() => getItemMax++), icon: Icon(Icons.add_circle_outline_rounded, size: 34,),
                 disabledColor: CustomColors.greyLight(context),
@@ -771,19 +814,19 @@ class _ItemScreenState extends State<ItemScreen> {
             children: [
               SizedBox(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 0.25,
+                height: MediaQuery.of(context).size.height * 0.45,
                 child: Stack(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.25,
-                          child: FittedBox(
-                              fit: BoxFit.cover,
-                              child: widget.item.photo
-                          ),
-                      ),
+                    SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.45,
+                        child: Image(
+                            image: widget.item.photo.image,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.center,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
                     ),
                     Positioned(
                         left: 0,
@@ -793,12 +836,13 @@ class _ItemScreenState extends State<ItemScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 120,),
-              Padding(padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),child: Text(widget.item.name, style: th.bodyLarge,)),
+              const SizedBox(height: 20,),
+              Padding(padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),child: Text(widget.item.name, style: th.titleSmall,)),
               Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                   child: Text(widget.item.description, style: th.labelLarge,)),
               const SizedBox(height: 15,),
+              Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),child: Text('Price: ৳${widget.item.price} / unit',)),
               Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 25),child: Text(widget.item.stock != 0 ? 'In stock: ${widget.item.stock}' : 'Out of stock')),
             ],
           ),

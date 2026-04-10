@@ -399,7 +399,10 @@ class _DayScreenState extends State<DayScreen> {
     }
     
     return Scaffold(
-      appBar: AppBar(title: Text('Today'),),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('Today'),
+      ),
       body: SafeArea(child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -420,7 +423,7 @@ class _DayScreenState extends State<DayScreen> {
                       TextSpan(text: "$currStat  ", style: th.titleMedium,),
                       WidgetSpan(
                           alignment: PlaceholderAlignment.middle,
-                          child: Icon(avatar, size: 34, color: ch.onSurface,)
+                          child: Icon(avatar, size: 30, color: ch.onSurface,)
                       ),
                     ]
                   )),
@@ -520,7 +523,8 @@ class _DayScreenState extends State<DayScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 25),
+
           ],
         ),
       )

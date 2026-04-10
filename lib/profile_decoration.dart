@@ -318,6 +318,7 @@ class ProfileWidgets {
             children: [
               Text('Free days', style: Theme.of(context).textTheme.labelLarge),
               Text(
+                user.freeType.isEmpty ? 'None' :
                 user.freeType.length > 2
                     ? '${user.freeType.first} & ${user.freeType.length - 1} more'
                     : '${user.freeType.first}, ${user.freeType[1]}',
