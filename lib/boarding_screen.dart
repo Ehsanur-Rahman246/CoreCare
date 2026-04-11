@@ -205,14 +205,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         for (final c in _lottieController) {
                           c.stop();
                         }
-                        final provider = Provider.of<DataProvider>(
-                          context,
-                          listen: false,
-                        );
-                        await provider.restoreSession();
-                        if (context.mounted) {
                           Navigator.pushReplacementNamed(context, '/auth');
-                        }
                       },
                       child: Text('Sign In'),
                     )

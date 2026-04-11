@@ -5,9 +5,8 @@ import 'package:core_care/pages/profile_tags.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:google_sign_in_web/web_only.dart' as web;
+import 'package:core_care/cross_platform/gsi.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:google_sign_in_web/google_sign_in_web.dart';
 import 'package:core_care/data_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -175,7 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             SliverPersistentHeader(
-              delegate: SpacerDelegate(maxSpace: 200, minSpace: 20),
+              delegate: SpacerDelegate(maxSpace: ExpandedProfileHeader.cardHeight , minSpace: 20),
             ),
             SliverPadding(
               padding: const EdgeInsetsGeometry.symmetric(horizontal: 15),
@@ -779,11 +778,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                               child: SizedBox(
                                                 height: 40,
                                                 width: 40,
-                                                child: web.renderButton(
+                                                child: renderButton(
                                                   configuration:
                                                       GSIButtonConfiguration(
-                                                        size: web
-                                                            .GSIButtonSize
+                                                        size: GSIButtonSize
                                                             .large,
                                                         shape:
                                                             GSIButtonShape.pill,
@@ -1147,6 +1145,7 @@ class SpacerDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class ExpandedProfileHeader extends StatefulWidget {
+  static double cardHeight = 200;
   static bool hasImage = false;
   static Uint8List imageBytes = Uint8List(0);
 
@@ -1157,11 +1156,16 @@ class ExpandedProfileHeader extends StatefulWidget {
 }
 
 class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
+  final cardKey = GlobalKey();
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadImageFromUrl();
+      final box = cardKey.currentContext?.findRenderObject() as RenderBox?;
+      if(box != null){
+        ExpandedProfileHeader.cardHeight = box.size.height;
+      }
       setState(() {});
     });
   }
@@ -1192,9 +1196,11 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
     }
   }
 
-  void removeImage() {
+  void removeImage() async{
+    await context.read<DataProvider>().removeProfileImage();
     setState(() {
       ExpandedProfileHeader.hasImage = false;
+      ExpandedProfileHeader.imageBytes = Uint8List(0);
     });
   }
 
@@ -1266,8 +1272,9 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
         Positioned(
           left: 20,
           right: 20,
-          bottom: -190,
+          top: 120,
           child: Card(
+            key: cardKey,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 50, 20, 15),
               child: Column(

@@ -6,13 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:core_care/decoration.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:google_sign_in_web/google_sign_in_web.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:core_care/data_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:google_sign_in_web/web_only.dart' as web;
+import 'package:core_care/cross_platform/gsi.dart';
 
 class SignupPageOneData {
   String? name;
@@ -3736,7 +3735,7 @@ class _SignupPageNineState extends State<SignupPageNine> {
                       child: SizedBox(
                         width: double.infinity,
                         height: 50,
-                        child: web.renderButton(
+                        child: renderButton(
                           configuration: GSIButtonConfiguration(
                             size: GSIButtonSize.large,
                             shape: GSIButtonShape.pill,

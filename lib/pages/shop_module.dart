@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:core_care/main.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';

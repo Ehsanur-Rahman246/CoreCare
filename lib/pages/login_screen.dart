@@ -8,9 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:google_sign_in_web/web_only.dart' as web;
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:google_sign_in_web/google_sign_in_web.dart';
+import 'package:core_care/cross_platform/gsi.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -375,7 +374,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: SizedBox(
                                     height: 50,
                                     width: 50,
-                                    child: web.renderButton(
+                                    child: renderButton(
                                       configuration: GSIButtonConfiguration(
                                         size: GSIButtonSize.large,
                                         shape: GSIButtonShape.pill,

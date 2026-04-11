@@ -296,7 +296,7 @@ class _DietScreenState extends State<DietScreen> {
               Expanded(
                 child: ListView(
                   children: [
-                    MealBoxes(title: 'Breakfast', name: 'Food', icon: Symbols.breakfast_dining_rounded, onTap: () {Navigator.push(context, MaterialPageRoute(builder: (_) => MealDemo()));}, trail: IconButton(onPressed: (){}, icon: Icon(Symbols.hand_meal_rounded)),),
+                    MealBoxes(title: 'Breakfast', name: 'Food', icon: Symbols.breakfast_dining_rounded, onTap: () {Navigator.push(context, MaterialPageRoute(builder: (_) => SwapMealScreen()));}, trail: Symbols.hand_meal_rounded,),
                   ],
                 ),
               ),
@@ -474,7 +474,7 @@ class MealBoxes extends StatefulWidget {
   final String title;
   final String name;
   final VoidCallback onTap;
-  final Widget trail;
+  final IconData trail;
   const MealBoxes({super.key, required this.title, required this.name, required this.icon, required this.onTap, required this.trail});
 
   @override
@@ -487,10 +487,11 @@ class _MealBoxesState extends State<MealBoxes> {
     return Card(
       elevation: 0,
       child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: Text(widget.title),
         leading: Icon(widget.icon),
         subtitle: Text(widget.name),
-        trailing: widget.trail,
+        trailing: Icon(widget.trail),
         onTap: widget.onTap,
       ),
     );
@@ -594,20 +595,6 @@ class MealProvider extends ChangeNotifier{
 
   List<MealModel> getMeal(String type){
     return meals.where((m) => m.meal == type).toList();
-  }
-}
-
-class MealDemo extends StatefulWidget {
-  const MealDemo({super.key});
-
-  @override
-  State<MealDemo> createState() => _MealDemoState();
-}
-
-class _MealDemoState extends State<MealDemo> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 

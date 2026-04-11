@@ -1,0 +1,1 @@
+export 'gsi_stub.dart' if(dart.library.ui_web) 'gsi_web.dart';

@@ -578,6 +578,18 @@ class DataProvider extends ChangeNotifier {
     return null;
   }
 
+  Future<void> removeProfileImage() async{
+    if(currentUser == null) return;
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).update({'profileImage': null});
+      profileImageBase64 = null;
+      notifyListeners();
+    }catch(e){
+      debugPrint('removeProfileImage error: $e');
+      rethrow;
+    }
+  }
+
   Future<void> updateSettings({
     bool? wantNotifications,
     bool? wantMetricUnit,

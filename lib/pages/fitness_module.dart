@@ -6,8 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'home_screen.dart';
-import 'dart:ui_web' as ui;
-import 'package:web/web.dart' as web;
+import 'package:core_care/cross_platform/yt_mobile.dart'
+    if(dart.library.ui_web) 'package:core_care/cross_platform/yt_web.dart';
 
 class FitScreen extends StatefulWidget {
   const FitScreen({super.key});
@@ -148,14 +148,6 @@ class _FitScreenState extends State<FitScreen>
                 }),
               ),
               const SizedBox(height: 5),
-              Container(
-                padding: const EdgeInsets.only(left: 10),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Today\'s exercises',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ),
               const SizedBox(height: 5),
               if(currentStatus == Status.injured)
                 Center(child: Text("You're Injured!!\nNo exercises for you today\nHeal up soon", textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall,),)
@@ -164,6 +156,14 @@ class _FitScreenState extends State<FitScreen>
               else if(currentStatus == Status.rest)
                   Center(child: Text("It's your rest day\nNo exercise today\nRemember to take a walk", textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall,),)
               else ...[
+                    Container(
+                      padding: const EdgeInsets.only(left: 10),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Today\'s exercises',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ),
                 if(currentStatus == Status.travelling) ...[
                   Center(child: Text("Safe Travelling\nIf you get time do your regular exercises", textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelMedium,),),
                   const SizedBox(height: 5,),
@@ -937,20 +937,7 @@ class _TutorialPlayerState extends State<TutorialPlayer> {
     showIcon = _appBarIcons[widget.playerNumber];
     selectedDescriptions = _descriptions[widget.playerNumber];
     for(final videoId in selectedPlaylist){
-      final id = 'yt-player-$videoId';
-      ui.platformViewRegistry.registerViewFactory(id, (int i){
-        final iframe = web.document.createElement('iframe') as web.HTMLIFrameElement
-            ..src = 'https://www.youtube-nocookie.com/embed/$videoId'
-                '?rel=0&showinfo=0&enablejsapi=1&playsinline=1'
-            ..width = '100%'
-            ..height = '100%'
-            ..allowFullscreen = true
-            ..setAttribute('referrerpolicy', 'strict-origin-when-cross-origin')
-            ..setAttribute('allow', 'accelerometer; autoplay; clipboard-write; '
-                'encrypted-media; gyroscope; picture-in-picture; web-share',);
-        (iframe as web.HTMLElement).style.border = 'none';
-        return iframe;
-      });
+      registerYT(videoId);
     }
   }
 
@@ -973,7 +960,7 @@ class _TutorialPlayerState extends State<TutorialPlayer> {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
               child: Column(
-                  children: [AspectRatio(aspectRatio: 16 /7,child: HtmlElementView(viewType: 'yt-player-$videoId'),),
+                  children: [ytWidget(videoId),
                     Padding(
                         padding: const EdgeInsets.only(top: 10, bottom: 30),
                         child: Text(selectedDescriptions[index], style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.left,)),

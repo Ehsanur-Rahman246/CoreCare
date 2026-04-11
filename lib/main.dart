@@ -15,11 +15,14 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+  if(kIsWeb){
+    await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+  }
   await GoogleSignIn.instance.initialize(
     clientId:
         '951551089343-jgfn96g1e3drrm51hf5ohs85bs1b2k9k.apps.googleusercontent.com',

@@ -3,7 +3,6 @@ import 'package:core_care/main.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
-
 import 'home_screen.dart';
 
 class ProfileTags extends StatefulWidget {
@@ -53,63 +52,82 @@ class _ProfileTagsState extends State<ProfileTags> {
       spacing: 15,
       runSpacing: 5,
       children: [
-        Chip(
-          label: Text(
-            user.ageGroup,
-            style: Theme.of(
-              context,
-            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),
-          ),
-          avatar: Icon(
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: ShapeDecoration(
+            color: CustomColors.blueMuted(context),
+            shape: StadiumBorder(
+              side: BorderSide(color: CustomColors.blueOutline(context)),
+            ),),
+          child: RichText(text: TextSpan(children: [WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Icon(
             Icons.cake_rounded,
+            size: 14,
             color: CustomColors.bluePrimary(context),
-          ),
-          shape: StadiumBorder(),
-          backgroundColor: CustomColors.blueMuted(context),
-          side: BorderSide(color: CustomColors.blueOutline(context)),
-        ),
-        Chip(
-          label: Text(
-            user.profileTag,
+          ),),
+            TextSpan(text: ' '),
+            TextSpan(text: user.ageGroup,
             style: Theme.of(
               context,
-            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),
-          ),
-          avatar: Icon(
-            Icons.person_rounded,
-            color: CustomColors.purplePrimary(context),
-          ),
-          shape: StadiumBorder(),
-          backgroundColor: CustomColors.purpleMuted(context),
-          side: BorderSide(color: CustomColors.purpleOutline(context)),
-        ),
-        Chip(
-          label: Text(
-            user.goalType,
-            style: Theme.of(
-              context,
-            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),
-          ),
-          avatar: Icon(
-            Symbols.target_rounded,
-            color: CustomColors.greenPrimary(context),
-          ),
-          shape: StadiumBorder(),
-          backgroundColor: CustomColors.greenMuted(context),
-          side: BorderSide(color: CustomColors.greenOutline(context)),
-        ),
-        Chip(
-          label: Text(
-            currStat,
-            style: Theme.of(
-              context,
-            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),
-          ),
-          avatar: Icon(avatar),
-          shape: StadiumBorder(),
-          backgroundColor: CustomColors.primaryMuted(context),
-          side: BorderSide(color: Theme.of(context).colorScheme.primary),
-        ),
+            ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),),])),),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: ShapeDecoration(
+            color: CustomColors.purpleMuted(context),
+            shape: StadiumBorder(
+              side: BorderSide(color: CustomColors.purpleOutline(context)),
+            ),),
+          child: RichText(text: TextSpan(children: [WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Icon(
+              Icons.person_rounded,
+              size: 14,
+              color: CustomColors.purplePrimary(context),
+            ),),
+            TextSpan(text: ' '),
+            TextSpan(text: user.profileTag,
+              style: Theme.of(
+                context,
+              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),),])),),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: ShapeDecoration(
+            color: CustomColors.greenMuted(context),
+            shape: StadiumBorder(
+              side: BorderSide(color: CustomColors.greenOutline(context)),
+            ),),
+          child: RichText(text: TextSpan(children: [WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Icon(
+              Symbols.target_rounded,
+              size: 14,
+              color: CustomColors.greenPrimary(context),
+            ),),
+            TextSpan(text: ' '),
+            TextSpan(text: user.goalType,
+              style: Theme.of(
+                context,
+              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),),])),),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: ShapeDecoration(
+            color: CustomColors.primaryMuted(context),
+            shape: StadiumBorder(
+              side: BorderSide(color: Theme.of(context).colorScheme.primary),
+            ),),
+          child: RichText(text: TextSpan(children: [WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Icon(
+              avatar,
+              size: 14,
+              color: CustomColors.greenPrimary(context),
+            ),),
+            TextSpan(text: ' '),
+            TextSpan(text: currStat,
+              style: Theme.of(
+                context,
+              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400),),])),),
       ],
     );
   }
