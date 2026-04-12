@@ -174,7 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             SliverPersistentHeader(
-              delegate: SpacerDelegate(maxSpace: ExpandedProfileHeader.cardHeight , minSpace: 20),
+              delegate: SpacerDelegate(maxSpace: ExpandedProfileHeader.cardHeight - 60, minSpace: 20),
             ),
             SliverPadding(
               padding: const EdgeInsetsGeometry.symmetric(horizontal: 15),
@@ -1251,111 +1251,176 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
       clipBehavior: Clip.none,
       children: [
         Container(
-          alignment: Alignment.topLeft,
+          alignment: Alignment.topCenter,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(40)),
           ),
-        ),
-        Container(
-          alignment: Alignment.topCenter,
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 15),
-            child: Text(
-              "Profile",
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onPrimary,
+          child: Stack(
+            clipBehavior: Clip.none, children: [
+            Container(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: Text(
+                  "Profile",
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        Positioned(
-          left: 20,
-          right: 20,
-          top: 120,
-          child: Card(
-            key: cardKey,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 50, 20, 15),
-              child: Column(
-                children: [
-                  Text(
-                    user.name,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Text(
-                    user.email,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  Divider(color: Theme.of(context).colorScheme.tertiary),
-                  ProfileTags(),
-                  Divider(color: Theme.of(context).colorScheme.tertiary),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
+            Positioned(
+              left: 20,
+              right: 20,
+              top: 120,
+              child: Card(
+                key: cardKey,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 50, 20, 15),
+                      child: Column(
                         children: [
-                          CircleAvatar(
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.tertiary,
-                            child: Emoji.starter,
-                          ),
-                          const SizedBox(height: 8),
                           Text(
-                            "Starter",
+                            user.name,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Text(
+                            user.email,
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
-                          Text(
-                            "110 XP",
-                            style: Theme.of(context).textTheme.labelSmall,
+                          Divider(color: Theme.of(context).colorScheme.tertiary),
+                          ProfileTags(),
+                          Divider(color: Theme.of(context).colorScheme.tertiary),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.tertiary,
+                                    child: Emoji.starter,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "Starter",
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                  Text(
+                                    "110 XP",
+                                    style: Theme.of(context).textTheme.labelSmall,
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.tertiary,
+                                    child: Emoji.fire,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "3 day",
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                  Text(
+                                    "Streak",
+                                    style: Theme.of(context).textTheme.labelSmall,
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.tertiary,
+                                    child: Emoji.coin,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "100 FC",
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                  Text(
+                                    "FitCoins",
+                                    style: Theme.of(context).textTheme.labelSmall,
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      Column(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.tertiary,
-                            child: Emoji.fire,
+                    ),
+                    Positioned(
+                      top: -40,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Theme.of(context).colorScheme.surface,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              if (!ExpandedProfileHeader.hasImage)
+                                CircleAvatar(
+                                  backgroundColor: CustomColors.greyLight(context),
+                                  radius: 37,
+                                  child: Icon(Icons.person, size: 40),
+                                )
+                              else
+                                CircleAvatar(
+                                  radius: 37,
+                                  foregroundImage: MemoryImage(
+                                    ExpandedProfileHeader.imageBytes,
+                                  ),
+                                ),
+                              Positioned(
+                                right: -5,
+                                bottom: -5,
+                                child: SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: IconButton.filled(
+                                    style: IconButton.styleFrom(
+                                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                                    ),
+                                    padding: const EdgeInsets.all(0),
+                                    onPressed: () {
+                                      if (ExpandedProfileHeader.hasImage) {
+                                        _showDialog();
+                                      } else {
+                                        pickImage();
+                                      }
+                                    },
+                                    icon: ExpandedProfileHeader.hasImage
+                                        ? Icon(Icons.edit)
+                                        : Icon(Icons.camera_alt),
+                                    iconSize: 18,
+                                    tooltip: "Add",
+                                    color: Theme.of(context).colorScheme.onTertiary,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "3 day",
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          Text(
-                            "Streak",
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                        ],
+                        ),
                       ),
-                      Column(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.tertiary,
-                            child: Emoji.coin,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "100 FC",
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          Text(
-                            "FitCoins",
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
+          ],
           ),
         ),
         IconButton(
@@ -1380,60 +1445,6 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                 padding: const EdgeInsetsGeometry.all(5),
                 child: Emoji.settings,
               ),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 80,
-          left: 0,
-          right: 0,
-          child: CircleAvatar(
-            radius: 40,
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                if (!ExpandedProfileHeader.hasImage)
-                  CircleAvatar(
-                    backgroundColor: CustomColors.greyLight(context),
-                    radius: 37,
-                    child: Icon(Icons.person, size: 40),
-                  )
-                else
-                  CircleAvatar(
-                    radius: 37,
-                    foregroundImage: MemoryImage(
-                      ExpandedProfileHeader.imageBytes,
-                    ),
-                  ),
-                Positioned(
-                  right: -5,
-                  bottom: -5,
-                  child: SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: IconButton.filled(
-                      style: IconButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.tertiary,
-                      ),
-                      padding: const EdgeInsets.all(0),
-                      onPressed: () {
-                        if (ExpandedProfileHeader.hasImage) {
-                          _showDialog();
-                        } else {
-                          pickImage();
-                        }
-                      },
-                      icon: ExpandedProfileHeader.hasImage
-                          ? Icon(Icons.edit)
-                          : Icon(Icons.camera_alt),
-                      iconSize: 18,
-                      tooltip: "Add",
-                      color: Theme.of(context).colorScheme.onTertiary,
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
         ),
