@@ -171,9 +171,9 @@ class _FitScreenState extends State<FitScreen>
                 Expanded(
                   child: ListView(
                     children: [
-                      ExerciseList(time: '08:30AM', title: "Warm Ups", subtitle: Text("50kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => WarmupScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp, isFirst: true,),
-                      ExerciseList(time: '08:30AM', title: "Main Workouts", subtitle: Text("380kcal"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp,),
-                      ExerciseList(time: '08:30AM', title: "Stretches", subtitle: Text("10kcal"), trailing: TextButton(onPressed: (){}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Icons.eighteen_mp, isLast: true,),
+                      ExerciseList(time: '08:30AM', title: "Warm Ups", subtitle: Text("50kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => WarmupScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.arrow_warm_up_rounded, isFirst: true,),
+                      ExerciseList(time: '08:37AM', title: "Main Workouts", subtitle: Text("380kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => MainWorkoutScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.fitness_center_rounded,),
+                      ExerciseList(time: '09:05AM', title: "Stretches", subtitle: Text("10kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => StretchScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.physical_therapy_rounded, isLast: true,),
                     ],
                   ),
                 ),
@@ -556,7 +556,7 @@ class FitnessProvider extends ChangeNotifier{
   final List<FitnessModel> exercises = [
     FitnessModel(title: "Warm-up", name: 'Neck rolls (gentle)', instructions: '1. Stand tall\n2. Drop chin to chest\n3. Slowly roll head in a circle\n4. Switch direction', burn: 3, duration: 30, sets: 1),
     FitnessModel(title: "Warm-up", name: 'Shoulder rolls', instructions: '1. Stand relaxed\n2. Lift shoulders up\n3. Roll back and down\n4. Repeat forward and backward', burn: 3, duration: 30, sets: 1),
-    FitnessModel(title: "Warm-up", name: 'Neck rolls (gentle)', instructions: '1. Extend arms sideways\n2. Make small circles\n3. Increase size gradually\n4. Reverse direction', burn: 4, duration: 60, sets: 1),
+    FitnessModel(title: "Warm-up", name: 'Arm circles (forward + back)', instructions: '1. Extend arms sideways\n2. Make small circles\n3. Increase size gradually\n4. Reverse direction', burn: 4, duration: 60, sets: 1),
     FitnessModel(title: "Warm-up", name: 'Torso rotation (standing)', instructions: '1. Stand with feet shoulder-width\n2. Keep hips forward\n3. Rotate upper body side to side', burn: 3, duration: 30, sets: 1),
     FitnessModel(title: "Warm-up", name: 'Hip circles', instructions: '1. Hands on hips\n2. Move hips in a circle\n3. Keep chest still\n4. Switch direction', burn: 3, duration: 60, sets: 1),
     FitnessModel(title: "Warm-up", name: 'Cat-cow', instructions: '1. On hands and knees\n2. Inhale drop belly lift chest\n3. Exhale round spine tuck chin', burn: 4, reps: 10, sets: 1),
@@ -618,56 +618,81 @@ class _WarmupScreenState extends State<WarmupScreen> {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: ListView.builder(
-            itemCount: ex.length,
-            itemBuilder: (context, index){
-              final exercises = ex[index];
-              return Card(
-                child: ListTile(
-                  title: Text(exercises.name!),
-                  trailing: OutlinedButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => DemoScreen()));}, child: Text('Start')),
-                ),
-              );
-        }),
-      ),
-    );
-  }
-}
-
-class DemoScreen extends StatefulWidget {
-  const DemoScreen({super.key});
-
-  @override
-  State<DemoScreen> createState() => _DemoScreenState();
-}
-
-class _DemoScreenState extends State<DemoScreen> {
-  @override
-  Widget build(BuildContext context) {
-    final exe = context.watch<FitnessProvider>();
-    return Scaffold(
-      appBar: AppBar(title: Text('Warm-up demo'),),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 5,),
-              Center(child: SetRepTimer(seconds: 300,)),
-              const SizedBox(height: 15,),
-              ExpansionTile(title: Text('Instructions'),
-              children: [
-                Text(exe.exercises[0].instructions!,),
-              ],
-              ),
-
-            ],
-          ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: ListView.builder(
+              itemCount: ex.length,
+              itemBuilder: (context, index){
+                final exercises = ex[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: Card(
+                    child: ListTile(
+                      title: Text(exercises.name!),
+                      trailing: OutlinedButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => WarmUpPages(index: index,)));}, child: Text('Start')),
+                    ),
+                  ),
+                );
+          }),
         ),
       ),
     );
   }
 }
 
+class WarmUpPages extends StatefulWidget {
+  final int index;
+  const WarmUpPages({super.key, required this.index});
+
+  @override
+  State<WarmUpPages> createState() => _WarmUpPagesState();
+}
+
+class _WarmUpPagesState extends State<WarmUpPages> {
+  @override
+  Widget build(BuildContext context) {
+    final ex = context.watch<FitnessProvider>();
+    return Scaffold(
+      body: SafeArea(child: SingleChildScrollView(child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        child: Column(
+          children: [
+            Align(
+                alignment: Alignment.centerLeft,
+                child: Text(ex.exercises[widget.index].name!, style: Theme.of(context).textTheme.bodyLarge,)),
+            const SizedBox(height: 15,),
+            ExpansionTile(
+              collapsedBackgroundColor: Theme.of(
+                context,
+              ).colorScheme.surface,
+              collapsedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide.none,
+              ),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              title: Text('Instructions', style: Theme.of(context).textTheme.titleMedium,),
+              children: [
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10), child: Text(ex.exercises[widget.index].instructions!, style: Theme.of(context).textTheme.bodyLarge,),
+                    ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 25,),
+            SetRepTimer(seconds: ex.exercises[widget.index].duration!),
+          ],
+        ),
+      ))),
+    );
+  }
+}
 
 class MainWorkoutScreen extends StatefulWidget {
   const MainWorkoutScreen({super.key});
@@ -679,9 +704,89 @@ class MainWorkoutScreen extends StatefulWidget {
 class _MainWorkoutScreenState extends State<MainWorkoutScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final ex = context.read<FitnessProvider>().getExercise('Main Workout');
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Main Workout'),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: ListView.builder(
+              itemCount: ex.length,
+              itemBuilder: (context, index){
+                final exercises = ex[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: Card(
+                    child: ListTile(
+                      title: Text(exercises.name!),
+                      trailing: OutlinedButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => WorkoutPages(index: index,)));}, child: Text('Start')),
+                    ),
+                  ),
+                );
+              }),
+        ),
+      ),
+    );
   }
 }
+
+class WorkoutPages extends StatefulWidget {
+  final int index;
+  const WorkoutPages({super.key, required this.index});
+
+  @override
+  State<WorkoutPages> createState() => _WorkoutPagesState();
+}
+
+class _WorkoutPagesState extends State<WorkoutPages> {
+  @override
+  Widget build(BuildContext context) {
+    final ex = context.watch<FitnessProvider>();
+    return Scaffold(
+      body: SafeArea(child: SingleChildScrollView(child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        child: Column(
+          children: [
+            Align(
+                alignment: Alignment.centerLeft,
+                child: Text(ex.exercises[widget.index + 8].name!, style: Theme.of(context).textTheme.bodyLarge,)),
+            const SizedBox(height: 15,),
+            ExpansionTile(
+              collapsedBackgroundColor: Theme.of(
+                context,
+              ).colorScheme.surface,
+              collapsedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide.none,
+              ),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              title: Text('Instructions', style: Theme.of(context).textTheme.titleMedium,),
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10), child: Text(ex.exercises[widget.index + 8].instructions!, style: Theme.of(context).textTheme.bodyLarge,),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 25,),
+            SetRepTimer(seconds: ex.exercises[widget.index + 8].duration!),
+          ],
+        ),
+      ))),
+    );
+  }
+}
+
 
 class StretchScreen extends StatefulWidget {
   const StretchScreen({super.key});
@@ -693,9 +798,89 @@ class StretchScreen extends StatefulWidget {
 class _StretchScreenState extends State<StretchScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final ex = context.read<FitnessProvider>().getExercise("Stretches");
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Stretches"),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: ListView.builder(
+              itemCount: ex.length,
+              itemBuilder: (context, index){
+                final exercises = ex[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: Card(
+                    child: ListTile(
+                      title: Text(exercises.name!),
+                      trailing: OutlinedButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => StretchPages(index: index,)));}, child: Text('Start')),
+                    ),
+                  ),
+                );
+              }),
+        ),
+      ),
+    );
   }
 }
+
+class StretchPages extends StatefulWidget {
+  final int index;
+  const StretchPages({super.key, required this.index});
+
+  @override
+  State<StretchPages> createState() => _StretchPagesState();
+}
+
+class _StretchPagesState extends State<StretchPages> {
+  @override
+  Widget build(BuildContext context) {
+    final ex = context.watch<FitnessProvider>();
+    return Scaffold(
+      body: SafeArea(child: SingleChildScrollView(child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        child: Column(
+          children: [
+            Align(
+                alignment: Alignment.centerLeft,
+                child: Text(ex.exercises[widget.index + 16].name!, style: Theme.of(context).textTheme.bodyLarge,)),
+            const SizedBox(height: 15,),
+            ExpansionTile(
+              collapsedBackgroundColor: Theme.of(
+                context,
+              ).colorScheme.surface,
+              collapsedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide.none,
+              ),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              title: Text('Instructions', style: Theme.of(context).textTheme.titleMedium,),
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10), child: Text(ex.exercises[widget.index + 16].instructions!, style: Theme.of(context).textTheme.bodyLarge,),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 25,),
+            SetRepTimer(seconds: ex.exercises[widget.index + 16].duration!),
+          ],
+        ),
+      ))),
+    );
+  }
+}
+
 
 class ExerciseScheduleScreen extends StatefulWidget {
   const ExerciseScheduleScreen({super.key});
@@ -1005,22 +1190,15 @@ class _SetRepTimerState extends State<SetRepTimer> {
     mode: StopWatchMode.countDown,
     presetMillisecond: StopWatchTimer.getMilliSecFromSecond(widget.seconds),
   );
-  bool _isRunning = false;
-
-  @override
-  void dispose() async {
-    super.dispose();
-    await _timer.dispose();
+  bool _hasStarted = false;
+  void _restartTimer(){
+    _timer..onResetTimer()..setPresetTime(mSec: StopWatchTimer.getMilliSecFromSecond(widget.seconds))..onStartTimer();
   }
 
-  void _toggle() {
-    if (_isRunning) {
-      _timer.onResetTimer();
-      setState(() => _isRunning = false);
-    } else {
-      _timer.onStartTimer();
-      setState(() => _isRunning = true);
-    }
+  @override
+  void dispose() {
+    super.dispose();
+    _timer.dispose();
   }
 
   @override
@@ -1028,33 +1206,41 @@ class _SetRepTimerState extends State<SetRepTimer> {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.only(left: 5),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            StreamBuilder<int>(
-              stream: _timer.rawTime,
-              initialData: _timer.rawTime.value,
-              builder: (context, snap) => Text(
-                StopWatchTimer.getDisplayTime(
-                  snap.data!,
-                  hours: false,
-                  milliSecond: false,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: StreamBuilder<int>(
+          stream: _timer.rawTime,
+          initialData: _timer.rawTime.value,
+          builder: (context, snap) {
+            final time = snap.data ?? 0;
+            final isFinished = time <= 0;
+            return Column(
+              children: [
+                Text(
+                  StopWatchTimer.getDisplayTime(
+                    snap.data!,
+                    hours: false,
+                    milliSecond: false,
+                  ),
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            const SizedBox(width: 10),
-            IconButton(
-              onPressed: _toggle,
-              icon: Icon(
-                _isRunning
-                    ? Icons.refresh_rounded
-                    : Icons.play_circle_filled_rounded,
-              ),
-              iconSize: 26,
-            ),
-          ],
+                const SizedBox(height: 30,),
+                OutlinedButton(onPressed: (){
+                  if(!_hasStarted){
+                    _timer.onStartTimer();
+                    setState(() {
+                      _hasStarted = true;
+                    });
+                  }else{
+                    _restartTimer();
+                  }
+                }, child: _hasStarted ? Text('Restart', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.primary),) : Text('Start', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.primary),)),
+                if(isFinished) ...[
+                  const SizedBox(height: 10,),
+                  FilledButton(onPressed: (){Navigator.pop(context);}, child: Text('Done', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimary),)),
+                ]
+              ],
+            );
+          }
         ),
       ),
     );

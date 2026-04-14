@@ -120,7 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       value: _buttonA,
                                       onChanged: (val) => update(() {
                                         _buttonA = val;
-                                        if (val) _buttonB = false;
+                                        if (val){
+                                          _buttonB = false;
+                                        }else{
+                                          _buttonB = true;
+                                        }
                                         if (val) st.updateStatus(Status.active);
                                       }),
                                     ),
@@ -142,7 +146,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       value: _buttonB,
                                       onChanged: (val) => update(() {
                                         _buttonB = val;
-                                        if (val) _buttonA = false;
+                                        if (val){
+                                          _buttonA = false;
+                                        }else{
+                                          _buttonA = true;
+                                        }
                                         if (val) st.updateStatus(Status.rest);
                                       }),
                                     ),
@@ -167,6 +175,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         if (val) {
                                           _buttonB = true;
                                           _buttonA = false;
+                                        }else{
+                                          _buttonA = true;
+                                          _buttonB = false;
                                         }
                                         if (val) st.updateStatus(Status.sick);
                                       }),
@@ -292,6 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userUp = context.read<DataProvider>();
     final time = context.watch<TimeProvider>();
     final provider = context.watch<DataProvider>();
     final fit = context.watch<FitnessProvider>();
@@ -673,8 +685,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             FilledButton(
                               onPressed: fillCounter < waterBarCount
-                                  ? () => setState(() => fillCounter++)
-                                  : null,
+                                  ? () {
+                                setState(() => fillCounter++);
+                                userUp.addXP(1);
+                              } : null,
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -687,11 +701,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 25),
                             FilledButton(
                               onPressed: fillCounter < waterBarCount
-                                  ? () => setState(() {
-                                      fillCounter++;
-                                      fillCounter++;
-                                    })
-                                  : null,
+                                  ? () {
+                                setState(() {
+                                  fillCounter++;
+                                  fillCounter++;
+                                });
+                                userUp.addXP(2);
+                              } : null,
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,

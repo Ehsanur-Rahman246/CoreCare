@@ -1,7 +1,6 @@
-import 'package:core_care/data_provider.dart';
+
 import 'package:core_care/pages/sign_up_pages.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:core_care/main.dart';

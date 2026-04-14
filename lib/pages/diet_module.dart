@@ -296,6 +296,9 @@ class _DietScreenState extends State<DietScreen> {
               Expanded(
                 child: ListView(
                   children: [
+                    // ListView.builder(itemBuilder: itemBuilder),
+                    // ListView.builder(itemBuilder: itemBuilder),
+                    // ListView.builder(itemBuilder: itemBuilder),
                     MealBoxes(title: 'Breakfast', name: 'Food', icon: Symbols.breakfast_dining_rounded, onTap: () {Navigator.push(context, MaterialPageRoute(builder: (_) => SwapMealScreen()));}, trail: Symbols.hand_meal_rounded,),
                   ],
                 ),

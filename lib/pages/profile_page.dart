@@ -1246,6 +1246,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<DataProvider>();
     final user = context.watch<DataProvider>().currentUser!;
     return Stack(
       clipBehavior: Clip.none,
@@ -1304,15 +1305,15 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                                     backgroundColor: Theme.of(
                                       context,
                                     ).colorScheme.tertiary,
-                                    child: Emoji.starter,
+                                    child: provider.xpIcon,
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    "Starter",
+                                    user.xpTag,
                                     style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                   Text(
-                                    "110 XP",
+                                    '${user.xp} XP',
                                     style: Theme.of(context).textTheme.labelSmall,
                                   ),
                                 ],
@@ -1327,7 +1328,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    "3 day",
+                                    user.streak <= 1 ? '${user.streak}-day' : '${user.streak}-days',
                                     style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                   Text(
@@ -1346,7 +1347,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    "100 FC",
+                                    '${user.coins} FC',
                                     style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                   Text(

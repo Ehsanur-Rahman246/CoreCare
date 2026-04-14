@@ -118,6 +118,40 @@ class UserData {
   final String themeMode;
   final bool is24Hour;
   final DateTime createdAt;
+  final int xp;
+  final int streak;
+  final int coins;
+  final String xpTag;
+
+  static int calculateXp({required String work, required String active, required String fit}){
+    const workXp = {
+      'Sedentary': 0,
+      'Moderately Active': 100,
+      'Physically Active': 200,
+    };
+    const activityXP = {
+      'Low': 0,
+      'Moderate': 200,
+      'High': 400,
+    };
+    const fitXP = {
+      'Beginner': 0,
+      'Intermediate': 300,
+      'Advanced': 600,
+    };
+    int base = 0;
+    return base + (workXp[work] ?? 0) + (activityXP[active] ?? 0) + (fitXP[fit] ?? 0);
+  }
+  static Map<String, String> getLevelTag(int xp){
+    if(xp < 500) return {'tag': 'Starter'};
+    if(xp < 500) return {'tag': 'Active'};
+    if(xp < 500) return {'tag': 'Commited'};
+    if(xp < 500) return {'tag': 'Dedicated'};
+    if(xp < 500) return {'tag': 'Advanced'};
+    if(xp < 500) return {'tag': 'Expert'};
+    if(xp < 500) return {'tag': 'Elite'};
+    return {'tag': 'Legend'};
+  }
 
   UserData({
     required this.uid,
@@ -169,7 +203,7 @@ class UserData {
     required this.language,
     required this.themeMode,
     required this.is24Hour,
-    required this.profileTag,
+    required this.profileTag, required this.xp, required this.streak, required this.coins, required this.xpTag,
   });
 
   factory UserData.fromSignup({
@@ -196,6 +230,8 @@ class UserData {
       final bytes = utf8.encode(password);
       return sha256.convert(bytes).toString();
     }
+    final startXP = UserData.calculateXp(work: p3.workType, active: p3.activityLevel, fit: p4.fitType);
+    final level = UserData.getLevelTag(startXP);
 
     return UserData(
       uid: uid,
@@ -247,7 +283,7 @@ class UserData {
       language: 'English',
       themeMode: 'system',
       is24Hour: true,
-      profileTag: profileTag,
+      profileTag: profileTag, xp: startXP, streak: 0, coins: 0, xpTag: level['tag']!,
     );
   }
 
@@ -303,6 +339,8 @@ class UserData {
       'theme': themeMode,
       'hourFormat': is24Hour,
       'createdAt': createdAt.toIso8601String(),
+      'xp' : xp, 'streak' : streak, 'coins' : coins,
+      'levelTag' : xpTag,
     };
   }
 
@@ -332,7 +370,7 @@ class UserData {
       fundType: map['fundamental'] ?? '',
       goalType: map['goal'],
       planType: map['plan'] ?? '',
-      workType: map['work'] ?? 0,
+      workType: map['work'] ?? '',
       activityLevel: map['activity'] ?? '',
       sleepPattern: map['sleepPattern'] ?? '',
       selectedMeds: List<String>.from(map['medicals'] ?? []),
@@ -359,7 +397,7 @@ class UserData {
       createdAt: DateTime.parse(
         map['createdAt'] ?? DateTime.now().toIso8601String(),
       ),
-      profileTag: map['profileTag'] ?? 'Starter',
+      profileTag: map['profileTag'] ?? 'Starter', xp: map['xp'] ?? 0, streak: map['streak'] ?? 0, coins: map['coins'] ?? 0, xpTag: map['levelTag'] ?? 'Starter',
     );
   }
 }
@@ -511,6 +549,20 @@ class DataProvider extends ChangeNotifier {
   String? profileImageBase64;
   bool _sessionRestored = false;
 
+  Image get xpIcon {
+    final xp = currentUser!.xp;
+    return switch(xp){
+      < 500 => Emoji.starter,
+      < 1000 => Emoji.starter,
+      < 1500 => Emoji.starter,
+      < 2000 => Emoji.starter,
+      < 3000 => Emoji.starter,
+      < 4000 => Emoji.starter,
+      < 5000 => Emoji.starter,
+      _ => Emoji.legend,
+    };
+  }
+
   bool get sessionRestored => _sessionRestored;
 
   ThemeMode get savedThemeMode => switch (currentUser?.themeMode ?? 'system') {
@@ -623,16 +675,39 @@ class DataProvider extends ChangeNotifier {
 
   Future<void> updateProfileField(String field, dynamic value) async {
     if (currentUser == null) return;
+    final updatedMap = currentUser!.toMap()..addAll({field: value});
+    currentUser = UserData.fromMap(updatedMap);
+    notifyListeners();
     try {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(currentUser!.uid)
           .update({field: value});
-      final updatedMap = currentUser!.toMap()..addAll({field: value});
-      currentUser = UserData.fromMap(updatedMap);
-      notifyListeners();
     } catch (e) {
       debugPrint('updatedProfileField error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> addXP(int gain) async{
+    if(currentUser == null) return;
+    final newXP = currentUser!.xp + gain;
+    final level = UserData.getLevelTag(newXP);
+
+    final fields = {
+      'xp' : newXP,
+      'levelTag' : level['tag'],
+    };
+    final updatedMap = currentUser!.toMap()..addAll(fields);
+    currentUser = UserData.fromMap(updatedMap);
+    notifyListeners();
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update(fields);
+    } catch (e) {
+      debugPrint('updateXP error: $e');
       rethrow;
     }
   }

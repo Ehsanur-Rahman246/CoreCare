@@ -817,6 +817,8 @@ class _GreetingsState extends State<Greetings> {
   DateTime? _lastGenerated;
 
   Greet? getRandomGreeting(List<Greet> greet, BuildContext context) {
+    final user = context.read<DataProvider>().currentUser;
+    if(user == null) return null;
     final now = DateTime.now();
     final time = context.watch<TimeProvider>().now.hour;
     final group = context.watch<DataProvider>().currentUser!.ageGroup;
