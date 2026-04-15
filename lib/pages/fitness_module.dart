@@ -171,9 +171,9 @@ class _FitScreenState extends State<FitScreen>
                 Expanded(
                   child: ListView(
                     children: [
-                      ExerciseList(time: '08:30AM', title: "Warm Ups", subtitle: Text("50kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => WarmupScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.arrow_warm_up_rounded, isFirst: true,),
-                      ExerciseList(time: '08:37AM', title: "Main Workouts", subtitle: Text("380kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => MainWorkoutScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.fitness_center_rounded,),
-                      ExerciseList(time: '09:05AM', title: "Stretches", subtitle: Text("10kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => StretchScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.physical_therapy_rounded, isLast: true,),
+                      ExerciseList(time: '08:30', title: "Warm Ups", subtitle: Text("50kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => WarmupScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.arrow_warm_up_rounded, isFirst: true,),
+                      ExerciseList(time: '08:37', title: "Main Workouts", subtitle: Text("380kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => MainWorkoutScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.fitness_center_rounded,),
+                      ExerciseList(time: '09:05', title: "Stretches", subtitle: Text("10kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => StretchScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.physical_therapy_rounded, isLast: true,),
                     ],
                   ),
                 ),
@@ -552,6 +552,11 @@ class FitnessProvider extends ChangeNotifier{
   int totalExe = 0;
   int totalCal = 0;
   int burnedCal = 0;
+  final Set<int> completedIndices = {};
+  void markCompleted(int index){
+    completedIndices.add(index);
+    notifyListeners();
+  }
 
   final List<FitnessModel> exercises = [
     FitnessModel(title: "Warm-up", name: 'Neck rolls (gentle)', instructions: '1. Stand tall\n2. Drop chin to chest\n3. Slowly roll head in a circle\n4. Switch direction', burn: 3, duration: 30, sets: 1),

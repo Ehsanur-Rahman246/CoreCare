@@ -101,6 +101,7 @@ class _DietScreenState extends State<DietScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 5),
               Container(
@@ -174,7 +175,7 @@ class _DietScreenState extends State<DietScreen> {
                               style: th.bodySmall,
                             ),
                             Text(
-                              "7 / 20 left",
+                              "2 / 3 left",
                               style: th.labelMedium,
                             ),
                           ],
@@ -296,10 +297,34 @@ class _DietScreenState extends State<DietScreen> {
               Expanded(
                 child: ListView(
                   children: [
+                    RichText(text: TextSpan(
+                      children: [
+                        WidgetSpan(child: Icon(Symbols.breakfast_dining_rounded), alignment: PlaceholderAlignment.middle),
+                        TextSpan(text: ' '),
+                        TextSpan(text: 'Breakfast '),
+                        TextSpan(text: ' 09:30', style: th.labelLarge),
+                      ]
+                    )),
                     // ListView.builder(itemBuilder: itemBuilder),
+                    RichText(text: TextSpan(
+                        children: [
+                          WidgetSpan(child: Icon(Symbols.meal_lunch_rounded), alignment: PlaceholderAlignment.middle),
+                          TextSpan(text: ' '),
+                          TextSpan(text: 'Lunch '),
+                          TextSpan(text: ' 13:30', style: th.labelLarge),
+                        ]
+                    )),
                     // ListView.builder(itemBuilder: itemBuilder),
+                    RichText(text: TextSpan(
+                        children: [
+                          WidgetSpan(child: Icon(Symbols.meal_dinner_rounded), alignment: PlaceholderAlignment.middle),
+                          TextSpan(text: ' '),
+                          TextSpan(text: 'Dinner '),
+                          TextSpan(text: ' 20:30', style: th.labelLarge),
+                        ]
+                    )),
                     // ListView.builder(itemBuilder: itemBuilder),
-                    MealBoxes(title: 'Breakfast', name: 'Food', icon: Symbols.breakfast_dining_rounded, onTap: () {Navigator.push(context, MaterialPageRoute(builder: (_) => SwapMealScreen()));}, trail: Symbols.hand_meal_rounded,),
+                    MealBoxes(title: 'Breakfast', cal: '100kcal', icon: Symbols.breakfast_dining_rounded, onTap: () {Navigator.push(context, MaterialPageRoute(builder: (_) => SwapMealScreen()));}, trail: Symbols.hand_meal_rounded,),
                   ],
                 ),
               ),
@@ -475,10 +500,10 @@ class _MicroLineWidgetState extends State<MicroLineWidget> {
 class MealBoxes extends StatefulWidget {
   final IconData icon;
   final String title;
-  final String name;
+  final String cal;
   final VoidCallback onTap;
   final IconData trail;
-  const MealBoxes({super.key, required this.title, required this.name, required this.icon, required this.onTap, required this.trail});
+  const MealBoxes({super.key, required this.title, required this.cal, required this.icon, required this.onTap, required this.trail});
 
   @override
   State<MealBoxes> createState() => _MealBoxesState();
@@ -493,7 +518,7 @@ class _MealBoxesState extends State<MealBoxes> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: Text(widget.title),
         leading: Icon(widget.icon),
-        subtitle: Text(widget.name),
+        subtitle: Text(widget.cal),
         trailing: Icon(widget.trail),
         onTap: widget.onTap,
       ),
