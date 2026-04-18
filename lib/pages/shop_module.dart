@@ -261,7 +261,6 @@ class _ShopScreenState extends State<ShopScreen> {
   ];
 
 
-
   List<Item> getSuggestionForYou({required Map<SectionType , List<Item>> data}){
     List<Item> init = data.values.expand((list) => list).toList();
     init.shuffle(Random());
@@ -339,6 +338,32 @@ class _ShopScreenState extends State<ShopScreen> {
       appBar: AppBar(
         leading: Icon(Icons.shopping_cart_rounded),
         title: Text('Shop Module'),
+        actions: [
+          PopupMenuButton(
+            onSelected: (value) async {
+              switch (value) {
+                case 0:
+                  Navigator.pushNamed(context, '/shopH');
+                  break;
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  value: 0,
+                  child: Row(
+                    children: [
+                      Icon(Symbols.orders_rounded),
+                      const SizedBox(width: 8),
+                      Text("Orders"),
+                    ],
+                  ),
+                ),
+              ];
+            },
+            icon: Icon(Icons.more_vert_rounded),
+          ),
+        ],
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -738,6 +763,21 @@ class _ShopScreenState extends State<ShopScreen> {
     );
   }
 }
+
+class ShopHistory extends StatefulWidget {
+  const ShopHistory({super.key});
+
+  @override
+  State<ShopHistory> createState() => _ShopHistoryState();
+}
+
+class _ShopHistoryState extends State<ShopHistory> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
 
 class ItemScreen extends StatefulWidget {
   final Item item;

@@ -78,6 +78,7 @@ class _MyAppState extends State<MyApp> {
         '/meal': (context) => AddMealScreen(),
         '/fitH': (context) => FitnessHistory(),
         '/dietH': (context) => DietHistory(),
+        '/shopH' : (context) => ShopHistory(),
         '/cart': (context) => CartScreen(),
       },
     );

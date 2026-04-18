@@ -157,174 +157,106 @@ class _DietScreenState extends State<DietScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: ch.surface,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 15,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Meals:",
-                              style: th.bodySmall,
+                    child: Consumer<MealProvider>(
+                      builder: (context, mealProvider, _) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: ch.surface,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 15,
                             ),
-                            Text(
-                              "2 / 3 left",
-                              style: th.labelMedium,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Meals:",
+                                  style: th.bodySmall,
+                                ),
+                                Text(
+                                  "${mealProvider.takenMeal} / 3 left",
+                                  style: th.labelMedium,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(width: 15),
                   Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: ch.surface,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 15,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Calories Taken:",
-                              style: th.bodySmall,
+                    child: Consumer<MealProvider>(
+                      builder: (context, mealProvider, _) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: ch.surface,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 15,
                             ),
-                            Text(
-                              "100 kcal",
-                              style: th.labelMedium,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "Calories Taken:",
+                                  style: th.bodySmall,
+                                ),
+                                Text(
+                                  "${mealProvider.calorieTaken} kcal",
+                                  style: th.labelMedium,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: MicroLineWidget(carbs: 0.4, protein: 0.5, fats: 0.1),
-              ),
-              const SizedBox(height: 5),
-              Card(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Carbs: ',
-                            style: th.labelMedium
-                                ?.copyWith(
-                                  color: CustomColors.yellowPrimary(context),
-                                ),
-                          ),
-                          TextSpan(
-                            text: '40%',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              color: ch.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Protein: ',
-                            style: th.labelMedium
-                                ?.copyWith(
-                                  color: CustomColors.bluePrimary(context),
-                                ),
-                          ),
-                          TextSpan(
-                            text: '50%',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              color: ch.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Fats: ',
-                            style: th.labelMedium
-                                ?.copyWith(
-                                  color: CustomColors.orangePrimary(context),
-                                ),
-                          ),
-                          TextSpan(
-                            text: '10%',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              color: ch.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 15),
               Expanded(
                 child: ListView(
                   children: [
-                    RichText(text: TextSpan(
-                      children: [
-                        WidgetSpan(child: Icon(Symbols.breakfast_dining_rounded), alignment: PlaceholderAlignment.middle),
-                        TextSpan(text: ' '),
-                        TextSpan(text: 'Breakfast '),
-                        TextSpan(text: ' 09:30', style: th.labelLarge),
-                      ]
-                    )),
-                    // ListView.builder(itemBuilder: itemBuilder),
-                    RichText(text: TextSpan(
-                        children: [
-                          WidgetSpan(child: Icon(Symbols.meal_lunch_rounded), alignment: PlaceholderAlignment.middle),
-                          TextSpan(text: ' '),
-                          TextSpan(text: 'Lunch '),
-                          TextSpan(text: ' 13:30', style: th.labelLarge),
-                        ]
-                    )),
-                    // ListView.builder(itemBuilder: itemBuilder),
-                    RichText(text: TextSpan(
-                        children: [
-                          WidgetSpan(child: Icon(Symbols.meal_dinner_rounded), alignment: PlaceholderAlignment.middle),
-                          TextSpan(text: ' '),
-                          TextSpan(text: 'Dinner '),
-                          TextSpan(text: ' 20:30', style: th.labelLarge),
-                        ]
-                    )),
-                    // ListView.builder(itemBuilder: itemBuilder),
-                    MealBoxes(title: 'Breakfast', cal: '100kcal', icon: Symbols.breakfast_dining_rounded, onTap: () {Navigator.push(context, MaterialPageRoute(builder: (_) => SwapMealScreen()));}, trail: Symbols.hand_meal_rounded,),
+                    Consumer<MealProvider>(
+                        builder: (context, mealProvider, _){
+                          final meals = [
+                            (mealProvider.selectedBreakfast, Symbols.breakfast_dining_rounded, '09:30'),
+                            (mealProvider.selectedLunch, Symbols.meal_lunch_rounded, '13:30'),
+                            (mealProvider.selectedDinner, Symbols.meal_dinner_rounded, '20:30'),
+                          ];
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: meals.map((entry){
+                              final (meal, icon, time) = entry;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(text: TextSpan(children: [
+                                    WidgetSpan(child: Icon(icon), alignment: PlaceholderAlignment.middle),
+                                    TextSpan(text: '  ${meal.meal}  ', style: th.bodyMedium),
+                                    TextSpan(text: time, style: th.labelLarge),
+                                  ])),
+                                  const SizedBox(height: 8,),
+                                  MealBoxes(title: meal.name ?? '', cal: '${meal.cal} kcal', icon: icon, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SwapMealScreen())),
+                                      trail: mealProvider.loggedMeals.contains(meal.meal)
+                                          ? Icons.check_circle_rounded
+                                          : Symbols.hand_meal_rounded,
+                                      onLog: () => context.read<MealProvider>().logMeal(meal)),
+                                  const SizedBox(height: 20,),
+                                ],
+                              );
+                            }).toList(),
+                          );
+                        }
+                    ),
                   ],
                 ),
               ),
@@ -413,6 +345,105 @@ class _DietScreenState extends State<DietScreen> {
     );
   }
 }
+
+class MealDayScreen extends StatefulWidget {
+  const MealDayScreen({super.key});
+
+  @override
+  State<MealDayScreen> createState() => _MealDayScreenState();
+}
+
+class _MealDayScreenState extends State<MealDayScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: MicroLineWidget(carbs: 0.4, protein: 0.5, fats: 0.1),
+        ),
+        const SizedBox(height: 8,),
+        Card(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Carbs: ',
+                      style: th.labelMedium
+                          ?.copyWith(
+                        color: CustomColors.yellowPrimary(context),
+                      ),
+                    ),
+                    TextSpan(
+                      text: '40%',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Poppins',
+                        fontSize: 12,
+                        color: ch.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Protein: ',
+                      style: th.labelMedium
+                          ?.copyWith(
+                        color: CustomColors.bluePrimary(context),
+                      ),
+                    ),
+                    TextSpan(
+                      text: '50%',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Poppins',
+                        fontSize: 12,
+                        color: ch.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Fats: ',
+                      style: th.labelMedium
+                          ?.copyWith(
+                        color: CustomColors.orangePrimary(context),
+                      ),
+                    ),
+                    TextSpan(
+                      text: '10%',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Poppins',
+                        fontSize: 12,
+                        color: ch.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 
 class MicroLine extends CustomPainter {
   final double carbs;
@@ -503,7 +534,8 @@ class MealBoxes extends StatefulWidget {
   final String cal;
   final VoidCallback onTap;
   final IconData trail;
-  const MealBoxes({super.key, required this.title, required this.cal, required this.icon, required this.onTap, required this.trail});
+  final VoidCallback onLog;
+  const MealBoxes({super.key, required this.title, required this.cal, required this.icon, required this.onTap, required this.trail, required this.onLog});
 
   @override
   State<MealBoxes> createState() => _MealBoxesState();
@@ -519,7 +551,7 @@ class _MealBoxesState extends State<MealBoxes> {
         title: Text(widget.title),
         leading: Icon(widget.icon),
         subtitle: Text(widget.cal),
-        trailing: Icon(widget.trail),
+        trailing: IconButton(onPressed: widget.onLog, icon: Icon(widget.trail),),
         onTap: widget.onTap,
       ),
     );
@@ -582,6 +614,19 @@ class MealProvider extends ChangeNotifier{
   late MealModel selectedLunch;
   late MealModel selectedDinner;
 
+  final Set<String> loggedMeals = {};
+
+  void logMeal(MealModel meal){
+    if(loggedMeals.contains(meal.meal)) return;
+    loggedMeals.add(meal.meal!);
+    takenMeal++;
+    calorieTaken += meal.cal!;
+    carbTaken += meal.carb!;
+    proteinTaken += meal.protein!;
+    fatTaken += meal.fat!;
+    notifyListeners();
+  }
+
   final List<MealModel> meals = [
     MealModel(meal: 'Breakfast', name: "Egg & oat power bowl", cal: 490, carb: 52, protein: 30, fat: 16, tags: ['VIT-D', 'B12', 'B1', 'VIT-C', 'CA', 'MG', 'FE'], description: '3 eggs scrambled + 80g oats (cooked, water) + 200ml milk + 1 orange', serving: 1, photo: Image.asset('assets/meals/b1.png'),),
     MealModel(meal: 'Breakfast', name: "Oat banana milk bowl", cal: 510, carb: 72, protein: 18, fat: 20, tags: ['B1', 'CA', 'VIT-D', 'MG', 'K', 'VIT-E', 'FIBER-S'], description: '100g oats + 250ml milk + 1 banana + 30g almond butter', serving: 1, photo: Image.asset('assets/meals/b2.png'),),
@@ -612,14 +657,6 @@ class MealProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  void logMeal(MealModel meal){
-    takenMeal++;
-    calorieTaken += meal.cal!;
-    carbTaken += meal.carb!;
-    proteinTaken += meal.protein!;
-    fatTaken += meal.fat!;
-    notifyListeners();
-  }
 
   List<MealModel> getMeal(String type){
     return meals.where((m) => m.meal == type).toList();
@@ -976,14 +1013,213 @@ class DietHistory extends StatefulWidget {
   State<DietHistory> createState() => _DietHistoryState();
 }
 
+// class _DietHistoryState extends State<DietHistory> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Your Diet History'),
+//       ),
+//       body: SizedBox(),
+//     );
+//   }
+// }
+
 class _DietHistoryState extends State<DietHistory> {
   @override
   Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+
+    final weeks = [
+      {
+        'label': 'This week — Apr 13–19',
+        'days': [
+          {'day': 'Sun', 'date': '13', 'state': DietState.taken},
+          {'day': 'Mon', 'date': '14', 'state': DietState.taken},
+          {'day': 'Tue', 'date': '15', 'state': DietState.fasting},
+          {'day': 'Wed', 'date': '16', 'state': DietState.taken},
+          {'day': 'Thu', 'date': '17', 'state': DietState.normal},
+          {'day': 'Fri', 'date': '18', 'state': DietState.normal},
+          {'day': 'Sat', 'date': '19', 'state': DietState.normal},
+        ],
+      },
+      {
+        'label': 'Last week — Apr 6–12',
+        'days': [
+          {'day': 'Sun', 'date': '6',  'state': DietState.taken},
+          {'day': 'Mon', 'date': '7',  'state': DietState.remaining},
+          {'day': 'Tue', 'date': '8',  'state': DietState.fasting},
+          {'day': 'Wed', 'date': '9',  'state': DietState.taken},
+          {'day': 'Thu', 'date': '10', 'state': DietState.taken},
+          {'day': 'Fri', 'date': '11', 'state': DietState.taken},
+          {'day': 'Sat', 'date': '12', 'state': DietState.taken},
+        ],
+      },
+    ];
+
+    final logs = [
+      {'date': 'Wed, Apr 16', 'meals': '3 / 3', 'kcal': '1,680', 'state': DietState.taken},
+      {'date': 'Tue, Apr 15', 'meals': 'Fasting',  'kcal': '—',     'state': DietState.fasting},
+      {'date': 'Mon, Apr 14', 'meals': '3 / 3', 'kcal': '1,720', 'state': DietState.taken},
+      {'date': 'Mon, Apr 7',  'meals': '1 / 3', 'kcal': '490',   'state': DietState.remaining},
+    ];
+
+    Color stateColor(DietState s) {
+      if (s == DietState.taken)     return CustomColors.greenOutline(context);
+      if (s == DietState.remaining) return CustomColors.redOutline(context);
+      if (s == DietState.fasting)   return CustomColors.blueOutline(context);
+      return ch.onSurface.withOpacity(0.2);
+    }
+
+    Color stateBg(DietState s) {
+      if (s == DietState.taken)     return CustomColors.greenMuted(context);
+      if (s == DietState.remaining) return CustomColors.redMuted(context);
+      if (s == DietState.fasting)   return ch.surface;
+      return ch.surface;
+    }
+
+    String stateLabel(DietState s) {
+      if (s == DietState.taken)     return 'All meals';
+      if (s == DietState.remaining) return 'Missed';
+      if (s == DietState.fasting)   return 'Fasting';
+      return '—';
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Your Diet History'),
+      appBar: AppBar(title: const Text('Your Diet History')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  _SummaryCard(label: 'Days logged',   value: '20'),
+                  const SizedBox(width: 10),
+                  _SummaryCard(label: 'Avg kcal / day', value: '1,690'),
+                  const SizedBox(width: 10),
+                  _SummaryCard(label: 'Meals hit',     value: '91%'),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              for (final week in weeks) ...[
+                Text(week['label'] as String, style: th.labelMedium),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    for (final d in week['days'] as List<Map<String, Object>>)
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: stateBg(d['state'] as DietState),
+                            border: Border.all(color: stateColor(d['state'] as DietState)),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(d['day'] as String, style: th.bodySmall),
+                              Text(d['date'] as String, style: th.labelSmall),
+                              const SizedBox(height: 6),
+                              Container(
+                                width: 8, height: 8,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: stateColor(d['state'] as DietState),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+
+              const Divider(),
+              const SizedBox(height: 8),
+              Text('Recent days', style: th.labelMedium),
+              const SizedBox(height: 10),
+
+              for (final log in logs)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: ch.surface,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(log['date'] as String, style: th.bodyMedium),
+                            const SizedBox(height: 2),
+                            Text('Meals: ${log['meals']}', style: th.labelSmall),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text('${log['kcal']} kcal', style: th.labelLarge),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: stateBg(log['state'] as DietState),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              stateLabel(log['state'] as DietState),
+                              style: th.labelSmall?.copyWith(color: stateColor(log['state'] as DietState)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
-      body: SizedBox(),
+    );
+  }
+}
+
+class _SummaryCard extends StatelessWidget {
+  final String label;
+  final String value;
+  const _SummaryCard({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        decoration: BoxDecoration(
+          color: ch.surface,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(value, style: th.titleMedium),
+            const SizedBox(height: 2),
+            Text(label, style: th.labelSmall),
+          ],
+        ),
+      ),
     );
   }
 }

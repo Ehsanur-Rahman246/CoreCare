@@ -171,9 +171,9 @@ class _FitScreenState extends State<FitScreen>
                 Expanded(
                   child: ListView(
                     children: [
-                      ExerciseList(time: '08:30', title: "Warm Ups", subtitle: Text("50kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => WarmupScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.arrow_warm_up_rounded, isFirst: true,),
-                      ExerciseList(time: '08:37', title: "Main Workouts", subtitle: Text("380kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => MainWorkoutScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.fitness_center_rounded,),
-                      ExerciseList(time: '09:05', title: "Stretches", subtitle: Text("10kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => StretchScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: true, isPast: true, icon: Symbols.physical_therapy_rounded, isLast: true,),
+                      ExerciseList(time: '08:30', title: "Warm Ups", subtitle: Text("50kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => WarmupScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: false, isPast: false, icon: Symbols.arrow_warm_up_rounded, isFirst: true,),
+                      ExerciseList(time: '08:37', title: "Main Workouts", subtitle: Text("380kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => MainWorkoutScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: false, isPast: false, icon: Symbols.fitness_center_rounded,),
+                      ExerciseList(time: '09:05', title: "Stretches", subtitle: Text("10kcal"), trailing: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (_) => StretchScreen()));}, child: Text('Start')), burn: '200kcal', isCompleted: false, isPast: false, icon: Symbols.physical_therapy_rounded, isLast: true,),
                     ],
                   ),
                 ),
@@ -300,7 +300,7 @@ class _ExerciseListState extends State<ExerciseList> {
 
     return TimelineTile(
       alignment: TimelineAlign.manual,
-      lineXY: 0.20,
+      lineXY: 0.15,
       isFirst: widget.isFirst,
       isLast: widget.isLast,
 
@@ -1170,14 +1170,219 @@ class FitnessHistory extends StatefulWidget {
   State<FitnessHistory> createState() => _FitnessHistoryState();
 }
 
+// class _FitnessHistoryState extends State<FitnessHistory> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Your Fitness History'),
+//       ),
+//       body: SizedBox(),
+//     );
+//   }
+// }
+
 class _FitnessHistoryState extends State<FitnessHistory> {
   @override
   Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+
+    final weeks = [
+      {
+        'label': 'This week — Apr 13–19',
+        'days': [
+          {'day': 'Sun', 'date': '13', 'state': BoxState.completed},
+          {'day': 'Mon', 'date': '14', 'state': BoxState.completed},
+          {'day': 'Tue', 'date': '15', 'state': BoxState.restDay},
+          {'day': 'Wed', 'date': '16', 'state': BoxState.completed},
+          {'day': 'Thu', 'date': '17', 'state': BoxState.normal},
+          {'day': 'Fri', 'date': '18', 'state': BoxState.normal},
+          {'day': 'Sat', 'date': '19', 'state': BoxState.normal},
+        ],
+      },
+      {
+        'label': 'Last week — Apr 6–12',
+        'days': [
+          {'day': 'Sun', 'date': '6', 'state': BoxState.completed},
+          {'day': 'Mon', 'date': '7', 'state': BoxState.notCompleted},
+          {'day': 'Tue', 'date': '8', 'state': BoxState.restDay},
+          {'day': 'Wed', 'date': '9', 'state': BoxState.completed},
+          {'day': 'Thu', 'date': '10', 'state': BoxState.completed},
+          {'day': 'Fri', 'date': '11', 'state': BoxState.completed},
+          {'day': 'Sat', 'date': '12', 'state': BoxState.restDay},
+        ],
+      },
+    ];
+
+    final sessions = [
+      {'title': 'Full session', 'date': 'Wed, Apr 16', 'duration': '37 min', 'exercises': '21', 'kcal': '268', 'state': BoxState.completed},
+      {'title': 'Rest day',     'date': 'Tue, Apr 15', 'duration': '',       'exercises': '',   'kcal': '—',   'state': BoxState.restDay},
+      {'title': 'Full session', 'date': 'Mon, Apr 14', 'duration': '41 min', 'exercises': '21', 'kcal': '274', 'state': BoxState.completed},
+      {'title': 'Partial',      'date': 'Mon, Apr 7',  'duration': '14 min', 'exercises': '8',  'kcal': '92',  'state': BoxState.notCompleted},
+    ];
+
+    Color stateColor(BoxState s) {
+      if (s == BoxState.completed)    return CustomColors.greenOutline(context);
+      if (s == BoxState.notCompleted) return CustomColors.redOutline(context);
+      if (s == BoxState.restDay)      return CustomColors.blueOutline(context);
+      return ch.onSurface.withOpacity(0.2);
+    }
+
+    Color stateBg(BoxState s) {
+      if (s == BoxState.completed)    return CustomColors.greenMuted(context);
+      if (s == BoxState.notCompleted) return CustomColors.redMuted(context);
+      if (s == BoxState.restDay)      return ch.surface;
+      return ch.surface;
+    }
+
+    String stateLabel(BoxState s) {
+      if (s == BoxState.completed)    return 'Completed';
+      if (s == BoxState.notCompleted) return 'Missed';
+      if (s == BoxState.restDay)      return 'Rest';
+      return '—';
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Your Fitness History'),
+      appBar: AppBar(title: const Text('Your Fitness History')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Summary cards
+              Row(
+                children: [
+                  _SummaryCard(label: 'Days trained',     value: '18'),
+                  const SizedBox(width: 10),
+                  _SummaryCard(label: 'kcal burned',      value: '4,820'),
+                  const SizedBox(width: 10),
+                  _SummaryCard(label: 'Completion rate',  value: '86%'),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Weekly grids
+              for (final week in weeks) ...[
+                Text(week['label'] as String, style: th.labelMedium),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    for (final d in week['days'] as List<Map<String, Object>>)
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: stateBg(d['state'] as BoxState),
+                            border: Border.all(color: stateColor(d['state'] as BoxState)),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(d['day'] as String, style: th.bodySmall),
+                              Text(d['date'] as String, style: th.labelSmall),
+                              const SizedBox(height: 6),
+                              Container(
+                                width: 8, height: 8,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: stateColor(d['state'] as BoxState),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+
+              const Divider(),
+              const SizedBox(height: 8),
+              Text('Recent sessions', style: th.labelMedium),
+              const SizedBox(height: 10),
+
+              // Session rows
+              for (final s in sessions)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: ch.surface,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(s['title'] as String, style: th.bodyMedium),
+                            const SizedBox(height: 2),
+                            Text(
+                              [s['date'], if ((s['duration'] as String).isNotEmpty) s['duration'], if ((s['exercises'] as String).isNotEmpty) '${s['exercises']} exercises'].join(' · '),
+                              style: th.labelSmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text('${s['kcal']} kcal', style: th.labelLarge),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: stateBg(s['state'] as BoxState),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              stateLabel(s['state'] as BoxState),
+                              style: th.labelSmall?.copyWith(color: stateColor(s['state'] as BoxState)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
-      body: SizedBox(),
+    );
+  }
+}
+
+class _SummaryCard extends StatelessWidget {
+  final String label;
+  final String value;
+  const _SummaryCard({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final th = Theme.of(context).textTheme;
+    final ch = Theme.of(context).colorScheme;
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        decoration: BoxDecoration(
+          color: ch.surface,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(value, style: th.titleMedium),
+            const SizedBox(height: 2),
+            Text(label, style: th.labelSmall),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -28,6 +28,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   StreamSubscription? _linkGoogleSub;
+  final _cardHeight = ValueNotifier<double>(200);
   static final injuryKey = GlobalKey();
 
   Future<void> _linkGoogle() async {
@@ -165,16 +166,26 @@ class _ProfilePageState extends State<ProfilePage> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            SliverPersistentHeader(
-              pinned: true,
-              floating: false,
-              delegate: ProfileHeader(
-                maxHeight: MediaQuery.of(context).size.height * 0.3,
-                minHeight: MediaQuery.of(context).size.height * 0.1,
-              ),
+            ValueListenableBuilder<double>(
+                valueListenable: _cardHeight,
+                builder: (context, cardHeight, _){
+                  return SliverPersistentHeader(
+                    pinned: true,
+                    floating: false,
+                    delegate: ProfileHeader(
+                      maxHeight: (MediaQuery.of(context).size.height * 0.1) + 70 + cardHeight / 2,
+                      minHeight: MediaQuery.of(context).size.height * 0.1,
+                      onCardHeightMeasured: (h){
+                        if(_cardHeight.value != h) _cardHeight.value = h;
+                      }
+                    ),
+                  );
+                }
             ),
-            SliverPersistentHeader(
-              delegate: SpacerDelegate(maxSpace: ExpandedProfileHeader.cardHeight - 60, minSpace: 20),
+            ValueListenableBuilder<double>(valueListenable: _cardHeight,
+                builder: (context, cardHeight, _){
+              return SliverToBoxAdapter(child: SizedBox(height: cardHeight / 2 + 60,),);
+                }
             ),
             SliverPadding(
               padding: const EdgeInsetsGeometry.symmetric(horizontal: 15),
@@ -1085,8 +1096,9 @@ class _ProfilePageState extends State<ProfilePage> {
 class ProfileHeader extends SliverPersistentHeaderDelegate {
   final double maxHeight;
   final double minHeight;
+  final void Function(double)? onCardHeightMeasured;
 
-  ProfileHeader({required this.maxHeight, required this.minHeight});
+  ProfileHeader({required this.maxHeight, required this.minHeight, this.onCardHeightMeasured});
 
   @override
   Widget build(
@@ -1097,11 +1109,22 @@ class ProfileHeader extends SliverPersistentHeaderDelegate {
     final isCollapsed = shrinkOffset >= (maxExtent - minExtent);
     final progress = (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
 
-    if (isCollapsed) {
-      return Opacity(opacity: progress, child: CollapsedProfileHeader());
-    } else {
-      return Opacity(opacity: 1 - progress, child: ExpandedProfileHeader());
-    }
+    return Stack(
+      fit: StackFit.expand,
+      clipBehavior: Clip.none,
+      children: [
+        if(!isCollapsed)
+          Opacity(
+            opacity: (1 - progress).clamp(0.0, 1.0),
+            child: ExpandedProfileHeader(onCardHeightMeasured: onCardHeightMeasured),
+          ),
+        if(isCollapsed)
+        Opacity(
+          opacity: ((progress - 0.99) * 100).clamp(0.0, 1.0),
+          child: CollapsedProfileHeader(),
+        ),
+      ],
+    );
   }
 
   @override
@@ -1111,36 +1134,8 @@ class ProfileHeader extends SliverPersistentHeaderDelegate {
   double get minExtent => minHeight;
 
   @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
-  }
-}
-
-class SpacerDelegate extends SliverPersistentHeaderDelegate {
-  final double maxSpace;
-  final double minSpace;
-
-  SpacerDelegate({required this.maxSpace, required this.minSpace});
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    final space = (maxExtent - shrinkOffset).clamp(minExtent, maxExtent);
-    return Container(height: space, color: Colors.transparent);
-  }
-
-  @override
-  double get maxExtent => maxSpace;
-
-  @override
-  double get minExtent => minSpace;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
+  bool shouldRebuild(covariant ProfileHeader oldDelegate) {
+    return oldDelegate.maxHeight != maxHeight || oldDelegate.minHeight != minHeight;
   }
 }
 
@@ -1148,8 +1143,9 @@ class ExpandedProfileHeader extends StatefulWidget {
   static double cardHeight = 200;
   static bool hasImage = false;
   static Uint8List imageBytes = Uint8List(0);
+  final void Function(double)? onCardHeightMeasured;
 
-  const ExpandedProfileHeader({super.key});
+  const ExpandedProfileHeader({super.key, this.onCardHeightMeasured});
 
   @override
   State<ExpandedProfileHeader> createState() => _ExpandedProfileHeaderState();
@@ -1163,10 +1159,12 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadImageFromUrl();
       final box = cardKey.currentContext?.findRenderObject() as RenderBox?;
-      if(box != null){
-        ExpandedProfileHeader.cardHeight = box.size.height;
+      if(box != null && box.size.height != ExpandedProfileHeader.cardHeight){
+        setState(() {
+          ExpandedProfileHeader.cardHeight = box.size.height;
+        });
+        widget.onCardHeightMeasured?.call(box.size.height);
       }
-      setState(() {});
     });
   }
 
@@ -1274,7 +1272,7 @@ class _ExpandedProfileHeaderState extends State<ExpandedProfileHeader> {
             Positioned(
               left: 20,
               right: 20,
-              top: 120,
+              bottom: -(ExpandedProfileHeader.cardHeight/2),
               child: Card(
                 key: cardKey,
                 child: Stack(
@@ -1505,7 +1503,7 @@ class _CollapsedProfileHeaderState extends State<CollapsedProfileHeader> {
             user.name,
             style: Theme.of(
               context,
-            ).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600),
+            ).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600, fontFamily: 'Poppins', color: Theme.of(context).colorScheme.onPrimary),
           ),
           Spacer(),
           Container(

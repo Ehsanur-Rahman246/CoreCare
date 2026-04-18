@@ -402,6 +402,8 @@ class UserData {
   }
 }
 
+
+
 class RecommendationData {
   final int? gender;
   final String? category;
