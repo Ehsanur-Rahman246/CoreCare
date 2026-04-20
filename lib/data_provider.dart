@@ -1,5 +1,9 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:core_care/pages/diet_module.dart';
+import 'package:core_care/pages/fitness_module.dart';
+import 'package:core_care/pages/home_screen.dart';
+import 'package:core_care/pages/shop_module.dart';
 import 'package:core_care/pages/sign_up_pages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -402,7 +406,62 @@ class UserData {
   }
 }
 
+class DailyExeLog{
+  final BoxState state;
+  final double progress;
+  final int doneExercises;
+  final double totalBurn;
+  final int totalTime;
+  final DateTime day;
+  DailyExeLog({required this.progress, required this.doneExercises, required this.totalBurn, required this.totalTime, required this.day, required this.state});
+}
 
+class DailyMealLog{
+  final DietState state;
+  final double totalCalories;
+  final int takenMeals;
+  final double totalCarbs;
+  final double totalProtein;
+  final double totalFats;
+  final DateTime day;
+  DailyMealLog({required this.state, required this.totalCalories, required this.takenMeals, required this.totalCarbs, required this.totalProtein, required this.totalFats, required this.day});
+}
+
+class ExerciseSchedule{
+  final BoxState state;
+  final List<String> schedule;
+  final DateTime day;
+  ExerciseSchedule({required this.state, required this.schedule, required this.day});
+}
+
+class ShopLog{
+  final List<Item> recentSearch;
+  final List<Item> cart;
+  final List<Item> orders;
+  final ShopItemState state;
+  final DateTime day;
+  ShopLog({required this.recentSearch, required this.cart, required this.orders, required this.state, required this.day});
+}
+
+class OngoingLogs{
+  final double burn;
+  final double intake;
+  final double carb;
+  final double protein;
+  final double fat;
+  final double progress;
+  final int waterTaken;
+  OngoingLogs({required this.burn, required this.intake, required this.carb, required this.protein, required this.fat, required this.progress, required this.waterTaken});
+}
+
+class UserLog{
+  final DailyExeLog exeLogs;
+  final DailyMealLog mealLogs;
+  final ExerciseSchedule schedule;
+  final ShopLog shopping;
+  final OngoingLogs dailyData;
+  UserLog({required this.exeLogs, required this.mealLogs, required this.schedule, required this.shopping, required this.dailyData});
+}
 
 class RecommendationData {
   final int? gender;

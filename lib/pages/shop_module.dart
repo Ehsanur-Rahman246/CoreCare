@@ -10,6 +10,8 @@ class ShopScreen extends StatefulWidget {
   State<ShopScreen> createState() => _ShopScreenState();
 }
 
+enum ShopItemState{ carted, ordered, packaging, delivered }
+
 class Item{
   final String name;
   final Image photo;
